@@ -82,4 +82,6 @@ function showSelectServerDialog() {
 function connectedServer(addr) {
     const $elem = document.getElementById("connected-server");
     $elem.innerText = addr;
+
+    document.querySelector(".loader").classList.remove("hide")
 }
