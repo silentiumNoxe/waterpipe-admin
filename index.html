@@ -10,7 +10,10 @@
   <script async src="index.js"></script>
 </head>
 <body>
-<h1>Waterpipe</h1>
+<div class="header fixed">
+  <h1 class="title">Waterpipe</h1>
+  <div id="connected-server" onclick="showSelectServerDialog()"></div>
+</div>
 <dialog id="dialog-server-addr" open>
   <h3>Specify your server address</h3>
   <div class="form">

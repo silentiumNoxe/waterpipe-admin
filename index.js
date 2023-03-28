@@ -1,3 +1,12 @@
+(function () {
+    const host = localStorage.getItem("server-addr");
+    if (host != null || host !== "") {
+        document.getElementById("dialog-server-addr").classList.add("hide");
+    }
+
+    connectedServer(host);
+})();
+
 function applyServer() {
     const $elem = document.getElementById("host-server")
     if ($elem == null) {
@@ -10,8 +19,11 @@ function applyServer() {
         return;
     }
 
-    localStorage.setItem("server-addr", $elem.value)
-    document.getElementById("dialog-server-addr").remove();
+    const host = $elem.value;
+
+    localStorage.setItem("server-addr", host)
+    document.getElementById("dialog-server-addr").classList.add("hide");
+    connectedServer(host);
 }
 
 function testServer() {
@@ -58,4 +70,16 @@ function testServerError(msg) {
 
     const $input = document.getElementById("host-server")
     $input.classList.add("error")
+    $input.classList.remove("success")
+}
+
+function showSelectServerDialog() {
+    const $elem = document.getElementById("dialog-server-addr");
+    $elem.classList.remove("hide");
+    document.getElementById("host-server").value = localStorage.getItem("server-addr");
+}
+
+function connectedServer(addr) {
+    const $elem = document.getElementById("connected-server");
+    $elem.innerText = addr;
 }

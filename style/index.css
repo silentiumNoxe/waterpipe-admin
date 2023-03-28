@@ -53,3 +53,12 @@ input {
     float: right;
     margin-right: 0;
 }
+
+#connected-server {
+    border: 1px solid var(--color-light);
+    border-radius: 25px;
+    padding: 10px 10px;
+    font-size: .7vw;
+    text-align: center;
+    cursor: pointer;
+}

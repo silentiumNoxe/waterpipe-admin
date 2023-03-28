@@ -1,5 +1,27 @@
+html, body {
+    margin: 0;
+}
+
 .hide {
     display: none;
+}
+
+.fixed {
+    position: fixed;
+}
+
+.header {
+    top: 0;
+    width: 100%;
+    display: flex;
+}
+
+.header > * {
+    margin: 10px;
+}
+
+.title {
+    cursor: pointer;
 }
 
 p.red {
