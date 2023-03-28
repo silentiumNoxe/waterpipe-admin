@@ -1,0 +1,23 @@
+.hide {
+    display: none;
+}
+
+p.red {
+    background-color: var(--color-error);
+}
+
+p.green {
+    background-color: var(--color-success);
+}
+
+input {
+    font-family: 'Ubuntu', sans-serif;
+}
+
+input.error {
+    border-color: var(--color-error);
+}
+
+input.success {
+    border-color: var(--color-success);
+}

@@ -1,0 +1,55 @@
+@import "commons.css";
+@import "font.css";
+@import "button.css";
+
+html, body {
+    background-color: var(--color-primary);
+}
+
+input {
+    border: 1px solid var(--color-light);
+    background-color: var(--color-light);
+    outline: none;
+
+    font-size: 1em;
+    /*font-weight: bold;*/
+}
+
+#message {
+    margin: 0;
+    padding: 2px 4px;
+    font-weight: bold;
+}
+
+#dialog-server-addr {
+    top: 25vh;
+    background-color: inherit;
+    border: 1px solid var(--color-light);
+    color: var(--color-light);
+    width: 15vw;
+}
+
+#dialog-server-addr > * {
+    width: 100%;
+    font-size: .8vw;
+}
+
+#dialog-server-addr > .form > input {
+    width: calc(100% - 6px);
+}
+
+#dialog-server-addr > .buttons-container {
+    margin-top: 1vh;
+    width: 100%;
+}
+
+#dialog-server-addr > .buttons-container > * {
+    float: right;
+    margin-right: 5px;
+    font-size: .8vw;
+}
+
+#dialog-server-addr > .buttons-container > :first-child {
+    float: right;
+    margin-right: 0;
+}

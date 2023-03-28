@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Waterpipe admin</title>
+
+  <link rel="stylesheet" href="style/dark.css">
+  <link rel="stylesheet" href="style/index.css">
+
+  <script async src="index.js"></script>
+</head>
+<body>
+<h1>Waterpipe</h1>
+<dialog id="dialog-server-addr" open>
+  <h3>Specify your server address</h3>
+  <div class="form">
+    <p id="message" class="hide red"></p>
+
+    <label for="host-server">
+      <input id="host-server" type="url" autocomplete="url">
+    </label>
+  </div>
+  <div class="buttons-container">
+    <button class="pill green" onclick="applyServer()">Apply</button>
+    <button class="pill" onclick="testServer()">Test</button>
+  </div>
+</dialog>
+</body>
+</html>
