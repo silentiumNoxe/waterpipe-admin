@@ -31,6 +31,7 @@ function testServer() {
         .then(resp => {
             if (resp.status !== 200) {
                 setTimeout(() => testServerError("server unavailable"))
+                return
             }
 
             const $p = document.getElementById("message");
@@ -51,7 +52,8 @@ function testServer() {
 function testServerError(msg) {
     const $p = document.getElementById("message");
     $p.innerText = msg;
-    $p.classList.add("green")
+    $p.classList.add("red")
+    $p.classList.remove("green")
     $p.classList.remove("hide")
 
     const $input = document.getElementById("host-server")
