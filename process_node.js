@@ -6,6 +6,7 @@ export default class ProcessNode {
     args;
     next;
     timeout;
+    position;
 
     constructor(source) {
         this.id = source.id;
@@ -14,6 +15,7 @@ export default class ProcessNode {
         this.args = source.args;
         this.next = source.next;
         this.timeout = source.timeout;
+        this.position = source.position;
     }
 
     isSystem() {
