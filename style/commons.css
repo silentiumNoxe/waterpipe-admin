@@ -4,6 +4,13 @@ html, body {
     margin: 0;
 }
 
+dialog {
+    position: absolute;
+    background-color: var(--color-primary);
+    border: 1px solid var(--color-light);
+    border-radius: 10px;
+}
+
 .hide {
     display: none !important;
 }
@@ -32,16 +39,4 @@ p.red {
 
 p.green {
     background-color: var(--color-success);
-}
-
-input {
-    font-family: 'Ubuntu', sans-serif;
-}
-
-input.error {
-    border-color: var(--color-error);
-}
-
-input.success {
-    border-color: var(--color-success);
 }

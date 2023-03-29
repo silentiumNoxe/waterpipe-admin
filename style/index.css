@@ -1,9 +1,12 @@
 @import "font.css";
 @import "dark.css";
+@import "button.css";
+@import "input.css";
 @import "commons.css";
 
 * {
     margin: 0;
+    user-select: none;
 }
 
 body {
@@ -50,4 +53,16 @@ body {
 [data-type="server-addr"].success {
     border-color: var(--color-success);
     color: var(--color-success);
+}
+
+#select-addr-dialog > * {
+    margin-top: 15px;
+}
+
+#select-addr-dialog > .container {
+    width: 100%;
+}
+
+#select-addr-dialog > .container > * {
+    float: right;
 }

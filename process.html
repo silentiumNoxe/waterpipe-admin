@@ -13,9 +13,18 @@
   <article id="header">
     <h1 data-type="title">Waterpipe</h1>
     <div class="warning" data-type="server-addr" onclick="selectServer()">
-      server status
+      server offline
     </div>
   </article>
+  <dialog id="select-addr-dialog">
+    <h3>Specify server address</h3>
+    <label for="server-addr-input">
+    </label>
+    <input id="server-addr-input" type="url" placeholder="server address">
+    <div class="container">
+      <button class="pill" onclick="applyServer()">Apply</button>
+    </div>
+  </dialog>
 </section>
 <section id="editor"></section>
 </body>

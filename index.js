@@ -61,6 +61,7 @@ function showConnectedServer() {
         $elem.classList.remove("success")
         $elem.classList.remove("error")
         $elem.classList.add("warning")
+        $elem.textContent = "server offline"
     }
 
     function error(msg) {
@@ -69,6 +70,7 @@ function showConnectedServer() {
         $elem.classList.remove("warning")
         $elem.classList.add("error")
         $elem.title = msg;
+        $elem.textContent = "server error"
     }
 
     function connected(addr) {
@@ -77,6 +79,7 @@ function showConnectedServer() {
         $elem.classList.remove("error")
         $elem.classList.add("success")
         $elem.title = addr;
+        $elem.textContent = "server connected";
     }
 
     function check() {
@@ -85,6 +88,8 @@ function showConnectedServer() {
             error("url not specified")
             return
         }
+
+        offline()
     }
 
     check();
@@ -92,4 +97,5 @@ function showConnectedServer() {
 }
 
 function selectServer() {
+    document.getElementById("select-addr-dialog").open = true;
 }

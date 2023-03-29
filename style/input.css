@@ -1,0 +1,19 @@
+input {
+    background-color: var(--color-primary);
+    border: none;
+    border-bottom: 1px solid var(--color-light);
+    text-decoration: none;
+    outline: none;
+}
+
+input:focus {
+    border-bottom: 3px solid var(--color-light);
+}
+
+input.error {
+    border-color: var(--color-error);
+}
+
+input.success {
+    border-color: var(--color-success);
+}
