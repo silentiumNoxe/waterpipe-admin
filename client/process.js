@@ -1,4 +1,4 @@
-import Process from "../process.js";
+import Process from "../model/process.js";
 
 /**
  * @return Array<string>
