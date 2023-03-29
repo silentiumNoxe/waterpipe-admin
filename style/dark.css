@@ -4,6 +4,9 @@
 
     --color-success: #4d7c45;
     --color-error: #a24444;
+    --color-warning: #bb853e;
+}
 
+* {
     color: var(--color-light);
 }

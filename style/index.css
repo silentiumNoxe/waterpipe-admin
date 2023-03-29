@@ -1,5 +1,6 @@
 @import "font.css";
 @import "dark.css";
+@import "commons.css";
 
 * {
     margin: 0;
@@ -12,6 +13,7 @@ body {
 #ui {
     position: absolute;
     z-index: 1000;
+    background-color: var(--color-primary);
 }
 
 #header {
@@ -22,4 +24,30 @@ body {
 
 #header > [data-type="title"] {
     font-size: 2em;
+}
+
+[data-type="server-addr"] {
+    min-width: 100px;
+    border: 1px solid var(--color-light);
+    border-radius: 25px;
+    margin-left: 1vw;
+    text-align: center;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+[data-type="server-addr"].warning {
+    border-color: var(--color-warning);
+    color: var(--color-warning);
+}
+
+[data-type="server-addr"].error {
+    border-color: var(--color-error);
+    color: var(--color-error);
+}
+
+[data-type="server-addr"].success {
+    border-color: var(--color-success);
+    color: var(--color-success);
 }

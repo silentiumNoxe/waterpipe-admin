@@ -1,7 +1,9 @@
 <html>
 <head>
   <title>Waterpipe</title>
+
   <link rel="stylesheet" href="style/index.css">
+
   <script src="https://unpkg.com/konva@8/konva.js"></script>
   <script src="node.js"></script>
   <script src="index.js"></script>
@@ -10,6 +12,9 @@
 <section id="ui">
   <article id="header">
     <h1 data-type="title">Waterpipe</h1>
+    <div class="warning" data-type="server-addr" onclick="selectServer()">
+      server status
+    </div>
   </article>
 </section>
 <section id="editor"></section>

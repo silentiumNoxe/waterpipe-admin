@@ -1,4 +1,6 @@
 window.addEventListener("DOMContentLoaded", () => {
+    showConnectedServer()
+
     const width = window.innerWidth;
     const height = window.innerHeight;
     const stage = new Konva.Stage({container: "editor", width, height, draggable: true});
@@ -52,3 +54,42 @@ window.addEventListener("DOMContentLoaded", () => {
     stage.add(layer);
     layer.draw();
 })
+
+function showConnectedServer() {
+    function offline() {
+        const $elem = document.querySelector("[data-type='server-addr']")
+        $elem.classList.remove("success")
+        $elem.classList.remove("error")
+        $elem.classList.add("warning")
+    }
+
+    function error(msg) {
+        const $elem = document.querySelector("[data-type='server-addr']")
+        $elem.classList.remove("success")
+        $elem.classList.remove("warning")
+        $elem.classList.add("error")
+        $elem.title = msg;
+    }
+
+    function connected(addr) {
+        const $elem = document.querySelector("[data-type='server-addr']")
+        $elem.classList.remove("warning")
+        $elem.classList.remove("error")
+        $elem.classList.add("success")
+        $elem.title = addr;
+    }
+
+    function check() {
+        const addr = localStorage.getItem("server-addr");
+        if (addr == null || addr === "") {
+            error("url not specified")
+            return
+        }
+    }
+
+    check();
+    setInterval(check, 30000)
+}
+
+function selectServer() {
+}
