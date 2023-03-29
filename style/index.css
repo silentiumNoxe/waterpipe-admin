@@ -1,7 +1,4 @@
-@import "font.css";
 @import "dark.css";
-@import "button.css";
-@import "input.css";
 @import "commons.css";
 
 * {
@@ -53,6 +50,11 @@ body {
 [data-type="server-addr"].success {
     border-color: var(--color-success);
     color: var(--color-success);
+}
+
+#select-addr-dialog {
+    top: 35vh;
+    left: 42vw;
 }
 
 #select-addr-dialog > * {

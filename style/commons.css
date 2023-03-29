@@ -1,4 +1,7 @@
 @import "loader.css";
+@import "button.css";
+@import "input.css";
+@import "font.css";
 
 html, body {
     margin: 0;

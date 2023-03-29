@@ -38,6 +38,14 @@ window.addEventListener("DOMContentLoaded", () => {
         stage.position(newPos);
     })
 
+    stage.on("dragmove", () => {
+        document.body.style.cursor = "grab";
+    })
+
+    stage.on("dragend", () => {
+        document.body.style.cursor = "auto";
+    })
+
     const layer = new Konva.Layer();
     const lineLayer = new Konva.Layer();
 
@@ -89,7 +97,19 @@ function showConnectedServer() {
             return
         }
 
-        offline()
+        fetch(addr+"/health")
+            .then(resp => {
+                if (resp.status !== 200) {
+                    error(resp.statusText);
+                    return
+                }
+
+                connected(addr)
+            })
+            .catch(e => {
+                console.warn(e)
+                offline()
+            })
     }
 
     check();
@@ -98,4 +118,16 @@ function showConnectedServer() {
 
 function selectServer() {
     document.getElementById("select-addr-dialog").open = true;
+}
+
+function applyServer() {
+    const $input = document.getElementById("server-addr-input");
+    const url = $input.value;
+    if (url == null || url === "") {
+        $input.classList.add("error")
+        return
+    }
+
+    localStorage.setItem("server-addr", url);
+    document.getElementById("select-addr-dialog").open = false;
 }
