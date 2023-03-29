@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style/dark.css">
   <link rel="stylesheet" href="style/index.css">
 
-  <script async src="index.js"></script>
+  <script async src="index.js.old"></script>
 </head>
 <body>
 <div class="header fixed">

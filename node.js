@@ -8,9 +8,7 @@ class Node extends Konva.Rect {
             x, y,
             width: 200,
             height: 90,
-            fill: "#ffffff",
-            stroke: "black",
-            strokeWidth: 2,
+            fill: "#a0a8a8",
             draggable: true,
             id: crypto.randomUUID()
         })
@@ -32,9 +30,8 @@ class Node extends Konva.Rect {
     connectTo(node) {
         const line = new Konva.Line({
             points: [this.getCenter().x, this.getCenter().y, node.getCenter().x, node.getCenter().y],
-            stroke: "black",
+            stroke: "#a0a8a8",
             strokeWidth: 2,
-            fill: "black",
             id: `${this.id()}_${node.id()}`
         });
 

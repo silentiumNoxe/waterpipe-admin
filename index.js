@@ -1,87 +1,54 @@
-(function () {
-    const host = localStorage.getItem("server-addr");
-    if (host != null || host !== "") {
-        document.getElementById("dialog-server-addr").classList.add("hide");
-    }
+window.addEventListener("DOMContentLoaded", () => {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const stage = new Konva.Stage({container: "editor", width, height, draggable: true});
 
-    connectedServer(host);
-})();
+    stage.on("wheel", e => {
+        const scaleBy = 1.05;
+        // stop default scrolling
+        e.evt.preventDefault();
 
-function applyServer() {
-    const $elem = document.getElementById("host-server")
-    if ($elem == null) {
-        console.error("host-server input not found")
-        return
-    }
+        const oldScale = stage.scaleX();
+        const pointer = stage.getPointerPosition();
 
-    if ($elem.value === "") {
-        setTimeout(() => testServerError("address not specified"))
-        return;
-    }
+        const mousePointTo = {
+            x: (pointer.x - stage.x()) / oldScale,
+            y: (pointer.y - stage.y()) / oldScale,
+        };
 
-    const host = $elem.value;
+        // how to scale? Zoom in? Or zoom out?
+        let direction = e.evt.deltaY > 0 ? 1 : -1;
 
-    localStorage.setItem("server-addr", host)
-    document.getElementById("dialog-server-addr").classList.add("hide");
-    connectedServer(host);
-}
+        // when we zoom on trackpad, e.evt.ctrlKey is true
+        // in that case lets revert direction
+        if (e.evt.ctrlKey) {
+            direction = -direction;
+        }
 
-function testServer() {
-    const $elem = document.getElementById("host-server")
-    if ($elem == null) {
-        console.error("host-server input not found")
-        return
-    }
+        const newScale = direction > 0 ? oldScale * scaleBy : oldScale / scaleBy;
 
-    if ($elem.value === "") {
-        setTimeout(() => testServerError("address not specified"))
-        return;
-    }
+        stage.scale({ x: newScale, y: newScale });
 
-    const addr = $elem.value;
-    fetch(`${addr}/health`, {mode: "cors"})
-        .then(resp => {
-            if (resp.status !== 200) {
-                setTimeout(() => testServerError("server unavailable"))
-                return
-            }
+        const newPos = {
+            x: pointer.x - mousePointTo.x * newScale,
+            y: pointer.y - mousePointTo.y * newScale,
+        };
+        stage.position(newPos);
+    })
 
-            const $p = document.getElementById("message");
-            $p.innerText = "success";
-            $p.classList.remove("hide")
-            $p.classList.remove("red")
-            $p.classList.add("green")
+    const layer = new Konva.Layer();
+    const lineLayer = new Konva.Layer();
 
-            const $input = document.getElementById("host-server")
-            $input.classList.add("success")
-        })
-        .catch(e => {
-            console.error(e);
-            setTimeout(() => testServerError("server unavailable"))
-        })
-}
+    const node1 = new Node({x: 50, y: 50});
+    const node2 = new Node({x: 200, y: 200});
+    const node3 = new Node({x: 2200, y: 200});
 
-function testServerError(msg) {
-    const $p = document.getElementById("message");
-    $p.innerText = msg;
-    $p.classList.add("red")
-    $p.classList.remove("green")
-    $p.classList.remove("hide")
+    const line = node1.connectTo(node2)
 
-    const $input = document.getElementById("host-server")
-    $input.classList.add("error")
-    $input.classList.remove("success")
-}
+    layer.add(node1, node2, node3);
+    lineLayer.add(line);
 
-function showSelectServerDialog() {
-    const $elem = document.getElementById("dialog-server-addr");
-    $elem.classList.remove("hide");
-    document.getElementById("host-server").value = localStorage.getItem("server-addr");
-}
-
-function connectedServer(addr) {
-    const $elem = document.getElementById("connected-server");
-    $elem.innerText = addr;
-
-    document.querySelector(".loader").classList.remove("hide")
-}
+    stage.add(lineLayer);
+    stage.add(layer);
+    layer.draw();
+})
