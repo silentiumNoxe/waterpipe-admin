@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Waterpipe admin</title>
+
+  <link rel="stylesheet" href="style/dark.css">
+  <link rel="stylesheet" href="style/index.css">
+
+  <script async src="index.js"></script>
+</head>
+<body>
+<div class="header fixed">
+  <h1 class="title">Waterpipe</h1>
+  <div id="connected-server" onclick="showSelectServerDialog()"></div>
+</div>
+<article class="main">
+  <section class="left">
+    <nav>
+      <ul id="site-nav">
+        <li>Processes</li>
+        <li>Nodes</li>
+      </ul>
+    </nav>
+  </section>
+  <section class="right">
+    <span class="loader hide"></span>
+    <div class="payload hide"></div>
+  </section>
+</article>
+<dialog id="dialog-server-addr" open>
+  <h3>Specify your server address</h3>
+  <div class="form">
+    <p id="message" class="hide red"></p>
+
+    <label for="host-server"></label>
+    <input id="host-server" type="url" autocomplete="url">
+  </div>
+  <div class="buttons-container">
+    <button class="pill green" onclick="applyServer()">Apply</button>
+    <button class="pill" onclick="testServer()">Test</button>
+  </div>
+</dialog>
+</body>
+</html>
