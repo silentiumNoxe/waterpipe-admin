@@ -1,3 +1,15 @@
+(function (){
+    const params = new URLSearchParams(window.location.search)
+    const processId = params.get("process")
+    const version = Number(params.get("v"))
+
+    import("./client/process.js")
+        .then(m => {
+            m.GetPayload(processId, version)
+                .then(process => console.log(process))
+        })
+})()
+
 window.addEventListener("DOMContentLoaded", () => {
     showConnectedServer()
 
