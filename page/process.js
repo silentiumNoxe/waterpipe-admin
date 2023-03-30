@@ -1,14 +1,12 @@
-(function (){
-    const params = new URLSearchParams(window.location.search)
-    const processId = params.get("process")
-    const version = Number(params.get("v"))
+Konva.DEFAULT_FONT = "Ubuntu";
+Konva.Color = {
+    PRIMARY: "#212525",
+    LIGHT: "#a0a8a8",
 
-    import("../client/process.js")
-        .then(m => {
-            m.GetPayload(processId, version)
-                .then(process => console.log(process))
-        })
-})()
+    SUCCESS: "#4d7c45",
+    WARNING: "#a24444",
+    ERROR: "#bb853e"
+}
 
 window.addEventListener("DOMContentLoaded", () => {
     showConnectedServer()
@@ -16,6 +14,10 @@ window.addEventListener("DOMContentLoaded", () => {
     const width = window.innerWidth;
     const height = window.innerHeight;
     const stage = new Konva.Stage({container: "editor", width, height, draggable: true});
+
+    window.mousePosition = function () {
+        return stage.getPointerPosition();
+    }
 
     stage.on("wheel", e => {
         const scaleBy = 1.05;
@@ -58,21 +60,21 @@ window.addEventListener("DOMContentLoaded", () => {
         document.body.style.cursor = "auto";
     })
 
-    const layer = new Konva.Layer();
-    const lineLayer = new Konva.Layer();
-
-    const node1 = new Node({x: 50, y: 50});
-    const node2 = new Node({x: 200, y: 200});
-    const node3 = new Node({x: 2200, y: 200});
-
-    const line = node1.connectTo(node2)
-
-    layer.add(node1, node2, node3);
-    lineLayer.add(line);
+    const layer = window.NodeLayer = new Konva.Layer({name: "Node"});
+    const lineLayer = window.LineLayer = new Konva.Layer({name: "Line"});
 
     stage.add(lineLayer);
     stage.add(layer);
-    layer.draw();
+
+    const params = new URLSearchParams(window.location.search)
+    const processId = params.get("process")
+    const version = Number(params.get("v"))
+
+    import("../client/process.js")
+        .then(m => {
+            m.GetPayload(processId, version)
+                .then(process => import("../render_process.js").then(m1 => m1.default(process)))
+        })
 })
 
 function showConnectedServer() {

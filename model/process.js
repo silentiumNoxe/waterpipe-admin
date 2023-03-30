@@ -7,6 +7,7 @@ export default class Process {
     version;
     author;
     path;
+    /** @type Array<ProcessNode>*/
     nodes = [];
     active;
     debug;
