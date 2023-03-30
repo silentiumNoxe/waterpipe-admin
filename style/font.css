@@ -3,3 +3,7 @@
 *, :root {
     font-family: 'Ubuntu', sans-serif;
 }
+
+.bold {
+    font-weight: bold;
+}

@@ -41,6 +41,10 @@ dialog {
     cursor: pointer;
 }
 
+.flex {
+    display: flex;
+}
+
 p.red {
     background-color: var(--color-error);
 }

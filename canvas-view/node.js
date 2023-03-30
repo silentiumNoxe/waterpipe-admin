@@ -8,6 +8,10 @@ export default class NodeView extends Konva.Group {
 
     #view = {}
 
+    #fontSizeScale = 1;
+
+    #important = false;
+
     constructor() {
         super({
             x: 0,
@@ -86,9 +90,11 @@ export default class NodeView extends Konva.Group {
                 padding: 10,
                 width: this.#view.shape.width(),
                 align: "center",
-                fontSize: 18,
+                fontSize: 18 * this.#fontSizeScale,
                 fontFamily: Konva.DEFAULT_FONT
             })
+
+            t.ops = {fontSize: 18};
 
             this.add(t);
         }
@@ -102,5 +108,19 @@ export default class NodeView extends Konva.Group {
 
     height(val) {
         return this.#view.shape.height(val);
+    }
+
+    set fontSizeScale(val) {
+        this.#fontSizeScale = val;
+        this.#view.title.fontSize(this.#view.title.ops.fontSize * val);
+    }
+
+    set important(val) {
+        this.#important = val;
+        if (this.#important === true) {
+            this.#view.shape.fill(Konva.Color.WARNING);
+        } else {
+            this.#view.shape.fill(Konva.Color.LIGHT);
+        }
     }
 }

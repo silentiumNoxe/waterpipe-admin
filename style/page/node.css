@@ -47,15 +47,58 @@
 #menus > * {
     width: 100%;
     height: 100%;
+    margin: 20px 0;
 }
 
 #script-menu > textarea {
     background-color: var(--color-primary);
     width: 100%;
     height: 100%;
-    margin: 20px 0;
     resize: none;
     outline: none;
     font-size: 1.2em;
     display: block;
+    border: none;
+}
+
+#commons-menu > :not(:first-child) {
+    margin-top: 2vh;
+}
+
+#commons-menu [data-type="node-name"] {
+    width: 200px;
+    border-radius: 10px;
+    margin-right: 2vw;
+}
+
+#commons-menu [data-type="node-pkg"] {
+    width: 400px;
+    border-radius: 10px;
+}
+
+#commons-menu [data-type="node-name"] > input {
+    border: none;
+    font-size: 1em;
+}
+
+#commons-menu [data-type="node-pkg"] > input {
+    border: none;
+    font-size: 1em;
+    width: inherit;
+}
+
+#commons-menu [data-type="node-important"] {
+    font-weight: bold;
+    border-radius: 15px;
+    border: 2px solid var(--color-light-1);
+    font-size: 1em;
+    height: 50px;
+    padding: 0 15px;
+    margin-top: 5px;
+    float: right;
+    margin-left: auto;
+}
+
+#commons-menu [data-type="node-important"].warning {
+    border: 2px solid var(--color-warning);
 }

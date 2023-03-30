@@ -31,17 +31,32 @@
   <dialog id="node-editor-menu" open>
     <div id="categories">
       <ul>
-        <li class="active" onclick="selectEditorPage(this)" data-linked="render-menu">Render</li>
+        <li class="active" onclick="selectEditorPage(this)" data-linked="commons-menu">Commons</li>
+        <li onclick="selectEditorPage(this)" data-linked="render-menu">Render</li>
         <li onclick="selectEditorPage(this)" data-linked="parameters-menu">Parameters</li>
         <li onclick="selectEditorPage(this)" data-linked="script-menu">Script</li>
       </ul>
       <hr>
     </div>
     <div id="menus">
-      <div id="render-menu">Render menu</div>
-      <div id="parameters-menu" hidden>Parameters menu</div>
+      <div id="commons-menu">
+        <div class="flex">
+          <fieldset data-type="node-name">
+            <legend>name</legend>
+            <input type="text">
+          </fieldset>
+          <fieldset data-type="node-pkg">
+            <legend>package</legend>
+            <input type="text">
+          </fieldset>
+          <button data-type="node-important" data-value="false">enable important</button>
+        </div>
+      </div>
+      <div id="render-menu" hidden><h1>In progress</h1></div>
+      <div id="parameters-menu" hidden><h1>In progress</h1></div>
       <div id="script-menu" hidden>
-        <textarea></textarea>
+        <label for="script-payload"></label>
+        <textarea id="script-payload"></textarea>
       </div>
     </div>
   </dialog>

@@ -6,6 +6,7 @@ export default class NodeDefinition {
     script;
     args;
     render;
+    important;
     constructor(source) {
         this.name = source.name;
         this.package = source.package;
@@ -13,5 +14,6 @@ export default class NodeDefinition {
         this.script = source.script;
         this.args = source.args;
         this.render = source.render;
+        this.important = source.important;
     }
 }

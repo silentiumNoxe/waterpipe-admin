@@ -26,3 +26,21 @@ button.green {
 button.green:active {
     background-color: var(--color-success);
 }
+
+button.warning {
+    border-color: var(--color-warning);
+    color: var(--color-warning);
+}
+
+button.warning:active {
+    background-color: var(--color-warning);
+}
+
+button.error {
+    border-color: var(--color-error);
+    color: var(--color-error);
+}
+
+button.error:active {
+    background-color: var(--color-error);
+}
