@@ -3,8 +3,9 @@
 @import "input.css";
 @import "font.css";
 
-html, body {
+* {
     margin: 0;
+    user-select: none;
 }
 
 dialog {

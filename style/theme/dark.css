@@ -10,3 +10,7 @@
 * {
     color: var(--color-light);
 }
+
+html, body {
+    background-color: var(--color-primary);
+}
