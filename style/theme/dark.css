@@ -1,6 +1,7 @@
 :root {
     --color-primary: #212525;
-    --color-light: #a0a8a8;
+    --color-light-1: #a0a8a8;
+    --color-light-2: #767e7e;
 
     --color-success: #4d7c45;
     --color-error: #a24444;
@@ -8,9 +9,13 @@
 }
 
 * {
-    color: var(--color-light);
+    color: var(--color-light-1);
 }
 
 html, body {
     background-color: var(--color-primary);
+}
+
+hr {
+    border: 1px solid var(--color-light-1);
 }

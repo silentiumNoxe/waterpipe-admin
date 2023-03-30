@@ -2,7 +2,7 @@
 @import "../commons.css";
 @import "../ui.css";
 
-#node-render-menu {
+#node-editor-menu {
     min-height: 86vh;
     min-width: 50vw;
     position: absolute;
@@ -10,4 +10,52 @@
     display: inline-block;
     right: 1vw;
     left: inherit;
+}
+
+#categories > ul {
+    text-decoration: none;
+    list-style: none;
+    display: flex;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+#categories > ul > * {
+    color: var(--color-light-1);
+    cursor: pointer;
+    padding: 8px;
+}
+
+#categories > ul > :not(:first-child) {
+    margin-left: 1vw;
+}
+
+#categories > ul > .active {
+    background-color: var(--color-light-1);
+    color: var(--color-primary);
+}
+
+#categories > hr {
+    border: 2px solid var(--color-light-1);
+}
+
+#menus {
+    width: 100%;
+    height: 80vh;
+}
+
+#menus > * {
+    width: 100%;
+    height: 100%;
+}
+
+#script-menu > textarea {
+    background-color: var(--color-primary);
+    width: 100%;
+    height: 100%;
+    margin: 20px 0;
+    resize: none;
+    outline: none;
+    font-size: 1.2em;
+    display: block;
 }

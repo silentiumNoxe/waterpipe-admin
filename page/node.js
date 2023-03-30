@@ -134,3 +134,14 @@ function applyServer() {
     localStorage.setItem("server-addr", url);
     document.getElementById("select-addr-dialog").open = false;
 }
+
+function selectEditorPage(elem) {
+    const $active = document.querySelector("#categories li.active");
+    if ($active) {
+        $active.classList.remove("active");
+        document.getElementById($active.dataset.linked).hidden = true;
+    }
+    elem.classList.add("active");
+    document.getElementById(elem.dataset.linked).hidden = false;
+
+}

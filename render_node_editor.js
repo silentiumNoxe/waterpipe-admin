@@ -9,4 +9,14 @@ export default async function(def) {
     view.setPosition({x: window.innerWidth / 5 - 100, y: window.innerHeight / 5 + 150});
 
     window.NodeLayer.add(view);
+
+    scriptEditor(def.script);
+}
+
+function scriptEditor(script) {
+    if (script == null || script === "") {
+        return;
+    }
+
+    document.querySelector("#script-menu > textarea").value = atob(script);
 }

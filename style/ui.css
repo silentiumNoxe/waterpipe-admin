@@ -17,7 +17,7 @@
 
 [data-type="server-addr"] {
     min-width: 100px;
-    border: 1px solid var(--color-light);
+    border: 1px solid var(--color-light-1);
     border-radius: 25px;
     margin-left: 1vw;
     text-align: center;
@@ -44,6 +44,7 @@
 #select-addr-dialog {
     top: 35vh;
     left: 42vw;
+    z-index: 10000;
 }
 
 #select-addr-dialog > * {
