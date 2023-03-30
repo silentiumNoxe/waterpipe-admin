@@ -63,6 +63,8 @@ window.addEventListener("DOMContentLoaded", () => {
     const layer = window.NodeLayer = new Konva.Layer({name: "Node"});
     const lineLayer = window.LineLayer = new Konva.Layer({name: "Line"});
 
+    lineLayer.listening(false);
+
     stage.add(lineLayer);
     stage.add(layer);
 
