@@ -4,12 +4,12 @@ import NodeView from "./canvas-view/node.js";
 /**
  * @param process {Process}
  * */
-export default function (process) {
+export default async function (process) {
     const nodes = {};
     const lines = [];
     const connections = [];
     for (const n of process.nodes) {
-        nodes[n.id] = renderNode(n);
+        nodes[n.id] = await renderNode(n);
         connections.push({from: n.id, to: n.next});
     }
 
@@ -37,11 +37,11 @@ export default function (process) {
 
 /**
  * @param node {ProcessNode}
- * @return NodeView
+ * @return Promise<NodeView>
  * */
-function renderNode(node) {
+async function renderNode(node) {
     const view = new NodeView();
-    const def = client.GetDefinition(node.type);
+    const def = await client.GetDefinition(node.type);
 
     view.id(node.id);
     view.setPosition(node.position);
