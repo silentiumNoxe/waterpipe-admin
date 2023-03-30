@@ -11,7 +11,7 @@ export default class NodeView extends Konva.Group {
     constructor() {
         super({
             x: 0,
-            y:  0,
+            y: 0,
             draggable: true
         })
 
@@ -63,7 +63,7 @@ export default class NodeView extends Konva.Group {
     }
 
     #updateCenter() {
-        this.#center = {x: this.x() + this.#view.shape.width()/2, y: this.y() + this.#view.shape.height()/2}
+        this.#center = {x: this.x() + this.#view.shape.width() / 2, y: this.y() + this.#view.shape.height() / 2}
     }
 
     #updateLines() {

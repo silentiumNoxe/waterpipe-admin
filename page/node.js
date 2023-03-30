@@ -1,13 +1,3 @@
-Konva.DEFAULT_FONT = "Ubuntu";
-Konva.Color = {
-    PRIMARY: "#212525",
-    LIGHT: "#a0a8a8",
-
-    SUCCESS: "#4d7c45",
-    WARNING: "#a24444",
-    ERROR: "#bb853e"
-}
-
 window.addEventListener("DOMContentLoaded", () => {
     showConnectedServer()
 
@@ -67,13 +57,12 @@ window.addEventListener("DOMContentLoaded", () => {
     stage.add(layer);
 
     const params = new URLSearchParams(window.location.search)
-    const processId = params.get("process")
-    const version = Number(params.get("v"))
+    const type = params.get("type");
 
-    import("../client/process.js")
+    import("../client/node.js")
         .then(m => {
-            m.GetPayload(processId, version)
-                .then(process => import("../render_process.js").then(m1 => m1.default(process)))
+            m.GetDefinition(type)
+                .then(def => import("../render_node_editor.js").then(m1 => m1.default(def)))
         })
 })
 
