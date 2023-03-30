@@ -62,8 +62,17 @@ export default class NodeView extends Konva.Group {
         return line;
     }
 
+    setPosition(pos) {
+        const x = super.setPosition(pos);
+        if (pos != null) {
+            this.#updateCenter();
+        }
+        return x;
+    }
+
     #updateCenter() {
         this.#center = {x: this.x() + this.#view.shape.width()/2, y: this.y() + this.#view.shape.height()/2}
+        console.log(this.getPosition(), this.#center);
     }
 
     #updateLines() {
