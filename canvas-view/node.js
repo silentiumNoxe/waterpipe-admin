@@ -24,6 +24,10 @@ export default class NodeView extends Konva.Group {
         this.on("dragmove", this.#updateCenter)
         this.on("dragmove", this.#updateLines)
         this.on("mouseover", () => {
+            document.body.style.cursor = "pointer";
+        })
+        this.on("mouseout", () => {
+            document.body.style.cursor = "auto";
         })
     }
 
