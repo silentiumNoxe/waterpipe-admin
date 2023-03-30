@@ -1,7 +1,12 @@
 import NodeView from "./canvas-view/node.js";
 
 export default async function(def) {
-    const view = new NodeView(def)
-    view.setPosition({x: window.innerWidth / 3, y: window.innerHeight / 3})
+    const view = new NodeView(def);
+
+    view.draggable(false);
+    view.width(400);
+    view.height(200);
+    view.setPosition({x: window.innerWidth / 5 - 100, y: window.innerHeight / 5 + 150});
+
     window.NodeLayer.add(view);
 }

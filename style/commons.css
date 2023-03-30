@@ -8,6 +8,10 @@
     user-select: none;
 }
 
+body {
+    overflow: hidden;
+}
+
 dialog {
     position: absolute;
     background-color: var(--color-primary);

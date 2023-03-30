@@ -1,3 +1,13 @@
 @import "../theme/dark.css";
 @import "../commons.css";
 @import "../ui.css";
+
+#node-render-menu {
+    min-height: 86vh;
+    min-width: 50vw;
+    position: absolute;
+    margin-top: 1vw;
+    display: inline-block;
+    right: 1vw;
+    left: inherit;
+}

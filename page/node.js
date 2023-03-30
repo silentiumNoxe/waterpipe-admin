@@ -3,7 +3,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const width = window.innerWidth;
     const height = window.innerHeight;
-    const stage = new Konva.Stage({container: "editor", width, height, draggable: true});
+    const stage = new Konva.Stage({container: "editor", width, height, draggable: false});
 
     window.mousePosition = function () {
         return stage.getPointerPosition();

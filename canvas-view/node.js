@@ -95,4 +95,12 @@ export default class NodeView extends Konva.Group {
 
         this.#view.title.text(val);
     }
+
+    width(val) {
+        return this.#view.shape.width(val);
+    }
+
+    height(val) {
+        return this.#view.shape.height(val);
+    }
 }
