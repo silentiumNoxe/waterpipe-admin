@@ -61,7 +61,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     import("../client/node.js")
         .then(m => {
-            m.GetDefinition(type)
+            m.getDefinition(type)
                 .then(def => import("../render_node_editor.js").then(m1 => m1.default(def)))
         })
 })
@@ -143,5 +143,9 @@ function selectEditorPage(elem) {
     }
     elem.classList.add("active");
     document.getElementById(elem.dataset.linked).hidden = false;
+
+}
+
+function save() {
 
 }

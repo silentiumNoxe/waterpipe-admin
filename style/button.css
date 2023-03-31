@@ -12,7 +12,7 @@ button:active {
 }
 
 button.pill {
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 5px 10px;
     display: inline-block;
     text-decoration: none;

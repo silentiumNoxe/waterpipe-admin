@@ -1,4 +1,5 @@
 import NodeView from "./canvas-view/node.js";
+import * as client from "./client/node.js";
 
 export default async function(def) {
     const view = new NodeView(def);
@@ -19,12 +20,14 @@ export default async function(def) {
     $nodeName.value = def.name;
     $nodeName.addEventListener("keyup", e => {
         def.name = view.title = e.target.value;
+        markAsUnsaved();
     })
 
     const $nodePkg = document.querySelector("[data-type='node-pkg'] > input");
     $nodePkg.value = def.package;
     $nodePkg.addEventListener("keyup", e => {
         def.package = e.target.value;
+        markAsUnsaved()
     })
 
     const $nodeImportant = document.querySelector("[data-type='node-important']");
@@ -45,6 +48,18 @@ export default async function(def) {
             e.target.textContent = "enable important";
             e.target.classList.remove("warning");
         }
+        markAsUnsaved();
+    })
+
+    document.querySelector("button[data-type='save']").addEventListener("click", () => {
+        client.save(def)
+            .then(() => {
+                markAsSaved();
+            })
+            .catch(e => {
+                console.error(e);
+                markAsUnsaved();
+            })
     })
 }
 
@@ -54,4 +69,12 @@ function scriptEditor(script) {
     }
 
     document.querySelector("#script-menu > textarea").value = atob(script);
+}
+
+function markAsUnsaved() {
+    document.getElementById("save-status").textContent = "Changes is not saved";
+}
+
+function markAsSaved() {
+    document.getElementById("save-status").textContent = "All changes are saved";
 }

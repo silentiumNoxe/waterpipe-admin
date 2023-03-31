@@ -41,7 +41,7 @@ export default async function (process) {
  * */
 async function renderNode(node) {
     const view = new NodeView();
-    const def = await client.GetDefinition(node.type);
+    const def = await client.getDefinition(node.type);
 
     view.id(node.id);
     view.setPosition(node.position);
