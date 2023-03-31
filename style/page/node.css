@@ -103,6 +103,14 @@
     border: 2px solid var(--color-warning);
 }
 
+#commons-menu .row {
+    display: flex;
+}
+
+#commons-menu .row:not(:first-child) {
+    margin-top: 20px;
+}
+
 button[data-type="save"] {
     margin-left: auto;
     margin-right: 2vw;

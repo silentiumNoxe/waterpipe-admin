@@ -5,55 +5,9 @@ window.addEventListener("DOMContentLoaded", () => {
     const height = window.innerHeight;
     const stage = new Konva.Stage({container: "editor", width, height, draggable: false});
 
-    window.mousePosition = function () {
-        return stage.getPointerPosition();
-    }
-
-    stage.on("wheel", e => {
-        const scaleBy = 1.05;
-        // stop default scrolling
-        e.evt.preventDefault();
-
-        const oldScale = stage.scaleX();
-        const pointer = stage.getPointerPosition();
-
-        const mousePointTo = {
-            x: (pointer.x - stage.x()) / oldScale,
-            y: (pointer.y - stage.y()) / oldScale,
-        };
-
-        // how to scale? Zoom in? Or zoom out?
-        let direction = e.evt.deltaY > 0 ? 1 : -1;
-
-        // when we zoom on trackpad, e.evt.ctrlKey is true
-        // in that case lets revert direction
-        if (e.evt.ctrlKey) {
-            direction = -direction;
-        }
-
-        const newScale = direction > 0 ? oldScale * scaleBy : oldScale / scaleBy;
-
-        stage.scale({ x: newScale, y: newScale });
-
-        const newPos = {
-            x: pointer.x - mousePointTo.x * newScale,
-            y: pointer.y - mousePointTo.y * newScale,
-        };
-        stage.position(newPos);
-    })
-
-    stage.on("dragmove", () => {
-        document.body.style.cursor = "grab";
-    })
-
-    stage.on("dragend", () => {
-        document.body.style.cursor = "auto";
-    })
-
     const layer = window.NodeLayer = new Konva.Layer({name: "Node"});
-    const lineLayer = window.LineLayer = new Konva.Layer({name: "Line"});
+    layer.listening(false);
 
-    stage.add(lineLayer);
     stage.add(layer);
 
     const params = new URLSearchParams(window.location.search)
