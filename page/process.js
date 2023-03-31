@@ -88,10 +88,23 @@ window.addEventListener("DOMContentLoaded", () => {
         $elem.open = true;
     });
 
-    document.querySelector("#save-process > button").addEventListener("click", () => {
-        const $elem = document.querySelector("[data-type='save-process']");
+    document.querySelector("#save-process button[data-type='save']").addEventListener("click", () => {
+        const $elem = document.querySelector("[data-type='process-version']");
         const version = parseInt($elem.value);
+
+        import("../client/process.js")
+            .then(m => {
+                m.Save(window.CurrentProcess, version)
+                    .then(() => markAsSaved())
+                    .catch(console.error);
+            })
+
+        document.getElementById("save-process").open = false;
     });
+
+    document.querySelector("#save-process button[data-type='cancel']").addEventListener("click", () => {
+        document.getElementById("save-process").open = false;
+    })
 })
 
 function showConnectedServer() {

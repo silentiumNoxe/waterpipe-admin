@@ -30,3 +30,17 @@
     font-size: 1.5em;
 }
 
+#save-process {
+    margin-top: 10%;
+    left: 40%;
+}
+
+#save-process > .container {
+    margin-left: auto;
+    margin-top: 15px;
+    float: right;
+}
+
+#save-process > .container > button {
+    font-size: 1em;
+}

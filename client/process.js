@@ -1,4 +1,5 @@
 import Process from "../model/process.js";
+import * as util from "./init.js";
 
 /**
  * @return Array<string>
@@ -41,8 +42,16 @@ export const GetPayload = async function (processId, version) {
 
 /**
  * @param process {Process}
+ * @param version {number}
  * @return Promise<Object>
  * */
-export const Save = async function(process) {
-
+export const Save = async function(process, version=0) {
+    const clone = new Process(process);
+    clone.version = version;
+    const response = await util.send("/process", {method: "POST", body: JSON.stringify(clone)});
+    const payload = await response.json();
+    if (response.status !== 200 || payload.error) {
+        console.error("Server respond", payload);
+        throw "server error";
+    }
 }
