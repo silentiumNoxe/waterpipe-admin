@@ -24,3 +24,9 @@
     margin-top: 15px;
 }
 
+#node-menu [data-type="node-title"] {
+    border: none;
+    font-weight: bold;
+    font-size: 1.5em;
+}
+

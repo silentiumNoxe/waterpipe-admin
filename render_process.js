@@ -13,7 +13,7 @@ export default async function (process) {
         const def = await client.getDefinition(n.type)
         x.on("click", e => {
             e.cancelBubble = true;
-            showNodeMenu(n, def);
+            showNodeMenu(x, n, def);
         });
         connections.push({from: n.id, to: n.next});
     }

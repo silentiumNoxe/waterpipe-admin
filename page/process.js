@@ -151,12 +151,17 @@ function applyServer() {
 }
 
 /**
+ * @param view {NodeView}
  * @param node {ProcessNode}
  * @param def {NodeDefinition}
  * */
-function showNodeMenu(node, def) {
+function showNodeMenu(view, node, def) {
     const $menu = document.getElementById("node-menu");
-    $menu.querySelector("[data-type='node-title']").textContent = node.title || def.name;
+
+    const $title = $menu.querySelector("[data-type='node-title']");
+    $title.value = node.title || def.name;
+    $title.onkeyup = e => view.title = node.title = e.target.value;
+
     $menu.querySelector("[data-type='node-id']").textContent = node.id;
     $menu.querySelector("[data-type='node-type']").textContent = node.type;
     $menu.open = true;
@@ -190,9 +195,24 @@ function showNodeMenu(node, def) {
 
         const $elem = drawInputField({
             name: argName,
-            value: node.args[argName],
+            value: node.args != null ? node.args[argName] : null,
             required: def.args[argName].required,
-            onchange: value => node.args[argName] = value
+            onchange: value => {
+                if (node.args == null) {
+                    node.args = {};
+                }
+                switch (def.args[argName].type) {
+                    case "number":
+                        if (isNumber(value)) {
+                            value = parseFloat(value);
+                        }
+                        break
+                    case "boolean":
+                        value = value === "true";
+                        break;
+                }
+                node.args[argName] = value
+            }
         })
         $body.append($elem);
     }
