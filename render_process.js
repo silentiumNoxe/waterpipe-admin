@@ -15,6 +15,9 @@ export default async function (process) {
             e.cancelBubble = true;
             showNodeMenu(x, n, def);
         });
+        x.on("dragmove", () => {
+            n.position = x.getPosition();
+        });
         connections.push({from: n.id, to: n.next});
     }
 
