@@ -110,14 +110,3 @@
 #commons-menu .row:not(:first-child) {
     margin-top: 20px;
 }
-
-button[data-type="save"] {
-    margin-left: auto;
-    margin-right: 2vw;
-    font-size: 1.2em;
-}
-
-#save-status {
-    margin-top: 0.5vw;
-    margin-left: 1vw;
-}

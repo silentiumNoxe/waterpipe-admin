@@ -38,3 +38,11 @@ export const GetPayload = async function (processId, version) {
 
     return new Process(payload);
 }
+
+/**
+ * @param process {Process}
+ * @return Promise<Object>
+ * */
+export const Save = async function(process) {
+
+}

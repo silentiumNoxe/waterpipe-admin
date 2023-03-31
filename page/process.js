@@ -77,8 +77,21 @@ window.addEventListener("DOMContentLoaded", () => {
     import("../client/process.js")
         .then(m => {
             m.GetPayload(processId, version)
-                .then(process => import("../render_process.js").then(m1 => m1.default(process)))
+                .then(process => {
+                    import("../render_process.js").then(m1 => m1.default(process));
+                    window.CurrentProcess = process;
+                })
         })
+
+    document.querySelector("[data-type='save']").addEventListener("click", () => {
+        const $elem = document.getElementById("save-process");
+        $elem.open = true;
+    });
+
+    document.querySelector("#save-process > button").addEventListener("click", () => {
+        const $elem = document.querySelector("[data-type='save-process']");
+        const version = parseInt($elem.value);
+    });
 })
 
 function showConnectedServer() {
@@ -160,7 +173,10 @@ function showNodeMenu(view, node, def) {
 
     const $title = $menu.querySelector("[data-type='node-title']");
     $title.value = node.title || def.name;
-    $title.onkeyup = e => view.title = node.title = e.target.value;
+    $title.onkeyup = e => {
+        view.title = node.title = e.target.value;
+        markAsUnsaved();
+    }
 
     $menu.querySelector("[data-type='node-id']").textContent = node.id;
     $menu.querySelector("[data-type='node-type']").textContent = node.type;
@@ -212,6 +228,7 @@ function showNodeMenu(view, node, def) {
                         break;
                 }
                 node.args[argName] = value
+                markAsUnsaved();
             }
         })
         $body.append($elem);
@@ -220,4 +237,12 @@ function showNodeMenu(view, node, def) {
 
 function hideNodeMenu() {
     document.getElementById("node-menu").open = false;
+}
+
+function markAsUnsaved() {
+    document.getElementById("save-status").textContent = "Changes is not saved";
+}
+
+function markAsSaved() {
+    document.getElementById("save-status").textContent = "All changes are saved";
 }

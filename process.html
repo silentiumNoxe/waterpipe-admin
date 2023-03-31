@@ -17,6 +17,8 @@
     <div class="warning" data-type="server-addr" onclick="selectServer()">
       server offline
     </div>
+    <p id="save-status">All changes are saved</p>
+    <button class="pill green" data-type="save">Save</button>
   </article>
   <dialog id="select-addr-dialog">
     <h3>Specify server address</h3>
@@ -36,6 +38,14 @@
     </div>
     <div class="body">
     </div>
+  </dialog>
+  <dialog id="save-process">
+    <h3>Save process with version</h3>
+    <fieldset class="input">
+      <legend>version</legend>
+      <input type="number" min="1" data-type="process-version">
+    </fieldset>
+    <button class="pill green">Save</button>
   </dialog>
 </section>
 <section id="editor"></section>
