@@ -28,6 +28,10 @@ export default class NodeView extends Konva.Group {
         this.on("dragmove", this.#updateCenter)
         this.on("dragmove", this.#updateLines)
         this.on("mouseover", () => {
+            document.body.style.cursor = "pointer";
+        })
+        this.on("mouseout", () => {
+            document.body.style.cursor = "auto";
         })
     }
 
@@ -64,6 +68,14 @@ export default class NodeView extends Konva.Group {
         node.lines.push(line);
 
         return line;
+    }
+
+    setPosition(pos) {
+        const x = super.setPosition(pos);
+        if (pos != null) {
+            this.#updateCenter();
+        }
+        return x;
     }
 
     #updateCenter() {

@@ -9,7 +9,7 @@ export default async function (process) {
     const lines = [];
     const connections = [];
     for (const n of process.nodes) {
-        nodes[n.id] = await renderNode(n);
+        const x = nodes[n.id] = await renderNode(n);
         connections.push({from: n.id, to: n.next});
     }
 
