@@ -1,3 +1,26 @@
 @import "../theme/dark.css";
 @import "../commons.css";
 @import "../ui.css";
+
+#node-menu {
+    min-height: 86vh;
+    min-width: 30vw;
+    position: absolute;
+    margin-top: 1vw;
+    right: 1vw;
+    left: inherit;
+}
+
+#node-menu > .header {
+    display: block;
+    margin-bottom: 20px;
+}
+
+#node-menu > .body {
+    overflow: hidden;
+}
+
+#node-menu > .body > :not(:first-child) {
+    margin-top: 15px;
+}
+

@@ -43,7 +43,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
         const newScale = direction > 0 ? oldScale * scaleBy : oldScale / scaleBy;
 
-        stage.scale({ x: newScale, y: newScale });
+        stage.scale({x: newScale, y: newScale});
 
         const newPos = {
             x: pointer.x - mousePointTo.x * newScale,
@@ -59,6 +59,8 @@ window.addEventListener("DOMContentLoaded", () => {
     stage.on("dragend", () => {
         document.body.style.cursor = "auto";
     })
+
+    stage.on("click", hideNodeMenu)
 
     const layer = window.NodeLayer = new Konva.Layer({name: "Node"});
     const lineLayer = window.LineLayer = new Konva.Layer({name: "Line"});
@@ -113,7 +115,7 @@ function showConnectedServer() {
             return
         }
 
-        fetch(addr+"/health")
+        fetch(addr + "/health")
             .then(resp => {
                 if (resp.status !== 200) {
                     error(resp.statusText);
@@ -146,4 +148,56 @@ function applyServer() {
 
     localStorage.setItem("server-addr", url);
     document.getElementById("select-addr-dialog").open = false;
+}
+
+/**
+ * @param node {ProcessNode}
+ * @param def {NodeDefinition}
+ * */
+function showNodeMenu(node, def) {
+    const $menu = document.getElementById("node-menu");
+    $menu.querySelector("[data-type='node-title']").textContent = node.title || def.name;
+    $menu.querySelector("[data-type='node-id']").textContent = node.id;
+    $menu.querySelector("[data-type='node-type']").textContent = node.type;
+    $menu.open = true;
+
+    const $body = $menu.querySelector(".body");
+    $body.innerHTML = "";
+
+    function drawInputField({name, value, required, onchange}) {
+        const $fs = document.createElement("fieldset");
+        $fs.classList.add("input");
+        const $legend = document.createElement("legend");
+        $legend.textContent = required ? name + "*" : name;
+        const $input = document.createElement("input");
+        if (value == null) {
+            value = ""
+        }
+        $input.value = value;
+        $input.addEventListener("keyup", e => {
+            onchange(e.target.value);
+        });
+
+        $fs.append($legend);
+        $fs.append($input);
+        return $fs;
+    }
+
+    for (const argName of Object.keys(def.args)) {
+        if (node.type === "waterpipe.code" && argName === "script") {
+            continue;
+        }
+
+        const $elem = drawInputField({
+            name: argName,
+            value: node.args[argName],
+            required: def.args[argName].required,
+            onchange: value => node.args[argName] = value
+        })
+        $body.append($elem);
+    }
+}
+
+function hideNodeMenu() {
+    document.getElementById("node-menu").open = false;
 }

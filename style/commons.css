@@ -19,6 +19,15 @@ dialog {
     border-radius: 10px;
 }
 
+fieldset.input {
+    border-radius: 10px;
+}
+
+fieldset.input input {
+    border: none;
+    font-size: 1.2em;
+}
+
 .hide {
     display: none !important;
 }
@@ -51,4 +60,8 @@ p.red {
 
 p.green {
     background-color: var(--color-success);
+}
+
+.mgw-lr-1 {
+    margin: 1vw;
 }

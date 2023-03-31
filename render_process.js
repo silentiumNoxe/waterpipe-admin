@@ -10,6 +10,11 @@ export default async function (process) {
     const connections = [];
     for (const n of process.nodes) {
         const x = nodes[n.id] = await renderNode(n);
+        const def = await client.getDefinition(n.type)
+        x.on("click", e => {
+            e.cancelBubble = true;
+            showNodeMenu(n, def);
+        });
         connections.push({from: n.id, to: n.next});
     }
 
