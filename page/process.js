@@ -13,7 +13,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const width = window.innerWidth;
     const height = window.innerHeight;
-    const stage = new Konva.Stage({container: "editor", width, height, draggable: true});
+    const stage = new Konva.Stage({x: width/3, y: height/5, container: "editor", width, height, draggable: true});
 
     window.mousePosition = function () {
         return stage.getPointerPosition();
@@ -232,7 +232,8 @@ function showNodeMenu(view, node, def) {
                 }
                 switch (def.args[argName].type) {
                     case "number":
-                        if (isNumber(value)) {
+                        value = parseFloat(value);
+                        if (!isNaN(value)) {
                             value = parseFloat(value);
                         }
                         break
