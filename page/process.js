@@ -217,20 +217,43 @@ function showNodeMenu(view, node, def) {
         return $fs;
     }
 
+    function drawInputNumField({name, value, required, onchange}) {
+        const $fs = document.createElement("fieldset");
+        $fs.classList.add("input");
+        const $legend = document.createElement("legend");
+        $legend.textContent = required ? name + "*" : name;
+        const $input = document.createElement("input");
+        $input.type = "number";
+        if (value == null) {
+            value = ""
+        }
+        $input.value = value;
+        $input.addEventListener("keyup", e => {
+            onchange(e.target.value);
+        });
+
+        $fs.append($legend);
+        $fs.append($input);
+        return $fs;
+    }
+
     for (const argName of Object.keys(def.args)) {
         if (node.type === "waterpipe.code" && argName === "script") {
             continue;
         }
 
-        const $elem = drawInputField({
+        const defArg = def.args[argName];
+        const nodeArg = node.args[argName];
+
+        const ops = {
             name: argName,
-            value: node.args != null ? node.args[argName] : null,
-            required: def.args[argName].required,
+            value: nodeArg != null ? nodeArg : null,
+            required: defArg.required,
             onchange: value => {
                 if (node.args == null) {
                     node.args = {};
                 }
-                switch (def.args[argName].type) {
+                switch (defArg.type) {
                     case "number":
                         value = parseFloat(value);
                         if (!isNaN(value)) {
@@ -244,7 +267,16 @@ function showNodeMenu(view, node, def) {
                 node.args[argName] = value
                 markAsUnsaved();
             }
-        })
+        };
+
+        let $elem = null;
+        switch (defArg.type) {
+            case "number":
+                $elem = drawInputNumField(ops);
+                break
+            default:
+                $elem = drawInputField(ops);
+        }
         $body.append($elem);
     }
 }

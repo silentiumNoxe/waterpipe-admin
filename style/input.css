@@ -17,3 +17,16 @@ input.error {
 input.success {
     border-color: var(--color-success);
 }
+
+fieldset > input {
+    width: 100%;
+}
+
+fieldset.input {
+    border-radius: 10px;
+}
+
+fieldset.input input {
+    border: none;
+    font-size: 1.2em;
+}
