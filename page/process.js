@@ -237,6 +237,19 @@ function showNodeMenu(view, node, def) {
         return $fs;
     }
 
+    const $timeout = drawInputNumField({
+        name: "timeout [sec]",
+        value: node.args != null ? node.args["timeout"] : null,
+        onchange: value => {
+            value = parseFloat(value)
+            if (!isNaN(value)) {
+                node.args["timeout"] = value;
+            }
+        }
+    })
+
+    $body.append($timeout);
+
     for (const argName of Object.keys(def.args)) {
         if (node.type === "waterpipe.code" && argName === "script") {
             continue;
