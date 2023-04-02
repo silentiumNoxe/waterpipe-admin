@@ -1,4 +1,4 @@
-import NodeDefinition from "../model/node_definition.js";
+import NodeDefinition from "../model/NodeDefinition.js";
 import * as util from "./init.js";
 
 /**

@@ -1,4 +1,4 @@
-import ProcessNode from "./process_node.js";
+import ProcessNode from "./ProcessNode.js";
 
 export default class Process {
 

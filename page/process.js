@@ -13,7 +13,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const width = window.innerWidth;
     const height = window.innerHeight;
-    const stage = new Konva.Stage({x: width/3, y: height/5, container: "editor", width, height, draggable: true});
+    const stage = new Konva.Stage({x: width / 3, y: height / 5, container: "editor", width, height, draggable: true});
 
     window.mousePosition = function () {
         return stage.getPointerPosition();
@@ -181,7 +181,9 @@ function applyServer() {
  * @param node {ProcessNode}
  * @param def {NodeDefinition}
  * */
-function showNodeMenu(view, node, def) {
+async function showNodeMenu(view, node, def) {
+    const fieldRenders = (await import("./render/node_ops/define.js")).default;
+
     const $menu = document.getElementById("node-menu");
 
     const $title = $menu.querySelector("[data-type='node-title']");
@@ -251,46 +253,51 @@ function showNodeMenu(view, node, def) {
     $body.append($timeout);
 
     for (const argName of Object.keys(def.args)) {
-        if (node.type === "waterpipe.code" && argName === "script") {
-            continue;
+        const defArg = def.args[argName];
+        if (defArg == null) {
+            throw `Argument ${argName} not found in node definition ${node.type}`
         }
 
-        const defArg = def.args[argName];
+        if (node.args == null) {
+            node.args = {};
+        }
+
         const nodeArg = node.args[argName];
 
-        const ops = {
-            name: argName,
-            value: nodeArg != null ? nodeArg : null,
-            required: defArg.required,
-            onchange: value => {
-                if (node.args == null) {
-                    node.args = {};
+        const applyChange = {
+            number: value => {
+                value = parseFloat(value);
+                if (!isNaN(value)) {
+                    node.args[argName] = parseFloat(value);
                 }
-                switch (defArg.type) {
-                    case "number":
-                        value = parseFloat(value);
-                        if (!isNaN(value)) {
-                            value = parseFloat(value);
-                        }
-                        break
-                    case "boolean":
-                        value = value === "true";
-                        break;
-                }
-                node.args[argName] = value
-                markAsUnsaved();
+            },
+            boolean: value => {
+                node.args[argName] = value === "true";
+            },
+            code: value => {
+                node.args[argName] = btoa(value);
             }
         };
 
-        let $elem = null;
-        switch (defArg.type) {
-            case "number":
-                $elem = drawInputNumField(ops);
-                break
-            default:
-                $elem = drawInputField(ops);
+        for (const render of fieldRenders) {
+            if (render.support(defArg.type)) {
+                const $elem = render.draw({
+                    def: defArg,
+                    node: nodeArg,
+                    onchange: value => {
+                        const consumer = applyChange[defArg.type];
+                        if (consumer == null) {
+                            throw `Value consumer for type ${defArg.type} not found`;
+                        }
+                        consumer(value);
+                        markAsSaved();
+                    }
+                });
+
+                $body.append($elem);
+                break;
+            }
         }
-        $body.append($elem);
     }
 }
 

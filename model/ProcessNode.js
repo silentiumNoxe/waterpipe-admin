@@ -6,7 +6,7 @@ export default class ProcessNode {
     args;
     next;
     timeout;
-    position;
+    #position;
 
     constructor(source) {
         this.id = source.id;
@@ -15,10 +15,18 @@ export default class ProcessNode {
         this.args = source.args;
         this.next = source.next;
         this.timeout = source.timeout;
-        this.position = source.position;
+        this.#position = source.position;
     }
 
     isSystem() {
         return this.type.startsWith("waterpipe");
+    }
+
+    get position() {
+        return this.#position;
+    }
+
+    set position({x, y}) {
+        this.#position = {x: Math.round(x), y: Math.round(y)};
     }
 }

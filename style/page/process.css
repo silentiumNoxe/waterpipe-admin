@@ -18,6 +18,11 @@
 
 #node-menu > .body {
     overflow: hidden;
+    overflow-y: scroll;
+}
+
+#node-menu > .body::-webkit-scrollbar {
+    display: none;
 }
 
 #node-menu > .body > :not(:first-child) {
@@ -43,4 +48,19 @@
 
 #save-process > .container > button {
     font-size: 1em;
+}
+
+fieldset.input[data-type="code"] {
+    height: 55vh;
+}
+
+textarea.code {
+    background-color: var(--color-primary);
+    width: 100%;
+    height: 100%;
+    resize: none;
+    outline: none;
+    font-size: 1.2em;
+    display: block;
+    border: none;
 }
