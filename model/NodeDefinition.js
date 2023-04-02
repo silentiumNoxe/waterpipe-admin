@@ -5,7 +5,10 @@ export default class NodeDefinition {
     name;
     package;
     author;
+
+    /** @type Array<NodeDefinitionArgument>*/
     args = [];
+
     render;
     important;
     constructor(source) {

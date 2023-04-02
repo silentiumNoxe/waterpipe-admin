@@ -279,25 +279,33 @@ async function showNodeMenu(view, node, def) {
             }
         };
 
+        let r = null;
         for (const render of fieldRenders) {
             if (render.support(defArg.type)) {
-                const $elem = render.draw({
-                    def: defArg,
-                    node: nodeArg,
-                    onchange: value => {
-                        const consumer = applyChange[defArg.type];
-                        if (consumer == null) {
-                            throw `Value consumer for type ${defArg.type} not found`;
-                        }
-                        consumer(value);
-                        markAsSaved();
-                    }
-                });
-
-                $body.append($elem);
-                break;
+                r = render;
             }
         }
+
+        if (r == null) {
+            throw `Render for field ${defArg.type} not found`;
+        }
+
+        const $elem = r.draw({
+            def: defArg,
+            title: node.title,
+            node: nodeArg,
+            onchange: value => {
+                const consumer = applyChange[defArg.type];
+                if (consumer == null) {
+                    throw `Value consumer for type ${defArg.type} not found`;
+                }
+                consumer(value);
+                markAsSaved();
+            }
+        });
+
+        $body.append($elem);
+        break;
     }
 }
 

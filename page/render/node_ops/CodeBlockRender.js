@@ -26,7 +26,7 @@ export default class CodeBlockRender extends FieldRender {
         return $fs;
     }
 
-    support(type) {
-        return type === "code-block";
+    support(definition) {
+        return definition.type === "code-block";
     }
 }
