@@ -1,5 +1,4 @@
 import * as client from "./client/node.js";
-import NodeView from "./canvas-view/node.js";
 
 /**
  * @param process {Process}
@@ -9,8 +8,8 @@ export default async function (process) {
     const lines = [];
     const connections = [];
     for (const n of process.nodes) {
-        const x = nodes[n.id] = await renderNode(n);
         const def = await client.getDefinition(n.type)
+        const x = nodes[n.id] = await renderNode(n, def);
         x.on("click", e => {
             e.cancelBubble = true;
             showNodeMenu(x, n, def);
@@ -41,19 +40,4 @@ export default async function (process) {
         window.LineLayer.add(l);
     }
     window.LineLayer.draw();
-}
-
-/**
- * @param node {ProcessNode}
- * @return Promise<NodeView>
- * */
-async function renderNode(node) {
-    const view = new NodeView();
-    const def = await client.getDefinition(node.type);
-
-    view.id(node.id);
-    view.setPosition(node.position);
-    view.title = node.title || def.name;
-
-    return view;
 }

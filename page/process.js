@@ -52,8 +52,18 @@ window.addEventListener("DOMContentLoaded", () => {
 
     stage.on("click", hideNodeMenu)
 
+    stage.on("dblclick", () => {
+        const mouse = mousePosition();
+        console.log(mouse);
+        createNode("waterpipe.code", mouse);
+    })
+
     const layer = window.NodeLayer = new Konva.Layer({name: "Node"});
     const lineLayer = window.LineLayer = new Konva.Layer({name: "Line"});
+
+    window.addNode = node => {
+        layer.add(node);
+    };
 
     lineLayer.listening(false);
 
@@ -71,8 +81,6 @@ window.addEventListener("DOMContentLoaded", () => {
                     import("../render_process.js").then(m1 => m1.default(process));
                     window.CurrentProcess = process;
                     document.querySelector("[data-type='process-name']").textContent = process.name;
-                    const pos = process.nodes[0].position;
-                    stage.position({x: pos.x + window.innerWidth / 4, y: pos.y});
                 })
         })
 
@@ -257,4 +265,35 @@ function markAsUnsaved() {
 
 function markAsSaved() {
     document.getElementById("save-status").textContent = "All changes are saved";
+}
+
+async function createNode(type, {x=0, y=0}) {
+    const client = (await import("../client/node.js"));
+    const ProcessNode = (await import("../model/ProcessNode.js")).default;
+
+    const definition = await client.getDefinition(type);
+
+    const node = ProcessNode.new(type);
+    node.position = {x, y};
+
+    const view = await renderNode(node, definition);
+
+    window.addNode(view);
+    window.CurrentProcess.nodes.push(node);
+}
+
+/**
+ * @param node {ProcessNode}
+ * @param def {NodeDefinition}
+ * @return Promise<NodeView>
+ * */
+async function renderNode(node, def) {
+    const NodeView = (await import("../canvas-view/node.js")).default;
+    const view = new NodeView();
+
+    view.id(node.id);
+    view.setPosition(node.position);
+    view.title = node.title || def.name;
+
+    return view;
 }

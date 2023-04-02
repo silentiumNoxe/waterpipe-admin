@@ -1,5 +1,13 @@
 export default class ProcessNode {
 
+    /**
+     * @param type {string}
+     * @return ProcessNode
+     * */
+    static new(type) {
+        return new ProcessNode({id: crypto.randomUUID(), type});
+    }
+
     id;
     title;
     type;
