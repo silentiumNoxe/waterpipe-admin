@@ -13,7 +13,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const width = window.innerWidth;
     const height = window.innerHeight;
-    const stage = new Konva.Stage({x: width / 3, y: height / 5, container: "editor", width, height, draggable: true});
+    const stage = new Konva.Stage({container: "editor", width, height, draggable: true});
 
     window.mousePosition = function () {
         return stage.getPointerPosition();
@@ -80,6 +80,8 @@ window.addEventListener("DOMContentLoaded", () => {
                 .then(process => {
                     import("../render_process.js").then(m1 => m1.default(process));
                     window.CurrentProcess = process;
+                    const pos = process.nodes[0].position;
+                    stage.position({x: pos.x + window.innerWidth/4, y: pos.y});
                 })
         })
 
