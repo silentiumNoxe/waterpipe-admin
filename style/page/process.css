@@ -3,7 +3,12 @@
 @import "../ui.css";
 
 #header [data-type="save"] {
-    margin-right: 2vw;
+    margin-left: auto;
+    margin-right: 1vw;
+}
+
+#header [data-type="process-name"] {
+    margin-top: 5px;
 }
 
 #node-menu {

@@ -1,13 +1,3 @@
-Konva.DEFAULT_FONT = "Ubuntu";
-Konva.Color = {
-    PRIMARY: "#212525",
-    LIGHT: "#a0a8a8",
-
-    SUCCESS: "#4d7c45",
-    WARNING: "#a24444",
-    ERROR: "#bb853e"
-}
-
 window.addEventListener("DOMContentLoaded", () => {
     showConnectedServer()
 
@@ -80,6 +70,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 .then(process => {
                     import("../render_process.js").then(m1 => m1.default(process));
                     window.CurrentProcess = process;
+                    document.querySelector("[data-type='process-name']").textContent = process.name;
                     const pos = process.nodes[0].position;
                     stage.position({x: pos.x + window.innerWidth / 4, y: pos.y});
                 })
