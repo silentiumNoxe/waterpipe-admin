@@ -2,6 +2,10 @@
 @import "../commons.css";
 @import "../ui.css";
 
+#header [data-type="save"] {
+    margin-right: 2vw;
+}
+
 #node-menu {
     min-height: 86vh;
     min-width: 30vw;
@@ -43,6 +47,7 @@
 #save-process > .container {
     margin-left: auto;
     margin-top: 15px;
+    margin-right: 0;
     float: right;
 }
 
