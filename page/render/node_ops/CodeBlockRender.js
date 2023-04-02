@@ -11,10 +11,19 @@ export default class CodeBlockRender extends FieldRender {
         $legend.textContent = "code";
         const $textarea = document.createElement("textarea");
         $textarea.classList.add("code");
-        $textarea.value = atob(argument);
+        if (argument != null && argument !== "") {
+            $textarea.value = atob(argument);
+        }
 
         $textarea.addEventListener("keyup", e => {
-            if (definition.required && e.target.value === "") {
+            const value = e.target.value;
+
+            if (definition.required && value === "") {
+                return;
+            }
+
+            if (value === "") {
+                onchange(value);
                 return;
             }
 

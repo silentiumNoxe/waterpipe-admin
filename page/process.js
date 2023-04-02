@@ -295,5 +295,13 @@ async function renderNode(node, def) {
     view.setPosition(node.position);
     view.title = node.title || def.name;
 
+    view.on("click", e => {
+        e.cancelBubble = true;
+        showNodeMenu(view, node, def);
+    });
+    view.on("dragmove", () => {
+        node.position = view.getPosition();
+    });
+
     return view;
 }
