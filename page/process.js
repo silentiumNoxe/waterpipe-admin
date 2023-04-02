@@ -81,7 +81,7 @@ window.addEventListener("DOMContentLoaded", () => {
                     import("../render_process.js").then(m1 => m1.default(process));
                     window.CurrentProcess = process;
                     const pos = process.nodes[0].position;
-                    stage.position({x: pos.x + window.innerWidth/4, y: pos.y});
+                    stage.position({x: pos.x + window.innerWidth / 4, y: pos.y});
                 })
         })
 
@@ -186,6 +186,10 @@ function applyServer() {
 async function showNodeMenu(view, node, def) {
     const fieldRenders = (await import("./render/node_ops/define.js")).default;
 
+    if (node.args == null) {
+        node.args = {};
+    }
+
     const $menu = document.getElementById("node-menu");
 
     const $title = $menu.querySelector("[data-type='node-title']");
@@ -202,113 +206,58 @@ async function showNodeMenu(view, node, def) {
     const $body = $menu.querySelector(".body");
     $body.innerHTML = "";
 
-    function drawInputField({name, value, required, onchange}) {
-        const $fs = document.createElement("fieldset");
-        $fs.classList.add("input");
-        const $legend = document.createElement("legend");
-        $legend.textContent = required ? name + "*" : name;
-        const $input = document.createElement("input");
-        if (value == null) {
-            value = ""
+    def.args.forEach((definition, name) => {
+        const $elem = renderField({definition, node, fieldName: name, fieldRenders})
+        if ($elem == null) {
+            throw "Render did not return view";
         }
-        $input.value = value;
-        $input.addEventListener("keyup", e => {
-            onchange(e.target.value);
-        });
-
-        $fs.append($legend);
-        $fs.append($input);
-        return $fs;
-    }
-
-    function drawInputNumField({name, value, required, onchange}) {
-        const $fs = document.createElement("fieldset");
-        $fs.classList.add("input");
-        const $legend = document.createElement("legend");
-        $legend.textContent = required ? name + "*" : name;
-        const $input = document.createElement("input");
-        $input.type = "number";
-        if (value == null) {
-            value = ""
-        }
-        $input.value = value;
-        $input.addEventListener("keyup", e => {
-            onchange(e.target.value);
-        });
-
-        $fs.append($legend);
-        $fs.append($input);
-        return $fs;
-    }
-
-    const $timeout = drawInputNumField({
-        name: "timeout [sec]",
-        value: node.args != null ? node.args["timeout"] : null,
-        onchange: value => {
-            value = parseFloat(value)
-            if (!isNaN(value)) {
-                node.args["timeout"] = value;
-            }
-        }
-    })
-
-    $body.append($timeout);
-
-    for (const argName of Object.keys(def.args)) {
-        const defArg = def.args[argName];
-        if (defArg == null) {
-            throw `Argument ${argName} not found in node definition ${node.type}`
-        }
-
-        if (node.args == null) {
-            node.args = {};
-        }
-
-        const nodeArg = node.args[argName];
-
-        const applyChange = {
-            number: value => {
-                value = parseFloat(value);
-                if (!isNaN(value)) {
-                    node.args[argName] = parseFloat(value);
-                }
-            },
-            boolean: value => {
-                node.args[argName] = value === "true";
-            },
-            code: value => {
-                node.args[argName] = btoa(value);
-            }
-        };
-
-        let r = null;
-        for (const render of fieldRenders) {
-            if (render.support(defArg.type)) {
-                r = render;
-            }
-        }
-
-        if (r == null) {
-            throw `Render for field ${defArg.type} not found`;
-        }
-
-        const $elem = r.draw({
-            def: defArg,
-            title: node.title,
-            node: nodeArg,
-            onchange: value => {
-                const consumer = applyChange[defArg.type];
-                if (consumer == null) {
-                    throw `Value consumer for type ${defArg.type} not found`;
-                }
-                consumer(value);
-                markAsSaved();
-            }
-        });
-
         $body.append($elem);
-        break;
+    });
+}
+
+function renderField({definition, node, fieldName, fieldRenders}) {
+    const fieldType = definition.type;
+    const nodeArg = node.args.get(fieldName);
+
+    const applyChange = {
+        number: value => {
+            value = parseFloat(value);
+            if (!isNaN(value)) {
+                node.args.set(fieldName, parseFloat(value));
+            }
+        },
+        bool: value => {
+            node.args.set(fieldName, value === "true");
+        },
+        code: value => {
+            node.args.set(fieldName, btoa(value));
+        }
+    };
+
+    let r = null;
+    for (const render of fieldRenders) {
+        if (render.support(definition)) {
+            r = render;
+        }
     }
+
+    if (r == null) {
+        throw `Render for field "${fieldType}" not found`;
+    }
+
+    return r.draw({
+        definition,
+        title: fieldName,
+        argument: nodeArg,
+        onchange: value => {
+            const consumer = applyChange[fieldType];
+            if (consumer == null) {
+                throw `Value consumer for type ${fieldType} not found`;
+            }
+            consumer(value);
+            markAsSaved();
+        }
+    });
 }
 
 function hideNodeMenu() {

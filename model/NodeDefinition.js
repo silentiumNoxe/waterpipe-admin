@@ -6,8 +6,8 @@ export default class NodeDefinition {
     package;
     author;
 
-    /** @type Array<NodeDefinitionArgument>*/
-    args = [];
+    /** @type Map<string,NodeDefinitionArgument>*/
+    args = new Map();
 
     render;
     important;
@@ -19,7 +19,7 @@ export default class NodeDefinition {
         this.important = source.important;
 
         for (const name of Object.keys(source.args)) {
-            this.args.push(new NodeDefinitionArgument(source.args[name]));
+            this.args.set(name, new NodeDefinitionArgument(source.args[name]));
         }
     }
 }

@@ -8,7 +8,7 @@ export default class StringInputRender extends FieldRender {
         const $legend = document.createElement("legend");
         $legend.textContent = definition.required ? title + "*" : title;
         const $input = document.createElement("input");
-        $input.value = argument || definition.default;
+        $input.value = argument || definition.default || "";
         $input.addEventListener("keyup", e => {
             onchange(e.target.value);
         });

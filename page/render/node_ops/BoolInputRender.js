@@ -1,6 +1,6 @@
 import FieldRender from "./FieldRender.js";
 
-export default class NumberInputRender extends FieldRender {
+export default class BoolInputRender extends FieldRender {
 
     draw({definition, title, argument, onchange}) {
         const $fs = document.createElement("fieldset");
@@ -8,8 +8,7 @@ export default class NumberInputRender extends FieldRender {
         const $legend = document.createElement("legend");
         $legend.textContent = definition.required ? title + "*" : title;
         const $input = document.createElement("input");
-        $input.type = "number";
-        $input.value = argument || definition.default || 0;
+        $input.value = argument || definition.default;
         $input.addEventListener("keyup", e => {
             onchange(e.target.value);
         });
@@ -20,6 +19,6 @@ export default class NumberInputRender extends FieldRender {
     }
 
     support(definition) {
-        return definition.type === "number";
+        return definition.type === "bool";
     }
 }
