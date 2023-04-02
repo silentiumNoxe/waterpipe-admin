@@ -186,10 +186,6 @@ function applyServer() {
 async function showNodeMenu(view, node, def) {
     const fieldRenders = (await import("./render/node_ops/define.js")).default;
 
-    if (node.args == null) {
-        node.args = {};
-    }
-
     const $menu = document.getElementById("node-menu");
 
     const $title = $menu.querySelector("[data-type='node-title']");
