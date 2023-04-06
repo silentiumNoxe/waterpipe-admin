@@ -17,11 +17,12 @@ export default async function (def) {
     view.fontSizeScale = 1.5;
     view.important = def.important;
 
-    nodeMenuRender(view, new ProcessNode({id: "NODE ID", type: def.package + "." + def.name}), def);
+    const node = new ProcessNode({id: "NODE ID", type: def.package + "." + def.name});
+    nodeMenuRender(view, node, def);
 
     window.NodeLayer.add(view);
 
-    renderEditor(def.render);
+    renderEditor(def.render, view, node, def);
     scriptEditor(def.script);
 
     const $nodeName = document.querySelector("[data-type='node-name'] > input");
@@ -73,7 +74,7 @@ export default async function (def) {
     })
 }
 
-function renderEditor(payload) {
+function renderEditor(payload, view, node, def) {
     if (payload == null || payload === "") {
         return;
     }
@@ -81,6 +82,10 @@ function renderEditor(payload) {
     const $elem = document.querySelector("#render-menu > textarea");
     $elem.value = JSON.stringify(payload, null, "\t");
     $elem.onkeydown = tabListener;
+    $elem.onkeyup = e => {
+        def.render = JSON.parse(e.target.value);
+        nodeMenuRender(view, node, def);
+    }
 }
 
 function scriptEditor(script) {
