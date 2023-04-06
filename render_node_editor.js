@@ -1,5 +1,7 @@
 import NodeView from "./canvas-view/node.js";
 import * as client from "./client/node.js";
+import {nodeMenuRender} from "./page/render/node_menu.js";
+import ProcessNode from "./model/ProcessNode.js";
 
 export default async function(def) {
     const view = new NodeView(def);
@@ -11,6 +13,8 @@ export default async function(def) {
     view.title = def.name;
     view.fontSizeScale = 1.5;
     view.important = def.important;
+
+    nodeMenuRender(view, new ProcessNode({}), def);
 
     window.NodeLayer.add(view);
 
