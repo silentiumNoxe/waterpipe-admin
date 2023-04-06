@@ -3,18 +3,18 @@ import * as client from "./client/node.js";
 import {nodeMenuRender} from "./page/render/node_menu.js";
 import ProcessNode from "./model/ProcessNode.js";
 
-export default async function(def) {
+export default async function (def) {
     const view = new NodeView(def);
 
     view.draggable(false);
     view.width(300);
     view.height(150);
-    view.setPosition({x: window.innerWidth / 3+150, y: window.innerHeight / 3});
+    view.setPosition({x: window.innerWidth / 3 + 150, y: window.innerHeight / 3});
     view.title = def.name;
     view.fontSizeScale = 1.5;
     view.important = def.important;
 
-    nodeMenuRender(view, new ProcessNode({}), def);
+    nodeMenuRender(view, new ProcessNode({id: "NODE ID", type: def.package + "." + def.name}), def);
 
     window.NodeLayer.add(view);
 
@@ -44,7 +44,7 @@ export default async function(def) {
 
     $nodeImportant.addEventListener("click", e => {
         let value = e.target.dataset.value !== "true";
-        e.target.dataset.value = value+"";
+        e.target.dataset.value = value + "";
         def.important = value;
         view.important = value;
         if (value) {
