@@ -1,5 +1,6 @@
 import * as client from "./client/node.js";
 import NodeView from "./canvas-view/node.js";
+import {nodeMenuRender} from "./page/render/node_menu.js";
 
 /**
  * @param process {Process}
@@ -13,7 +14,7 @@ export default async function (process) {
         const def = await client.getDefinition(n.type)
         x.on("click", e => {
             e.cancelBubble = true;
-            showNodeMenu(x, n, def);
+            nodeMenuRender(x, n, def);
         });
         x.on("dragmove", () => {
             n.position = x.getPosition();
