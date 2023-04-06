@@ -7,7 +7,7 @@ export default async function(def) {
     view.draggable(false);
     view.width(300);
     view.height(150);
-    view.setPosition({x: window.innerWidth / 3+100, y: window.innerHeight / 5});
+    view.setPosition({x: window.innerWidth / 3+150, y: window.innerHeight / 3});
     view.title = def.name;
     view.fontSizeScale = 1.5;
     view.important = def.important;
@@ -22,6 +22,8 @@ export default async function(def) {
         def.name = view.title = e.target.value;
         markAsUnsaved();
     })
+
+    document.querySelector("[data-type='node-title']")
 
     const $nodePkg = document.querySelector("[data-type='node-pkg'] > input");
     $nodePkg.value = def.package;

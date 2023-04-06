@@ -1,6 +1,7 @@
 @import "../theme/dark.css";
 @import "../commons.css";
 @import "../ui.css";
+@import "../node_menu.css";
 
 #node-editor-menu {
     min-height: 86vh;
