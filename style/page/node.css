@@ -4,12 +4,10 @@
 
 #node-editor-menu {
     min-height: 86vh;
-    min-width: 50vw;
+    min-width: 30vw;
     position: absolute;
-    margin-top: 1vw;
     display: inline-block;
-    right: 1vw;
-    left: inherit;
+    left: 1vw;
 }
 
 #categories > ul {
@@ -66,13 +64,13 @@
 }
 
 #commons-menu [data-type="node-name"] {
-    width: 200px;
+    width: 8vw;
     border-radius: 10px;
-    margin-right: 2vw;
+    margin-right: 1vw;
 }
 
 #commons-menu [data-type="node-pkg"] {
-    width: 400px;
+    width: 8vw;
     border-radius: 10px;
 }
 
@@ -91,7 +89,7 @@
     font-weight: bold;
     border-radius: 15px;
     border: 2px solid var(--color-light-1);
-    font-size: 1em;
+    font-size: .9em;
     height: 50px;
     padding: 0 15px;
     margin-top: 5px;

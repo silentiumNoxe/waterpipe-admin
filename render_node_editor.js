@@ -5,11 +5,11 @@ export default async function(def) {
     const view = new NodeView(def);
 
     view.draggable(false);
-    view.width(400);
-    view.height(200);
-    view.setPosition({x: window.innerWidth / 5 - 100, y: window.innerHeight / 5 + 150});
+    view.width(300);
+    view.height(150);
+    view.setPosition({x: window.innerWidth / 3+100, y: window.innerHeight / 5});
     view.title = def.name;
-    view.fontSizeScale = 2;
+    view.fontSizeScale = 1.5;
     view.important = def.important;
 
     window.NodeLayer.add(view);
