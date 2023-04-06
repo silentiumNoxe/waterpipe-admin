@@ -24,7 +24,7 @@ export function nodeMenuRender(view, node, def) {
     def.args.forEach((definition, name) => {
         const $elem = renderField({definition, node, fieldName: name, fieldRenders: fieldRenders.default});
         if ($elem == null) {
-            throw "Render did not return view";
+            return;
         }
         $body.append($elem);
     });
@@ -41,7 +41,7 @@ function renderField({definition, node, fieldName, fieldRenders}) {
                 node.args.set(fieldName, parseFloat(value));
             }
         },
-        bool: value => {
+        boolean: value => {
             node.args.set(fieldName, value === "true");
         },
         code: value => {
@@ -57,7 +57,8 @@ function renderField({definition, node, fieldName, fieldRenders}) {
     }
 
     if (r == null) {
-        throw `Render for field "${fieldType}" not found`;
+        console.warn(`Render for field "${fieldType}" not found`);
+        return;
     }
 
     return r.draw({

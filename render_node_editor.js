@@ -3,6 +3,9 @@ import * as client from "./client/node.js";
 import {nodeMenuRender} from "./page/render/node_menu.js";
 import ProcessNode from "./model/ProcessNode.js";
 
+/**
+ * @param def {NodeDefinition}
+ * */
 export default async function (def) {
     const view = new NodeView(def);
 
@@ -18,6 +21,7 @@ export default async function (def) {
 
     window.NodeLayer.add(view);
 
+    renderEditor(def.render);
     scriptEditor(def.script);
 
     const $nodeName = document.querySelector("[data-type='node-name'] > input");
@@ -69,12 +73,35 @@ export default async function (def) {
     })
 }
 
+function renderEditor(payload) {
+    if (payload == null || payload === "") {
+        return;
+    }
+
+    const $elem = document.querySelector("#render-menu > textarea");
+    $elem.value = JSON.stringify(payload, null, "\t");
+    $elem.onkeydown = tabListener;
+}
+
 function scriptEditor(script) {
     if (script == null || script === "") {
         return;
     }
 
-    document.querySelector("#script-menu > textarea").value = atob(script);
+    const $elem = document.querySelector("#script-menu > textarea");
+    $elem.value = script;
+    $elem.onkeydown = tabListener;
+}
+
+function tabListener(e) {
+    if (e.key === "Tab") {
+        e.preventDefault();
+        let start = this.selectionStart;
+        let end = this.selectionEnd;
+
+        this.value = this.value.substring(0, start) + "\t" + this.value.substring(end);
+        this.selectionStart = this.selectionEnd = start + 1;
+    }
 }
 
 function markAsUnsaved() {
