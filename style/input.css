@@ -18,6 +18,12 @@ input.success {
     border-color: var(--color-success);
 }
 
+input[type=submit].pill {
+    border: 1px solid var(--color-light-1);
+    border-radius: 20px;
+    padding: 7px 12px;
+}
+
 fieldset > input {
     width: 100%;
 }

@@ -55,7 +55,18 @@ window.addEventListener("DOMContentLoaded", () => {
     stage.on("dblclick", () => {
         const mouse = mousePosition();
         console.log(mouse);
-        createNode("waterpipe.code", mouse);
+        startDialog("create-node")
+            .then(response => {
+                if (response.type == null) {
+                    throw "Type not specified";
+                }
+                createNode(response.type, mouse);
+            })
+            .catch(e => {
+                if (e !== "canceled") {
+                    console.error(e);
+                }
+            })
     })
 
     const layer = window.NodeLayer = new Konva.Layer({name: "Node"});
@@ -267,7 +278,7 @@ function markAsSaved() {
     document.getElementById("save-status").textContent = "All changes are saved";
 }
 
-async function createNode(type, {x=0, y=0}) {
+async function createNode(type, {x = 0, y = 0}) {
     const client = (await import("../client/node.js"));
     const ProcessNode = (await import("../model/ProcessNode.js")).default;
 
@@ -304,4 +315,52 @@ async function renderNode(node, def) {
     });
 
     return view;
+}
+
+function showSelectNodeDialog() {
+    document.getElementById("node-list").open = true;
+}
+
+function startDialog(name) {
+    return new Promise((resolve, reject) => {
+        const $dialog = document.getElementById(name);
+        $dialog.open = true;
+        const inputs = $dialog.querySelectorAll("input");
+        const response = {};
+
+        for (const $input of inputs) {
+            if ($input.type === "submit") {
+                if ($input.dataset.type === "apply") {
+                    $input.onclick = () => {
+                        $dialog.open = false;
+                        resolve(response);
+                    };
+                }
+                if ($input.dataset.type === "cancel") {
+                    $input.onclick = () => {
+                        $dialog.open = false;
+                        reject("canceled")
+                    };
+                }
+                continue;
+            }
+
+            $input.onkeyup = e => {
+                const t = e.target;
+                let value = t.value;
+                switch (t.type) {
+                    case "number":
+                        value = parseFloat(value);
+                        if (isNaN(value)) {
+                            reject(`expected number in ${t.name}`)
+                        }
+                        break;
+                    case "checkbox":
+                        value = t.checked;
+                        break;
+                }
+                response[t.name] = t.value;
+            }
+        }
+    })
 }

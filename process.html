@@ -50,6 +50,21 @@
       <button class="pill green" data-type="save">Save</button>
     </div>
   </dialog>
+  <dialog id="create-node" class="prompt">
+    <div class="title">
+      <h3>Select node type</h3>
+    </div>
+    <div class="payload">
+      <fieldset class="input">
+        <legend>type</legend>
+        <input type="text" name="type" data-type="node-type">
+      </fieldset>
+    </div>
+    <div class="submit">
+      <input type="submit" class="pill" data-type="cancel" value="Cancel">
+      <input type="submit" class="pill" data-type="apply" value="Apply">
+    </div>
+  </dialog>
 </section>
 <section id="editor"></section>
 </body>
