@@ -30,6 +30,12 @@ export function nodeMenuRender(view, node, def) {
     });
 }
 
+/**
+ * @param definition {NodeDefinitionArgument}
+ * @param node {ProcessNode}
+ * @param fieldName {string}
+ * @param fieldRenders {Array<FieldRender>}
+ * */
 function renderField({definition, node, fieldName, fieldRenders}) {
     const fieldType = definition.type;
     const nodeArg = node.args.get(fieldName);
@@ -64,7 +70,7 @@ function renderField({definition, node, fieldName, fieldRenders}) {
     return r.draw({
         definition,
         title: fieldName,
-        argument: nodeArg,
+        argument: nodeArg || definition.default,
         onchange: value => {
             const consumer = applyChange[fieldType];
             if (consumer == null) {
