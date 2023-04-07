@@ -35,6 +35,6 @@ export default class AnyInputRender extends FieldRender {
     }
 
     support(definition) {
-        return definition.type === "any";
+        return definition.view === "any";
     }
 }

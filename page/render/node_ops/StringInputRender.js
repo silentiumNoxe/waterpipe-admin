@@ -19,6 +19,6 @@ export default class StringInputRender extends FieldRender {
     }
 
     support(definition) {
-        return definition.type === "string";
+        return definition.view === "string";
     }
 }

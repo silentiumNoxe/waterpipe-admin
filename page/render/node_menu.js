@@ -1,4 +1,5 @@
 import * as fieldRenders from "./node_ops/define.js";
+import {NodeRenderOptions} from "../../model/NodeRenderOptions.js";
 
 /**
  * @param view {NodeView}
@@ -21,43 +22,69 @@ export function nodeMenuRender(view, node, def) {
     const $body = $menu.querySelector(".body");
     $body.innerHTML = "";
 
-    def.args.forEach((definition, name) => {
-        const $elem = renderField({definition, node, fieldName: name, fieldRenders: fieldRenders.default});
-        if ($elem == null) {
-            return;
+    Object.keys(def.render.args).forEach((name) => {
+        try {
+            const renderOps = new NodeRenderOptions(def.render.args[name]);
+            if (renderOps.view == null) {
+                console.debug("Missed node render options for", name);
+                return;
+            }
+
+            const $elem = renderField({
+                renderOps: renderOps,
+                argument: def.args.get(name),
+                value: node.args.get(name),
+                node,
+                fieldName: name,
+                fieldRenders: fieldRenders.default
+            });
+            if ($elem == null) {
+                throw "renderer did not return view";
+            }
+            $body.append($elem);
+        } catch (e) {
+            console.warn(`render field ${name} failed - ${e}`);
         }
-        $body.append($elem);
     });
 }
 
 /**
- * @param definition {NodeDefinitionArgument}
- * @param node {ProcessNode}
+ * @param renderOps {NodeRenderOptions}
+ * @param argument {NodeDefinitionArgument}
+ * @param value {any}
+ * @param resultFunc {function(value)}
  * @param fieldName {string}
  * @param fieldRenders {Array<FieldRender>}
  * */
-function renderField({definition, node, fieldName, fieldRenders}) {
-    const fieldType = definition.type;
-    const nodeArg = node.args.get(fieldName);
+function renderField({
+                         renderOps,
+                         argument,
+                         value,
+                         fieldName,
+                         fieldRenders,
+                         resultFunc = () => {
+                         }
+                     }) {
+    const fieldType = argument.type;
 
     const applyChange = {
         number: value => {
             value = parseFloat(value);
             if (!isNaN(value)) {
-                node.args.set(fieldName, parseFloat(value));
+                resultFunc(parseFloat(value));
             }
         },
         boolean: value => {
-            node.args.set(fieldName, value === "true");
+            resultFunc(value === "true");
         },
         code: value => {
-            node.args.set(fieldName, btoa(value));
+            resultFunc(btoa(value));
         }
     };
 
     let r = null;
     for (const render of fieldRenders) {
-        if (render.support(definition)) {
+        if (render.support(renderOps)) {
             r = render;
         }
     }
@@ -67,10 +94,12 @@ function renderField({definition, node, fieldName, fieldRenders}) {
         return;
     }
 
+    console.log(value, argument.default);
+
     return r.draw({
-        definition,
+        rules: renderOps,
         title: fieldName,
-        argument: nodeArg || definition.default,
+        argument: value || argument.default,
         onchange: value => {
             const consumer = applyChange[fieldType];
             if (consumer == null) {
