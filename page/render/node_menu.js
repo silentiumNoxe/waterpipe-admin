@@ -79,6 +79,22 @@ function renderField({
         },
         code: value => {
             resultFunc(btoa(value));
+        },
+        any: value => {
+            if (value === "") {
+                resultFunc(null);
+                return
+            }
+
+            if (!isNaN(value)) {
+                resultFunc(parseFloat(value))
+                return;
+            }
+
+            if (value.startsWith("{") || value.startsWith("[")) {
+                resultFunc(JSON.parse(value));
+                return;
+            }
         }
     };
 
