@@ -37,8 +37,8 @@ export default class NodeView extends Konva.Group {
 
     #mainShape() {
         return new Konva.Rect({
-            width: 200,
-            height: 90,
+            width: 300,
+            height: 150,
             fill: Konva.Color.LIGHT,
             cornerRadius: 10,
             overflow: "hidden"
