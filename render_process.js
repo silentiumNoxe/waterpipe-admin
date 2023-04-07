@@ -37,7 +37,7 @@ export default async function (process) {
             continue;
         }
 
-        lines.push(from.connectTo(to));
+        lines.push(from.connectTo(to, "next_default"));
     }
 
     for (const id of Object.keys(nodes)) {

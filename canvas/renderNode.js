@@ -17,7 +17,7 @@ export default function(renderOps, node) {
                 return;
             }
 
-            window.LineLayer.add(from.connectTo(view));
+            window.LineLayer.add(from.connectTo(view, window.connectionType));
             disableCurrentConnection();
         }
     });
@@ -133,11 +133,13 @@ function nextNode(renderOps, node, inject=()=>{}) {
         button.fill(Konva.Color.BLUE);
         window.connectionStart = true;
         window.connectionFrom = node.id;
+        window.connectionType = group.id();
 
         window.disableCurrentConnection = function () {
             button.fill(Konva.Color.LIGHT);
             window.connectionStart = false;
             window.connectionFrom = null;
+            window.connectionType = null;
         }
     });
 

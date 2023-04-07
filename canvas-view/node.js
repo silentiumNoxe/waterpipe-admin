@@ -51,18 +51,31 @@ export default class NodeView extends Konva.Group {
 
     /**
      * @param node {NodeView}
+     * @param type {string}
      * @return Konva.Line
      * */
-    connectTo(node) {
+    connectTo(node, type) {
+        const button = node.findOne("#" + type);
+        if (button == null) {
+            throw "not found button connection in " + this.id();
+        }
+
+        console.debug(button.getPosition())
+
         const line = new Konva.Line({
-            points: [this.getCenter().x, this.getCenter().y, node.getCenter().x, node.getCenter().y],
+            points: [this.getPosition().x + button.getPosition().x, this.getPosition().y + button.getPosition().y, node.getCenter().x, node.getCenter().y],
             stroke: Konva.Color.LIGHT,
             strokeWidth: 2,
             id: `${this.id()}_${node.id()}`
         });
 
-        line.from = this;
-        line.to = node;
+        line.from = () => {
+            const x = this.getPosition().x + button.getPosition().x;
+            const y = this.getPosition().y + button.getPosition().y;
+            return {x, y};
+        };
+
+        line.to = () => node.getCenter();
 
         this.lines.push(line);
         node.lines.push(line);
@@ -88,8 +101,8 @@ export default class NodeView extends Konva.Group {
         }
 
         for (const line of this.lines) {
-            const from = line.from.getCenter();
-            const to = line.to.getCenter();
+            const from = line.from();
+            const to = line.to();
             line.points([from.x, from.y, to.x, to.y]);
         }
     }
@@ -111,7 +124,7 @@ export default class NodeView extends Konva.Group {
      * @param val {boolean|null}
      * @return boolean
      * */
-    important(val=null) {
+    important(val = null) {
         if (val == null) {
             return this.#important;
         }
