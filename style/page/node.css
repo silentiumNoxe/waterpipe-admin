@@ -49,7 +49,7 @@
     margin: 20px 0;
 }
 
-#script-menu > textarea, #render-menu > textarea {
+#script-menu > textarea, #render-menu > textarea, #parameters-menu > textarea {
     background-color: var(--color-primary);
     width: 100%;
     height: 100%;

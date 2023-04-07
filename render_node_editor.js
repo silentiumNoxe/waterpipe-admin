@@ -22,8 +22,17 @@ export default async function (def) {
 
     window.NodeLayer.add(view);
 
-    renderEditor(def.render, view, node, def);
-    scriptEditor(def.script);
+    renderParametersList(def.args, value => {
+        def.args = value;
+        nodeMenuRender(view, node, def);
+    })
+    renderEditor(def.render, value => {
+        def.render = value;
+        nodeMenuRender(view, node, def);
+    });
+    scriptEditor(def.script, value => {
+        def.script = value;
+    });
 
     const $nodeName = document.querySelector("[data-type='node-name'] > input");
     $nodeName.value = def.name;
@@ -74,25 +83,50 @@ export default async function (def) {
     })
 }
 
-function renderEditor(payload, view, node, def) {
-    if (payload == null || payload === "") {
-        return;
-    }
-
+function renderParametersList(payload=new Map(), apply=() => {}) {
     let timeoutId;
-    const $elem = document.querySelector("#render-menu > textarea");
-    $elem.value = JSON.stringify(payload, null, "\t");
-    $elem.onkeydown = tabListener;
-    $elem.onkeyup = e => {
+    const $elem = document.querySelector("#parameters-menu > textarea");
+    $elem.value = JSON.stringify(Object.fromEntries(payload), null, "\t");
+    $elem.onkeydown = editorKeydown;
+    $elem.onkeyup = (e) => {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => {
-            def.render = JSON.parse(e.target.value);
-            nodeMenuRender(view, node, def);
+            const value = e.target.value;
+            if (value === "") {
+                apply();
+                return
+            }
+
+            const map = new Map();
+            const b = JSON.parse(e.target.value);
+            for (const x of Object.keys(b)) {
+                map.set(x, b[x]);
+            }
+            apply(map);
         }, 1000);
     }
 }
 
-function scriptEditor(script, def) {
+function renderEditor(payload={}, apply=() => {}) {
+    let timeoutId;
+    const $elem = document.querySelector("#render-menu > textarea");
+    $elem.value = JSON.stringify(payload, null, "\t");
+    $elem.onkeydown = editorKeydown;
+    $elem.onkeyup = e => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            const value = e.target.value;
+            if (value === "") {
+                apply();
+                return
+            }
+
+            apply(JSON.parse(e.target.value));
+        }, 1000);
+    }
+}
+
+function scriptEditor(script, apply=() => {}) {
     if (script == null || script === "") {
         return;
     }
@@ -100,11 +134,23 @@ function scriptEditor(script, def) {
     let timeoutId;
     const $elem = document.querySelector("#script-menu > textarea");
     $elem.value = script;
-    $elem.onkeydown = tabListener;
+    $elem.onkeydown = editorKeydown;
     $elem.onkeyup = (e) => {
         clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => def.script = btoa(e.target.value), 1000);
+        timeoutId = setTimeout(() => {
+            const value = e.target.value;
+            if (value === "") {
+                apply();
+                return;
+            }
+            apply(btoa(value));
+        }, 1000);
     }
+}
+
+function editorKeydown(e) {
+    tabListener.bind(this)(e);
+    quotesListener.bind(this)(e);
 }
 
 function tabListener(e) {
@@ -114,6 +160,17 @@ function tabListener(e) {
         let end = this.selectionEnd;
 
         this.value = this.value.substring(0, start) + "\t" + this.value.substring(end);
+        this.selectionStart = this.selectionEnd = start + 1;
+    }
+}
+
+function quotesListener(e) {
+    if (e.key === "\"" || e.key === "\'") {
+        e.preventDefault();
+        let start = this.selectionStart;
+        let end = this.selectionEnd;
+
+        this.value = this.value.substring(0, start) + e.key+e.key + this.value.substring(end);
         this.selectionStart = this.selectionEnd = start + 1;
     }
 }
