@@ -16,7 +16,7 @@ export default async function (process) {
             def.render = {};
         }
         def.render.important = def.important;
-        //todo: fix it
+        //todo: remove hardcode
         def.render.width = 300;
         def.render.height = 150;
         const x = nodes[n.id] = await renderNode(def.render, n);
@@ -27,7 +27,16 @@ export default async function (process) {
         x.on("dragmove", () => {
             n.position = x.getPosition();
         });
-        connections.push({from: n.id, to: n.next});
+
+        if (n.next != null) {
+            connections.push({from: n.id, to: n.next, type: "next_default"});
+        }
+
+        def.args.forEach((arg, name) => {
+            if (arg.type === "node" && n.args.get(name) != null) {
+                connections.push({from: n.id, to: n.args.get(name), type: arg.connector});
+            }
+        })
     }
 
     for (const conn of connections) {
@@ -37,7 +46,7 @@ export default async function (process) {
             continue;
         }
 
-        lines.push(from.connectTo(to, "next_default"));
+        lines.push(from.connectTo(to, conn.type));
     }
 
     for (const id of Object.keys(nodes)) {
