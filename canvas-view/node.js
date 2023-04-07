@@ -60,8 +60,6 @@ export default class NodeView extends Konva.Group {
             throw "not found button connection in " + this.id();
         }
 
-        console.debug(button.getPosition())
-
         const line = new Konva.Line({
             points: [this.getPosition().x + button.getPosition().x, this.getPosition().y + button.getPosition().y, node.getCenter().x, node.getCenter().y],
             stroke: Konva.Color.LIGHT,

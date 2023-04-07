@@ -9,19 +9,31 @@ import renderNode from "./canvas/renderNode.js";
  * */
 export default async function (def) {
     const node = new ProcessNode({
-        id: "NODE ID",
+        id: "NODE_ID",
         type: def.package + "." + def.name,
         title: "Node Title",
         position: {x: window.innerWidth / 3 + 150, y: window.innerHeight / 3}
     });
 
-    def.render.important = def.important;
-    def.render.width = 300;
-    def.render.height = 150;
-    const view = renderNode(def.render, node);
-    view.width(def.render.width);
-    view.height(def.render.height);
-    view.important = def.important;
+    const rn = () => {
+        def.render.important = def.important;
+        def.render.width = 300;
+        def.render.height = 150;
+        const view = renderNode(def.render, node);
+        view.width(def.render.width);
+        view.height(def.render.height);
+        view.important = def.important;
+
+        return view;
+    }
+
+    const redraw = () => {
+        view.destroy();
+        view = rn();
+        NodeLayer.add(view);
+    }
+
+    let view = rn();
 
     nodeMenuRender(view, node, def);
 
@@ -30,10 +42,12 @@ export default async function (def) {
     renderParametersList(def.args, value => {
         def.args = value;
         nodeMenuRender(view, node, def);
+        redraw();
     })
     renderEditor(def.render, value => {
         def.render = value;
         nodeMenuRender(view, node, def);
+        redraw();
     });
     scriptEditor(def.script, value => {
         def.script = value;

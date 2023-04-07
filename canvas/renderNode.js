@@ -6,12 +6,12 @@ import renderNode from "./renderNode.js";
  * @param node {ProcessNode}
  * @return NodeView
  * */
-export default function(renderOps, node) {
+export default function (renderOps, node) {
     const view = new NodeView();
 
     view.on("click", () => {
         if (window.connectionStart) {
-            const from = window.NodeLayer.findOne("#"+window.connectionFrom);
+            const from = window.NodeLayer.findOne("#" + window.connectionFrom);
             if (from == null) {
                 console.warn(`node ${window.connectionFrom} not found`);
                 return;
@@ -41,7 +41,8 @@ export default function(renderOps, node) {
 
     title(renderOps, node, view.put.bind(view));
     subTitle(renderOps, node, view.put.bind(view));
-    nextNode(renderOps, node, view.put.bind(view));
+    defaultConnector(renderOps, node, view.put.bind(view));
+    additionalConnector(renderOps, node, view.put.bind(view));
 
     return view;
 }
@@ -51,7 +52,8 @@ export default function(renderOps, node) {
  * @param node {ProcessNode}
  * @param inject {function(Konva.Node)}
  * */
-function title(renderOps, node, inject=()=>{}) {
+function title(renderOps, node, inject = () => {
+}) {
     if (node.title == null) {
         return;
     }
@@ -74,7 +76,8 @@ function title(renderOps, node, inject=()=>{}) {
  * @param node {ProcessNode}
  * @param inject {function(Konva.Node)}
  * */
-function subTitle(renderOps, node, inject=()=>{}) {
+function subTitle(renderOps, node, inject = () => {
+}) {
     const view = new Konva.Text({
         y: 30,
         padding: 10,
@@ -94,18 +97,44 @@ function subTitle(renderOps, node, inject=()=>{}) {
  * @param node {ProcessNode}
  * @param inject {function(Konva.Node)}
  * */
-function nextNode(renderOps, node, inject=()=>{}) {
-    const group = new Konva.Group({
-        id: "next_default",
+function defaultConnector(renderOps, node, inject = () => {
+}) {
+    const conn = renderConnector(node.id, "next_default", {
         x: renderOps.width / 2,
-        y: renderOps.height,
-    });
+        y: renderOps.height
+    }, {text: "default", position: {x: -20, Y: -30}});
+    inject(conn);
+}
 
-    const title = new Konva.Text({
-        x: -20,
-        y: -30,
-        fontSize: 12,
-        text: "default",
+/**
+ * @param renderOps {Object}
+ * @param node {ProcessNode}
+ * @param inject {function(Konva.Node)}
+ * */
+function additionalConnector(renderOps, node, inject = () => {
+}) {
+    if (renderOps.connectors == null) {
+        return;
+    }
+
+    for (const id of Object.keys(renderOps.connectors)) {
+        const ops = renderOps.connectors[id];
+        const conn = renderConnector(node.id, id, {
+            x: renderOps.width/100 * ops.position.x,
+            y: renderOps.height/100 * ops.position.y
+        }, ops.title);
+        inject(conn);
+    }
+}
+
+function renderConnector(nodeId, id, {x, y}, title = {text: "", position: {x: 0, y: 0}, fontSize: 12}) {
+    const group = new Konva.Group({id: id, x: x, y: y});
+
+    const titleView = new Konva.Text({
+        x: title.position.x,
+        y: title.position.y,
+        fontSize: 12 * title.fontSize,
+        text: title.text,
         fontFamily: Konva.DEFAULT_FONT
     });
 
@@ -132,7 +161,7 @@ function nextNode(renderOps, node, inject=()=>{}) {
 
         button.fill(Konva.Color.BLUE);
         window.connectionStart = true;
-        window.connectionFrom = node.id;
+        window.connectionFrom = nodeId;
         window.connectionType = group.id();
 
         window.disableCurrentConnection = function () {
@@ -143,7 +172,7 @@ function nextNode(renderOps, node, inject=()=>{}) {
         }
     });
 
-    group.add(title, button);
+    group.add(titleView, button);
 
-    inject(group);
+    return group;
 }
