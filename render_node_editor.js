@@ -2,22 +2,27 @@ import NodeView from "./canvas-view/node.js";
 import * as client from "./client/node.js";
 import {nodeMenuRender} from "./page/render/node_menu.js";
 import ProcessNode from "./model/ProcessNode.js";
+import renderNode from "./canvas/renderNode.js";
 
 /**
  * @param def {NodeDefinition}
  * */
 export default async function (def) {
-    const view = new NodeView(def);
+    const node = new ProcessNode({
+        id: "NODE ID",
+        type: def.package + "." + def.name,
+        title: "Node Title",
+        position: {x: window.innerWidth / 3 + 150, y: window.innerHeight / 3}
+    });
 
-    view.draggable(false);
-    view.width(300);
-    view.height(150);
-    view.setPosition({x: window.innerWidth / 3 + 150, y: window.innerHeight / 3});
-    view.title = def.name;
-    view.fontSizeScale = 1.5;
+    def.render.important = def.important;
+    def.render.width = 300;
+    def.render.height = 150;
+    const view = renderNode(def.render, node);
+    view.width(def.render.width);
+    view.height(def.render.height);
     view.important = def.important;
 
-    const node = new ProcessNode({id: "NODE ID", type: def.package + "." + def.name});
     nodeMenuRender(view, node, def);
 
     window.NodeLayer.add(view);
@@ -83,7 +88,8 @@ export default async function (def) {
     })
 }
 
-function renderParametersList(payload=new Map(), apply=() => {}) {
+function renderParametersList(payload = new Map(), apply = () => {
+}) {
     let timeoutId;
     const $elem = document.querySelector("#parameters-menu > textarea");
     $elem.value = JSON.stringify(Object.fromEntries(payload), null, "\t");
@@ -107,7 +113,8 @@ function renderParametersList(payload=new Map(), apply=() => {}) {
     }
 }
 
-function renderEditor(payload={}, apply=() => {}) {
+function renderEditor(payload = {}, apply = () => {
+}) {
     let timeoutId;
     const $elem = document.querySelector("#render-menu > textarea");
     $elem.value = JSON.stringify(payload, null, "\t");
@@ -126,7 +133,8 @@ function renderEditor(payload={}, apply=() => {}) {
     }
 }
 
-function scriptEditor(script, apply=() => {}) {
+function scriptEditor(script, apply = () => {
+}) {
     if (script == null || script === "") {
         return;
     }
@@ -170,7 +178,7 @@ function quotesListener(e) {
         let start = this.selectionStart;
         let end = this.selectionEnd;
 
-        this.value = this.value.substring(0, start) + e.key+e.key + this.value.substring(end);
+        this.value = this.value.substring(0, start) + e.key + e.key + this.value.substring(end);
         this.selectionStart = this.selectionEnd = start + 1;
     }
 }

@@ -94,26 +94,6 @@ export default class NodeView extends Konva.Group {
         }
     }
 
-    set title(val) {
-        this.#title = val;
-        if (this.#view.title == null) {
-            /** @type Konva.Text*/
-            const t = this.#view.title = new Konva.Text({
-                padding: 10,
-                width: this.#view.shape.width(),
-                align: "center",
-                fontSize: 18 * this.#fontSizeScale,
-                fontFamily: Konva.DEFAULT_FONT
-            })
-
-            t.ops = {fontSize: 18};
-
-            this.add(t);
-        }
-
-        this.#view.title.text(val);
-    }
-
     width(val) {
         return this.#view.shape.width(val);
     }
@@ -127,12 +107,22 @@ export default class NodeView extends Konva.Group {
         this.#view.title.fontSize(this.#view.title.ops.fontSize * val);
     }
 
-    set important(val) {
+    /**
+     * @param val {boolean}
+     * */
+    important(val) {
         this.#important = val;
         if (this.#important === true) {
             this.#view.shape.fill(Konva.Color.WARNING);
         } else {
             this.#view.shape.fill(Konva.Color.LIGHT);
         }
+    }
+
+    /**
+     * @param view {Konva.Node}
+     * */
+    put(view) {
+        this.add(view);
     }
 }
