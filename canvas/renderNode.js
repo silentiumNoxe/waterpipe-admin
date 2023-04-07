@@ -9,8 +9,10 @@ import renderNode from "./renderNode.js";
 export default function (renderOps, node) {
     const view = new NodeView();
 
-    view.on("click", () => {
+    view.on("click", e => {
         if (window.connectionStart) {
+            e.cancelBubble = true;
+
             const from = window.NodeLayer.findOne("#" + window.connectionFrom);
             if (from == null) {
                 console.warn(`node ${window.connectionFrom} not found`);
@@ -41,8 +43,11 @@ export default function (renderOps, node) {
 
     title(renderOps, node, view.put.bind(view));
     subTitle(renderOps, node, view.put.bind(view));
-    defaultConnector(renderOps, node, view.put.bind(view));
-    additionalConnector(renderOps, node, view.put.bind(view));
+
+    if (!renderOps.no_connector) {
+        defaultConnector(renderOps, node, view.put.bind(view));
+        additionalConnector(renderOps, node, view.put.bind(view));
+    }
 
     return view;
 }
@@ -102,7 +107,7 @@ function defaultConnector(renderOps, node, inject = () => {
     const conn = renderConnector(node.id, "next_default", {
         x: renderOps.width / 2,
         y: renderOps.height
-    }, {text: "default", position: {x: -20, Y: -30}});
+    });
     inject(conn);
 }
 
@@ -129,14 +134,19 @@ function additionalConnector(renderOps, node, inject = () => {
 
 function renderConnector(nodeId, id, {x, y}, title = {text: "", position: {x: 0, y: 0}, fontSize: 12}) {
     const group = new Konva.Group({id: id, x: x, y: y});
+    group.id(id);
 
-    const titleView = new Konva.Text({
-        x: title.position.x,
-        y: title.position.y,
-        fontSize: 12 * title.fontSize,
-        text: title.text,
-        fontFamily: Konva.DEFAULT_FONT
-    });
+    if (title.text === "") {
+        const titleView = new Konva.Text({
+            x: title.position.x,
+            y: title.position.y,
+            fontSize: 12 * title.fontSize,
+            text: title.text,
+            fontFamily: Konva.DEFAULT_FONT
+        });
+
+        group.add(titleView);
+    }
 
     const button = new Konva.Circle({
         radius: 15,
@@ -172,7 +182,7 @@ function renderConnector(nodeId, id, {x, y}, title = {text: "", position: {x: 0,
         }
     });
 
-    group.add(titleView, button);
+    group.add(button);
 
     return group;
 }

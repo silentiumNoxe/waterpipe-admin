@@ -55,9 +55,9 @@ export default class NodeView extends Konva.Group {
      * @return Konva.Line
      * */
     connectTo(node, type) {
-        const button = node.findOne("#" + type);
+        const button = this.findOne("#" + type);
         if (button == null) {
-            throw "not found button connection in " + this.id();
+            throw `not found button connection "${type}" in ${this.id()}`;
         }
 
         const line = new Konva.Line({
