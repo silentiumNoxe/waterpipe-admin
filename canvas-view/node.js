@@ -108,15 +108,22 @@ export default class NodeView extends Konva.Group {
     }
 
     /**
-     * @param val {boolean}
+     * @param val {boolean|null}
+     * @return boolean
      * */
-    important(val) {
+    important(val=null) {
+        if (val == null) {
+            return this.#important;
+        }
+
         this.#important = val;
         if (this.#important === true) {
             this.#view.shape.fill(Konva.Color.WARNING);
         } else {
             this.#view.shape.fill(Konva.Color.LIGHT);
         }
+
+        return this.#important;
     }
 
     /**
@@ -124,5 +131,12 @@ export default class NodeView extends Konva.Group {
      * */
     put(view) {
         this.add(view);
+    }
+
+    /**
+     * @return Konva.Rect
+     * */
+    get shape() {
+        return this.#view.shape;
     }
 }

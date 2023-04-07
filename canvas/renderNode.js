@@ -9,6 +9,32 @@ import renderNode from "./renderNode.js";
 export default function(renderOps, node) {
     const view = new NodeView();
 
+    view.on("click", () => {
+        if (window.connectionStart) {
+            const from = window.NodeLayer.findOne("#"+window.connectionFrom);
+            if (from == null) {
+                console.warn(`node ${window.connectionFrom} not found`);
+                return;
+            }
+
+            window.LineLayer.add(from.connectTo(view));
+            disableCurrentConnection();
+        }
+    });
+
+    view.on("mouseover", () => {
+        if (window.connectionStart) {
+            view.shape.fill(Konva.Color.BLUE);
+        }
+    });
+
+    view.on("mouseout", () => {
+        if (view.important()) {
+            view.shape.fill(Konva.Color.WARNING);
+        }
+        view.shape.fill(Konva.Color.LIGHT);
+    });
+
     view.id(node.id);
     view.setPosition(node.position);
     view.important(renderOps.important || false);
@@ -83,21 +109,39 @@ function nextNode(renderOps, node, inject=()=>{}) {
         fontFamily: Konva.DEFAULT_FONT
     });
 
-    const view = new Konva.Circle({
+    const button = new Konva.Circle({
         radius: 15,
         stroke: Konva.Color.PRIMARY,
         strokeWidth: 2,
         fill: Konva.Color.LIGHT,
     });
 
-    group.add(title, view);
-
-    view.on("mouseover", () => {
+    button.on("mouseover", () => {
         document.body.style.cursor = "pointer";
     });
-    view.on("mouseend", () => {
+    button.on("mouseend", () => {
         document.body.style.cursor = "auto";
-    })
+    });
+
+    group.on("click", e => {
+        e.cancelBubble = true;
+
+        if (window.disableCurrentConnection) {
+            disableCurrentConnection();
+        }
+
+        button.fill(Konva.Color.BLUE);
+        window.connectionStart = true;
+        window.connectionFrom = node.id;
+
+        window.disableCurrentConnection = function () {
+            button.fill(Konva.Color.LIGHT);
+            window.connectionStart = false;
+            window.connectionFrom = null;
+        }
+    });
+
+    group.add(title, button);
 
     inject(group);
 }
