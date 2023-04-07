@@ -136,7 +136,7 @@ function renderConnector(nodeId, id, {x, y}, title = {text: "", position: {x: 0,
     const group = new Konva.Group({id: id, x: x, y: y});
     group.id(id);
 
-    if (title.text === "") {
+    if (title.text !== "") {
         const titleView = new Konva.Text({
             x: title.position.x,
             y: title.position.y,
