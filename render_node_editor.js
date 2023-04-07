@@ -79,23 +79,32 @@ function renderEditor(payload, view, node, def) {
         return;
     }
 
+    let timeoutId;
     const $elem = document.querySelector("#render-menu > textarea");
     $elem.value = JSON.stringify(payload, null, "\t");
     $elem.onkeydown = tabListener;
     $elem.onkeyup = e => {
-        def.render = JSON.parse(e.target.value);
-        nodeMenuRender(view, node, def);
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            def.render = JSON.parse(e.target.value);
+            nodeMenuRender(view, node, def);
+        }, 1000);
     }
 }
 
-function scriptEditor(script) {
+function scriptEditor(script, def) {
     if (script == null || script === "") {
         return;
     }
 
+    let timeoutId;
     const $elem = document.querySelector("#script-menu > textarea");
     $elem.value = script;
     $elem.onkeydown = tabListener;
+    $elem.onkeyup = (e) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => def.script = btoa(e.target.value), 1000);
+    }
 }
 
 function tabListener(e) {
