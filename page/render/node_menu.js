@@ -94,8 +94,6 @@ function renderField({
         return;
     }
 
-    console.log(value, argument.default);
-
     return r.draw({
         rules: renderOps,
         title: fieldName,
