@@ -19,6 +19,9 @@ export default class Render {
 
     /** @param view {T}*/
     constructor(view) {
+        if (view == null) {
+            throw "Unable render null value";
+        }
         this.#view = view;
     }
 

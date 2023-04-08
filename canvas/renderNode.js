@@ -7,7 +7,7 @@ import Render from "./render.js";
  * @return NodeView
  * */
 export default function (renderOps, node) {
-    const render = new Render(NodeView);
+    const render = Render.of(NodeView);
 
     render.next(onclick)
         .next(onmouseover)
