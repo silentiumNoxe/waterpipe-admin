@@ -22,6 +22,16 @@ export function nodeMenuRender(view, node, def) {
     const $body = $menu.querySelector(".body");
     $body.innerHTML = "";
 
+    if (def.render == null) {
+        console.warn(`Definition of node ${node.type} does not has render options`);
+        return;
+    }
+
+    if (def.render.args == null) {
+        console.warn(`Definition of node ${node.type} does not has render args options`);
+        def.render.args = {};
+    }
+
     Object.keys(def.render.args).forEach((name) => {
         try {
             const renderOps = new NodeRenderOptions(def.render.args[name]);
