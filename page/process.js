@@ -234,10 +234,6 @@ async function renderNode(node, def) {
 }
 
 function startDialog(name, focus=null) {
-    const mapper = function(any, toType) {
-
-    }
-
     return new Promise((resolve, reject) => {
         const $dialog = document.getElementById(name);
         $dialog.open = true;

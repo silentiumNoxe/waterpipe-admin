@@ -91,11 +91,8 @@ function showNodeMenu(view, node) {
  * */
 function title(renderOps, node, inject = () => {
 }) {
-    if (node.title == null) {
-        return;
-    }
-
     const view = new Konva.Text({
+        id: "title",
         padding: 10,
         width: renderOps.width,
         align: "center",
@@ -116,6 +113,7 @@ function title(renderOps, node, inject = () => {
 function subTitle(renderOps, node, inject = () => {
 }) {
     const view = new Konva.Text({
+        id: "sub-title",
         y: 30,
         padding: 10,
         width: renderOps.width,

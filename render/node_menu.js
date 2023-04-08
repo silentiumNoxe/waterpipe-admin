@@ -17,7 +17,14 @@ export async function nodeMenuRender(view, node) {
     const $title = $menu.querySelector("[data-type='node-title']");
     $title.value = node.title || def.name;
     $title.onkeyup = e => {
-        view.title = node.title = e.target.value;
+        node.title = e.target.value;
+        const titleView = view.findOne("#title");
+        if (titleView == null) {
+            console.warn("Can't find title of node", view.id());
+            return;
+        }
+
+        titleView.text(node.title);
     }
 
     $menu.querySelector("[data-type='node-id']").textContent = node.id;
