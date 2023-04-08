@@ -54,8 +54,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     stage.on("dblclick", () => {
         const mouse = mousePosition();
-        console.log(mouse);
-        startDialog("create-node")
+        startDialog("create-node", `[data-type="node-type"]`)
             .then(response => {
                 if (response.type == null) {
                     throw "Type not specified";
@@ -194,7 +193,7 @@ function applyServer() {
  * @param def {NodeDefinition}
  * */
 async function showNodeMenu(view, node, def) {
-    (await import("./render/node_settings.js")).nodeSettingsRender(view, node, def)
+    (await import("../render/node_menu.js")).nodeMenuRender(view, node, def);
 }
 
 function hideNodeMenu() {
@@ -230,32 +229,18 @@ async function createNode(type, {x = 0, y = 0}) {
  * @return Promise<NodeView>
  * */
 async function renderNode(node, def) {
-    const NodeView = (await import("../canvas-view/node.js")).default;
-    const view = new NodeView();
-
-    view.id(node.id);
-    view.setPosition(node.position);
-    view.title = node.title || def.name;
-
-    view.on("click", e => {
-        e.cancelBubble = true;
-        showNodeMenu(view, node, def);
-    });
-    view.on("dragmove", () => {
-        node.position = view.getPosition();
-    });
-
-    return view;
+    const renderNode = (await import("../render/canvas/renderNode.js")).default;
+    return renderNode(def.render, node);
 }
 
-function showSelectNodeDialog() {
-    document.getElementById("node-list").open = true;
-}
-
-function startDialog(name) {
+function startDialog(name, focus=null) {
     return new Promise((resolve, reject) => {
         const $dialog = document.getElementById(name);
         $dialog.open = true;
+        if (focus) {
+            $dialog.querySelector(focus).focus();
+        }
+
         const inputs = $dialog.querySelectorAll("input");
         const response = {};
 
@@ -291,6 +276,11 @@ function startDialog(name) {
                         break;
                 }
                 response[t.name] = t.value;
+
+                if (e.key === "Enter") {
+                    $dialog.querySelector(`[data-type="apply"]`).click();
+                    return;
+                }
             }
         }
     })

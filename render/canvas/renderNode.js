@@ -9,7 +9,12 @@ import Render from "../render.js";
 export default function (renderOps, node) {
     const render = Render.of(NodeView);
 
-    render.next(onclick)
+    //todo: remove hardcore
+    renderOps.width = 300;
+    renderOps.height = 150;
+
+    render.next(ondblclick)
+        .next(onclick)
         .next(onmouseover)
         .next(onmouseout)
         .next(view => view.id(node.id))
@@ -20,6 +25,12 @@ export default function (renderOps, node) {
         .next(view => connectors(renderOps, node, x => view.put(x)))
 
     return render.build();
+}
+
+function ondblclick(view) {
+    view.on("dblclick", e => {
+        e.cancelBubble = true;
+    })
 }
 
 function onclick(view) {

@@ -15,9 +15,6 @@ export default async function (process) {
             def.render = {};
         }
         def.render.important = def.important;
-        //todo: remove hardcode
-        def.render.width = 300;
-        def.render.height = 150;
         const x = nodes[n.id] = await renderNode(def.render, n);
         x.on("click", e => {
             e.cancelBubble = true;
