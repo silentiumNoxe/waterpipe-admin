@@ -67,6 +67,12 @@ function onclick(view) {
             /** @type Process*/
             const process = window.CurrentProcess;
             const nFrom = process.nodes.filter(x => x.id === window.connectionFrom)[0];
+            if (nFrom == null) {
+                console.warn(`node ${window.connectionFrom} not found`);
+                disableCurrentConnection();
+                return;
+            }
+
             if (window.connectionType !== "next_default") {
                 getDefinition(nFrom.type)
                     .then(def => def.args)

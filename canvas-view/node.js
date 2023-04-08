@@ -195,4 +195,9 @@ export default class NodeView extends Konva.Group {
 
         this.#view.shape.fill(color);
     }
+
+    destroy() {
+        this.lines.forEach(x => x.destroy());
+        return super.destroy();
+    }
 }

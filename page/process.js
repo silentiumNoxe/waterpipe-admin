@@ -119,6 +119,14 @@ window.addEventListener("DOMContentLoaded", () => {
     })
 })
 
+window.addEventListener("keypress", e => {
+    switch (e.key) {
+        case "Delete":
+            deleteSelectedNode();
+            break;
+    }
+});
+
 function showConnectedServer() {
     function offline() {
         const $elem = document.querySelector("[data-type='server-addr']")
@@ -300,4 +308,26 @@ function startDialog(name, focus=null) {
             }
         }
     })
+}
+
+function deleteSelectedNode() {
+    if (window.selectedNodeId == null || window.selectedNodeId === "") {
+        return
+    }
+
+    const node = window.NodeLayer.findOne("#"+window.selectedNodeId);
+    if (node == null) {
+        console.warn(`node ${window.selectedNodeId} not found`);
+        return;
+    }
+
+    for (let i = 0; i < window.CurrentProcess.nodes.length; i++) {
+        const n = window.CurrentProcess.nodes[i];
+        if (n.id === window.selectedNodeId) {
+            window.CurrentProcess.nodes.splice(i, 1);
+            break;
+        }
+    }
+
+    node.destroy();
 }
