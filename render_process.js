@@ -1,7 +1,6 @@
 import * as client from "./client/node.js";
-import NodeView from "./canvas-view/node.js";
-import {nodeMenuRender} from "./page/render/node_menu.js";
-import renderNode from "./canvas/renderNode.js";
+import {nodeMenuRender} from "./render/node_menu.js";
+import renderNode from "./render/canvas/renderNode.js";
 
 /**
  * @param process {Process}

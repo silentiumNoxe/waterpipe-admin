@@ -1,4 +1,4 @@
-import NodeView from "../canvas-view/node.js";
+import NodeView from "../../canvas-view/node.js";
 import Render from "./render.js";
 
 /**
