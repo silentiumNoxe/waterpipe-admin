@@ -1,5 +1,5 @@
 import NodeView from "../canvas-view/node.js";
-import renderNode from "./renderNode.js";
+import Render from "./render.js";
 
 /**
  * @param renderOps {Object}
@@ -7,8 +7,22 @@ import renderNode from "./renderNode.js";
  * @return NodeView
  * */
 export default function (renderOps, node) {
-    const view = new NodeView();
+    const render = new Render(NodeView);
 
+    render.next(onclick)
+        .next(onmouseover)
+        .next(onmouseout)
+        .next(view => view.id(node.id))
+        .next(view => view.setPosition(node.position))
+        .next(view => view.important(renderOps.important || false))
+        .next(view => title(renderOps, node, x => view.put(x)))
+        .next(view => subTitle(renderOps, node, x => view.put(x)))
+        .next(view => connectors(renderOps, node, x => view.put(x)))
+
+    return render.build();
+}
+
+function onclick(view) {
     view.on("click", e => {
         if (window.connectionStart) {
             e.cancelBubble = true;
@@ -23,33 +37,23 @@ export default function (renderOps, node) {
             disableCurrentConnection();
         }
     });
+}
 
+function onmouseover(view) {
     view.on("mouseover", () => {
         if (window.connectionStart) {
             view.shape.fill(Konva.Color.BLUE);
         }
     });
+}
 
+function onmouseout(view) {
     view.on("mouseout", () => {
         if (view.important()) {
             view.shape.fill(Konva.Color.WARNING);
         }
         view.shape.fill(Konva.Color.LIGHT);
     });
-
-    view.id(node.id);
-    view.setPosition(node.position);
-    view.important(renderOps.important || false);
-
-    title(renderOps, node, view.put.bind(view));
-    subTitle(renderOps, node, view.put.bind(view));
-
-    if (!renderOps.no_connector) {
-        defaultConnector(renderOps, node, view.put.bind(view));
-        additionalConnector(renderOps, node, view.put.bind(view));
-    }
-
-    return view;
 }
 
 /**
@@ -95,6 +99,20 @@ function subTitle(renderOps, node, inject = () => {
     });
 
     inject(view);
+}
+
+/**
+ * @param renderOps {Object}
+ * @param node {ProcessNode}
+ * @param inject {function(Konva.Node)}
+ * */
+function connectors(renderOps, node, inject=()=>{}) {
+    if (renderOps.no_connector) {
+        return;
+    }
+
+    defaultConnector(renderOps, node, inject);
+    additionalConnector(renderOps, node, inject);
 }
 
 /**
