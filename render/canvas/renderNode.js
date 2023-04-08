@@ -1,6 +1,7 @@
 import NodeView from "../../canvas-view/node.js";
 import Render from "../render.js";
 import {nodeMenuRender} from "../node_menu.js";
+import {getDefinition} from "../../client/node.js";
 
 /**
  * @param renderOps {Object}
@@ -26,7 +27,7 @@ export default function (renderOps, node) {
         .next(view => view.id(node.id))
         .next(view => view.setPosition(node.position))
         .next(view => view.important(renderOps.important || false))
-        .next(view => title(renderOps, node, x => view.put(x)))
+        .next(view => title(renderOps, node.title || node.type.substring(node.type.lastIndexOf(".") + 1), x => view.put(x)))
         .next(view => subTitle(renderOps, node, x => view.put(x)))
         .next(view => connectors(renderOps, node, x => view.put(x)))
 
@@ -44,6 +45,16 @@ function onclick(view) {
         if (window.connectionStart) {
             e.cancelBubble = true;
 
+            if (window.connectionFrom == null) {
+                console.warn("Something went wrong - connection from is empty");
+                return;
+            }
+
+            if (window.connectionType == null) {
+                console.warn("Something went wrong - connection type is empty");
+                return;
+            }
+
             const from = window.NodeLayer.findOne("#" + window.connectionFrom);
             if (from == null) {
                 console.warn(`node ${window.connectionFrom} not found`);
@@ -51,6 +62,23 @@ function onclick(view) {
             }
 
             window.LineLayer.add(from.connectTo(view, window.connectionType));
+
+            //Save new connection
+            /** @type Process*/
+            const process = window.CurrentProcess;
+            console.debug(window.connectionFrom);
+            const nFrom = process.nodes.filter(x => x.id === window.connectionFrom)[0];
+            if (window.connectionType !== "next_default") {
+                getDefinition(nFrom.type)
+                    .then(def => def.args)
+                    .then(args => args.forEach((value, key) => {
+                        if (value.type === "node" && value.connector === window.connectionType) {
+                            nFrom.args[key] = view.id();
+                        }
+                    }));
+            }
+            nFrom.next = view.id();
+
             disableCurrentConnection();
         }
     });
@@ -86,10 +114,10 @@ function showNodeMenu(view, node) {
 
 /**
  * @param renderOps {Object}
- * @param node {ProcessNode}
+ * @param text {string}
  * @param inject {function(Konva.Node)}
  * */
-function title(renderOps, node, inject = () => {
+function title(renderOps, text, inject = () => {
 }) {
     const view = new Konva.Text({
         id: "title",
@@ -97,7 +125,7 @@ function title(renderOps, node, inject = () => {
         width: renderOps.width,
         align: "center",
         fontSize: 18,
-        text: node.title,
+        text,
         fontFamily: Konva.DEFAULT_FONT
     });
 
@@ -132,7 +160,8 @@ function subTitle(renderOps, node, inject = () => {
  * @param node {ProcessNode}
  * @param inject {function(Konva.Node)}
  * */
-function connectors(renderOps, node, inject=()=>{}) {
+function connectors(renderOps, node, inject = () => {
+}) {
     if (renderOps.no_connector) {
         return;
     }
@@ -169,8 +198,8 @@ function additionalConnector(renderOps, node, inject = () => {
     for (const id of Object.keys(renderOps.connectors)) {
         const ops = renderOps.connectors[id];
         const conn = renderConnector(node.id, id, {
-            x: renderOps.width/100 * ops.position.x,
-            y: renderOps.height/100 * ops.position.y
+            x: renderOps.width / 100 * ops.position.x,
+            y: renderOps.height / 100 * ops.position.y
         }, ops.title);
         inject(conn);
     }

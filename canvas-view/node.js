@@ -1,6 +1,8 @@
 export default class NodeView extends Konva.Group {
 
     #center;
+
+    /** @type Array<Konva.Line>*/
     lines = [];
 
     type = "";
@@ -25,8 +27,10 @@ export default class NodeView extends Konva.Group {
 
         this.#updateCenter();
 
-        this.on("dragmove", this.#updateCenter)
-        this.on("dragmove", this.#updateLines)
+        this.on("dragmove", () => {
+            this.#updateCenter()
+            this.#updateLines();
+        })
         this.on("mouseover", () => {
             document.body.style.cursor = "pointer";
         })
@@ -64,7 +68,7 @@ export default class NodeView extends Konva.Group {
             points: [this.getPosition().x + button.getPosition().x, this.getPosition().y + button.getPosition().y, node.getCenter().x, node.getCenter().y],
             stroke: Konva.Color.LIGHT,
             strokeWidth: 2,
-            id: `${this.id()}_${node.id()}`
+            id: `${type}_${this.id()}_${node.id()}`
         });
 
         line.from = () => {
@@ -74,6 +78,14 @@ export default class NodeView extends Konva.Group {
         };
 
         line.to = () => node.getCenter();
+
+        for (let i = 0; i < this.lines.length; i++) {
+            const l = this.lines[i];
+            if (l.id().startsWith(`${type}_${this.id()}`)) {
+                l.destroy();
+                this.lines.splice(i, 1);
+            }
+        }
 
         this.lines.push(line);
         node.lines.push(line);
@@ -90,19 +102,22 @@ export default class NodeView extends Konva.Group {
     }
 
     #updateCenter() {
-        this.#center = {x: this.x() + this.#view.shape.width() / 2, y: this.y() + this.#view.shape.height() / 2}
+        const {x,y} = this.getPosition();
+        const halfWidth = this.#view.shape.width() / 2;
+        const halfHeight = this.#view.shape.height() / 2;
+        this.#center = {x: x + halfWidth, y: y + halfHeight}
     }
 
     #updateLines() {
-        if (this.lines.length === 0) {
-            return
-        }
-
-        for (const line of this.lines) {
+        this.lines.forEach(line => {
             const from = line.from();
             const to = line.to();
+            if (from == null || to == null) {
+                console.debug("line", this.id(), from, to);
+                return
+            }
             line.points([from.x, from.y, to.x, to.y]);
-        }
+        })
     }
 
     width(val) {

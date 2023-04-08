@@ -193,7 +193,7 @@ function applyServer() {
  * @param def {NodeDefinition}
  * */
 async function showNodeMenu(view, node, def) {
-    (await import("../render/node_menu.js")).nodeMenuRender(view, node, def);
+    (await import("../render/node_menu.js")).nodeMenuRender(view, node).catch(console.error);
 }
 
 function hideNodeMenu() {
