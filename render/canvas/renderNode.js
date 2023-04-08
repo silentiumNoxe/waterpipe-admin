@@ -66,7 +66,6 @@ function onclick(view) {
             //Save new connection
             /** @type Process*/
             const process = window.CurrentProcess;
-            console.debug(window.connectionFrom);
             const nFrom = process.nodes.filter(x => x.id === window.connectionFrom)[0];
             if (window.connectionType !== "next_default") {
                 getDefinition(nFrom.type)
