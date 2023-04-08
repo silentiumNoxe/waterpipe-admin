@@ -13,6 +13,7 @@ export async function nodeMenuRender(view, node) {
     }
 
     const $menu = document.getElementById("node-menu");
+    $menu.dataset.node_id = node.id;
 
     const $title = $menu.querySelector("[data-type='node-title']");
     $title.value = node.title || def.name;

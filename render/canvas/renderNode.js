@@ -79,6 +79,7 @@ function onclick(view) {
             nFrom.next = view.id();
 
             disableCurrentConnection();
+            return;
         }
     });
 }
@@ -93,10 +94,14 @@ function onmouseover(view) {
 
 function onmouseout(view) {
     view.on("mouseout", () => {
-        if (view.important()) {
-            view.shape.fill(Konva.Color.WARNING);
+        if (window.connectionStart) {
+            if (view.selected) {
+                view.selected = true; //trigger fill color selected
+                return;
+            }
+
+            view.fillDefaultColor();
         }
-        view.shape.fill(Konva.Color.LIGHT);
     });
 }
 
@@ -107,7 +112,17 @@ function ondragmove(view, node) {
 function showNodeMenu(view, node) {
     view.on("click", e => {
         e.cancelBubble = true;
+
+        if (window.selectedNodeId != null && window.selectedNodeId !== node.id) {
+            const prev = window.NodeLayer.findOne("#"+window.selectedNodeId);
+            if (prev != null) {
+                prev.selected = false;
+            }
+        }
+
+        view.selected = true;
         nodeMenuRender(view, node).catch(console.error);
+        window.selectedNodeId = node.id;
     })
 }
 

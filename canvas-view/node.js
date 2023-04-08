@@ -14,6 +14,9 @@ export default class NodeView extends Konva.Group {
 
     #important = false;
 
+    /** @type boolean*/
+    #selected;
+
     constructor() {
         super({
             x: 0,
@@ -164,5 +167,32 @@ export default class NodeView extends Konva.Group {
      * */
     get shape() {
         return this.#view.shape;
+    }
+
+    /**
+     * @param val {boolean}
+     * */
+    set selected(val) {
+        this.#selected = val;
+
+        if (this.#selected) {
+            this.#view.shape.fill(Konva.Color.BLUE2);
+            return;
+        }
+
+        this.fillDefaultColor();
+    }
+
+    get selected() {
+        return this.#selected;
+    }
+
+    fillDefaultColor() {
+        let color = Konva.Color.LIGHT;
+        if (this.#important) {
+            color = Konva.Color.WARNING;
+        }
+
+        this.#view.shape.fill(color);
     }
 }
