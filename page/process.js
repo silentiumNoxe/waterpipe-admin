@@ -50,7 +50,8 @@ window.addEventListener("DOMContentLoaded", () => {
         document.body.style.cursor = "auto";
     })
 
-    stage.on("click", hideNodeMenu)
+    stage.on("click", hideNodeMenu);
+    stage.on("click", unselectNode)
 
     stage.on("dblclick", () => {
         const mouse = mousePosition();
@@ -194,6 +195,20 @@ function applyServer() {
  * */
 async function showNodeMenu(view, node, def) {
     (await import("../render/node_menu.js")).nodeMenuRender(view, node).catch(console.error);
+}
+
+function unselectNode() {
+    if (window.selectedNodeId == null || window.selectedNodeId === "") {
+        return;
+    }
+
+    const node = window.NodeLayer.findOne("#"+window.selectedNodeId);
+    if (node == null) {
+        console.warn(`node ${window.selectedNodeId} not found`);
+        return;
+    }
+
+    node.selected = false;
 }
 
 function hideNodeMenu() {
