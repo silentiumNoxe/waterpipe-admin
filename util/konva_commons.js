@@ -5,5 +5,7 @@ Konva.Color = {
 
     SUCCESS: "#4d7c45",
     ERROR: "#a24444",
-    WARNING: "#bb853e"
+    WARNING: "#bb853e",
+
+    BLUE: "#566c8c"
 }

@@ -20,6 +20,6 @@ export default class NumberInputRender extends FieldRender {
     }
 
     support(definition) {
-        return definition.type === "number";
+        return definition.view === "number";
     }
 }

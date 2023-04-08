@@ -20,6 +20,11 @@
     font-size: 2em;
 }
 
+#header > button[data-type="save"] {
+    margin-left: auto;
+    float: right;
+}
+
 [data-type="server-addr"] {
     min-width: 100px;
 

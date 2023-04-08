@@ -54,12 +54,28 @@
           <button data-type="node-important" data-value="false">enable important</button>
         </div>
       </div>
-      <div id="render-menu" hidden><h1>In progress</h1></div>
-      <div id="parameters-menu" hidden><h1>In progress</h1></div>
+      <div id="render-menu" hidden>
+        <label for="render-payload"></label>
+        <textarea id="render-payload" placeholder="Here render settings..."></textarea>
+      </div>
+      <div id="parameters-menu" hidden>
+        <label for="parameters-payload"></label>
+        <textarea id="parameters-payload" placeholder="Here parameters settings..."></textarea>
+      </div>
       <div id="script-menu" hidden>
         <label for="script-payload"></label>
-        <textarea id="script-payload"></textarea>
+        <textarea id="script-payload" placeholder="Here JavaScript code..."></textarea>
       </div>
+    </div>
+  </dialog>
+  <dialog id="node-menu" open>
+    <div class="header">
+      <input data-type="node-title" value="NODE TITLE" disabled>
+      <div><b>ID:</b><span class="mgw-lr-1" data-type="node-id">NODE ID</span></div>
+      <div><b>Type:</b><span class="mgw-lr-1" data-type="node-type"></span></div>
+      <hr>
+    </div>
+    <div class="body">
     </div>
   </dialog>
 </section>

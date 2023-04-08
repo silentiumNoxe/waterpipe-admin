@@ -37,8 +37,8 @@ export default class NodeView extends Konva.Group {
 
     #mainShape() {
         return new Konva.Rect({
-            width: 200,
-            height: 90,
+            width: 300,
+            height: 150,
             fill: Konva.Color.LIGHT,
             cornerRadius: 10,
             overflow: "hidden"
@@ -51,18 +51,29 @@ export default class NodeView extends Konva.Group {
 
     /**
      * @param node {NodeView}
+     * @param type {string}
      * @return Konva.Line
      * */
-    connectTo(node) {
+    connectTo(node, type) {
+        const button = this.findOne("#" + type);
+        if (button == null) {
+            throw `not found button connection "${type}" in ${this.id()}`;
+        }
+
         const line = new Konva.Line({
-            points: [this.getCenter().x, this.getCenter().y, node.getCenter().x, node.getCenter().y],
+            points: [this.getPosition().x + button.getPosition().x, this.getPosition().y + button.getPosition().y, node.getCenter().x, node.getCenter().y],
             stroke: Konva.Color.LIGHT,
             strokeWidth: 2,
             id: `${this.id()}_${node.id()}`
         });
 
-        line.from = this;
-        line.to = node;
+        line.from = () => {
+            const x = this.getPosition().x + button.getPosition().x;
+            const y = this.getPosition().y + button.getPosition().y;
+            return {x, y};
+        };
+
+        line.to = () => node.getCenter();
 
         this.lines.push(line);
         node.lines.push(line);
@@ -88,30 +99,10 @@ export default class NodeView extends Konva.Group {
         }
 
         for (const line of this.lines) {
-            const from = line.from.getCenter();
-            const to = line.to.getCenter();
+            const from = line.from();
+            const to = line.to();
             line.points([from.x, from.y, to.x, to.y]);
         }
-    }
-
-    set title(val) {
-        this.#title = val;
-        if (this.#view.title == null) {
-            /** @type Konva.Text*/
-            const t = this.#view.title = new Konva.Text({
-                padding: 10,
-                width: this.#view.shape.width(),
-                align: "center",
-                fontSize: 18 * this.#fontSizeScale,
-                fontFamily: Konva.DEFAULT_FONT
-            })
-
-            t.ops = {fontSize: 18};
-
-            this.add(t);
-        }
-
-        this.#view.title.text(val);
     }
 
     width(val) {
@@ -127,12 +118,36 @@ export default class NodeView extends Konva.Group {
         this.#view.title.fontSize(this.#view.title.ops.fontSize * val);
     }
 
-    set important(val) {
+    /**
+     * @param val {boolean|null}
+     * @return boolean
+     * */
+    important(val = null) {
+        if (val == null) {
+            return this.#important;
+        }
+
         this.#important = val;
         if (this.#important === true) {
             this.#view.shape.fill(Konva.Color.WARNING);
         } else {
             this.#view.shape.fill(Konva.Color.LIGHT);
         }
+
+        return this.#important;
+    }
+
+    /**
+     * @param view {Konva.Node}
+     * */
+    put(view) {
+        this.add(view);
+    }
+
+    /**
+     * @return Konva.Rect
+     * */
+    get shape() {
+        return this.#view.shape;
     }
 }

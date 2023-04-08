@@ -4,19 +4,19 @@
 export default class FieldRender {
 
     /**
-     * @param definition {NodeDefinitionArgument} - node definition argument
+     * @param rules {NodeRenderOptions} - node definition argument
      * @param title {string} - field title
      * @param argument {any} - node argument
      * @param onchange {function(value)}
      * @return HTMLElement
      * */
-    draw({definition, title, argument, onchange}) {
+    draw({rules, title, argument, onchange}) {
         return null;
     }
 
     /**
-     * @param definition {NodeDefinitionArgument} - field type
+     * @param ops {NodeRenderOptions} - field type
      * @return boolean
      * */
-    support(definition) {return false}
+    support(ops) {return false}
 }
