@@ -1,6 +1,7 @@
 @import "../theme/dark.css";
 @import "../commons.css";
 @import "../ui.css";
+@import "../node_menu.css";
 
 #header [data-type="save"] {
     margin-left: auto;
@@ -9,39 +10,6 @@
 
 #header [data-type="process-name"] {
     margin-top: 5px;
-}
-
-#node-menu {
-    min-height: 86vh;
-    min-width: 30vw;
-    position: absolute;
-    margin-top: 1vw;
-    right: 1vw;
-    left: inherit;
-}
-
-#node-menu > .header {
-    display: block;
-    margin-bottom: 20px;
-}
-
-#node-menu > .body {
-    overflow: hidden;
-    overflow-y: scroll;
-}
-
-#node-menu > .body::-webkit-scrollbar {
-    display: none;
-}
-
-#node-menu > .body > :not(:first-child) {
-    margin-top: 15px;
-}
-
-#node-menu [data-type="node-title"] {
-    border: none;
-    font-weight: bold;
-    font-size: 1.5em;
 }
 
 #save-process {

@@ -19,6 +19,6 @@ export default class BoolInputRender extends FieldRender {
     }
 
     support(definition) {
-        return definition.type === "boolean";
+        return definition.view === "boolean";
     }
 }

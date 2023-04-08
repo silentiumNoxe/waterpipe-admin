@@ -36,6 +36,6 @@ export default class CodeBlockRender extends FieldRender {
     }
 
     support(definition) {
-        return definition.type === "code";
+        return definition.view === "code";
     }
 }

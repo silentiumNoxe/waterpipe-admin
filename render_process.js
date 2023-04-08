@@ -1,4 +1,6 @@
 import * as client from "./client/node.js";
+import {nodeMenuRender} from "./render/node_menu.js";
+import renderNode from "./render/canvas/renderNode.js";
 
 /**
  * @param process {Process}
@@ -8,9 +10,32 @@ export default async function (process) {
     const lines = [];
     const connections = [];
     for (const n of process.nodes) {
-        const def = await client.getDefinition(n.type)
-        const x = nodes[n.id] = await renderNode(n, def);
-        connections.push({from: n.id, to: n.next});
+        const def = await client.getDefinition(n.type);
+        if (def.render == null) {
+            def.render = {};
+        }
+        def.render.important = def.important;
+        //todo: remove hardcode
+        def.render.width = 300;
+        def.render.height = 150;
+        const x = nodes[n.id] = await renderNode(def.render, n);
+        x.on("click", e => {
+            e.cancelBubble = true;
+            nodeMenuRender(x, n, def);
+        });
+        x.on("dragmove", () => {
+            n.position = x.getPosition();
+        });
+
+        if (n.next != null) {
+            connections.push({from: n.id, to: n.next, type: "next_default"});
+        }
+
+        def.args.forEach((arg, name) => {
+            if (arg.type === "node" && n.args.get(name) != null) {
+                connections.push({from: n.id, to: n.args.get(name), type: arg.connector});
+            }
+        })
     }
 
     for (const conn of connections) {
@@ -20,7 +45,7 @@ export default async function (process) {
             continue;
         }
 
-        lines.push(from.connectTo(to));
+        lines.push(from.connectTo(to, conn.type));
     }
 
     for (const id of Object.keys(nodes)) {

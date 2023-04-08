@@ -62,7 +62,7 @@ export const Save = async function(process, version=1) {
             id: n.id,
             title: n.title,
             type: n.type,
-            args: n.args,
+            args: Object.fromEntries(n.args),
             next: n.next,
             timeout: n.timeout,
             position: n.position
