@@ -1,12 +1,17 @@
 import * as fieldRenders from "./node_ops/define.js";
 import {NodeRenderOptions} from "../../model/NodeRenderOptions.js";
+import {getDefinition} from "../client/node.js";
 
 /**
  * @param view {NodeView}
  * @param node {ProcessNode}
- * @param def {NodeDefinition}
  * */
-export function nodeMenuRender(view, node, def) {
+export async function nodeMenuRender(view, node) {
+    const def = await getDefinition(node.type);
+    if (def == null) {
+        throw `Definition of node ${node.type} not found`;
+    }
+
     const $menu = document.getElementById("node-menu");
 
     const $title = $menu.querySelector("[data-type='node-title']");

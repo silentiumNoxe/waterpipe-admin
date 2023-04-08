@@ -1,8 +1,8 @@
 import NodeView from "./canvas-view/node.js";
 import * as client from "./client/node.js";
-import {nodeMenuRender} from "./page/render/node_menu.js";
+import {nodeMenuRender} from "./render/node_menu.js";
 import ProcessNode from "./model/ProcessNode.js";
-import renderNode from "./canvas/renderNode.js";
+import renderNode from "./render/canvas/renderNode.js";
 
 /**
  * @param def {NodeDefinition}

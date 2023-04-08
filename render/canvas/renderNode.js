@@ -1,5 +1,6 @@
 import NodeView from "../../canvas-view/node.js";
 import Render from "../render.js";
+import {nodeMenuRender} from "../node_menu.js";
 
 /**
  * @param renderOps {Object}
@@ -9,6 +10,9 @@ import Render from "../render.js";
 export default function (renderOps, node) {
     const render = Render.of(NodeView);
 
+    if (renderOps == null) {
+        renderOps = {};
+    }
     //todo: remove hardcore
     renderOps.width = 300;
     renderOps.height = 150;
@@ -17,6 +21,8 @@ export default function (renderOps, node) {
         .next(onclick)
         .next(onmouseover)
         .next(onmouseout)
+        .next(view => showNodeMenu(view, node))
+        .next(view => ondragmove(view, node))
         .next(view => view.id(node.id))
         .next(view => view.setPosition(node.position))
         .next(view => view.important(renderOps.important || false))
@@ -65,6 +71,17 @@ function onmouseout(view) {
         }
         view.shape.fill(Konva.Color.LIGHT);
     });
+}
+
+function ondragmove(view, node) {
+    view.on("dragmove", () => node.position = view.getPosition());
+}
+
+function showNodeMenu(view, node) {
+    view.on("click", e => {
+        e.cancelBubble = true;
+        nodeMenuRender(view, node).catch(console.error);
+    })
 }
 
 /**

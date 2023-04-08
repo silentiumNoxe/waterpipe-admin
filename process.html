@@ -57,7 +57,18 @@
     <div class="payload">
       <fieldset class="input">
         <legend>type</legend>
-        <input type="text" name="type" data-type="node-type">
+        <input type="text" name="type" data-type="node-type" list="builtin-nodes">
+        <datalist id="builtin-nodes">
+          <option value="waterpipe.start">Processing starts from there</option>
+          <option value="waterpipe.final">Processing stops there</option>
+          <option value="waterpipe.code">JavaScript code</option>
+          <option value="waterpipe.set">Set field</option>
+          <option value="waterpipe.condition">Condition</option>
+          <option value="waterpipe.goto">Jump to another process</option>
+          <option value="waterpipe.create_task">Create child task</option>
+          <option value="waterpipe.random">Generate pseudo-random number</option>
+          <option value="waterpipe.api_call">API Call</option>
+        </datalist>
       </fieldset>
     </div>
     <div class="submit">

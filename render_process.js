@@ -14,15 +14,9 @@ export default async function (process) {
         if (def.render == null) {
             def.render = {};
         }
+
         def.render.important = def.important;
-        const x = nodes[n.id] = await renderNode(def.render, n);
-        x.on("click", e => {
-            e.cancelBubble = true;
-            nodeMenuRender(x, n, def);
-        });
-        x.on("dragmove", () => {
-            n.position = x.getPosition();
-        });
+        nodes[n.id] = await renderNode(def.render, n);
 
         if (n.next != null) {
             connections.push({from: n.id, to: n.next, type: "next_default"});
