@@ -12,7 +12,14 @@ export const List = async function () {
  * @return Promise<Array<string>>
  * */
 export const GetVersions = async function (processId) {
-    return ["1", "2", "3"]; //todo: mocked
+    const response = await util.send(`/process/${processId}/version`)
+    const payload = await response.json();
+    if (response.status !== 200 || payload.error) {
+        console.error("Server respond", payload);
+        throw "server error";
+    }
+
+    return payload.list;
 }
 
 /**
