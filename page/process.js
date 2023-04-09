@@ -85,6 +85,8 @@ window.addEventListener("DOMContentLoaded", () => {
     const processId = params.get("process")
     const version = Number(params.get("v"))
 
+    document.querySelector("#header button[data-type='process-version']").textContent = "Version: "+version;
+
     import("../client/process.js")
         .then(m => {
             m.GetPayload(processId, version)
@@ -92,6 +94,19 @@ window.addEventListener("DOMContentLoaded", () => {
                     import("../render_process.js").then(m1 => m1.default(process));
                     window.CurrentProcess = process;
                     document.querySelector("[data-type='process-name']").textContent = process.name;
+                })
+
+            m.GetVersions(processId)
+                .then(list => {
+                    const $ul = document.querySelector("#process-version-dialog ul")
+                    list.forEach(v => {
+                        const $li = document.createElement("li")
+                        $li.textContent = v
+                        $li.addEventListener("click", e => {
+                            document.querySelector("#process-version-dialog input").value = e.target.textContent;
+                        })
+                        $ul.append($li);
+                    })
                 })
         })
 
@@ -116,7 +131,23 @@ window.addEventListener("DOMContentLoaded", () => {
 
     document.querySelector("#save-process button[data-type='cancel']").addEventListener("click", () => {
         document.getElementById("save-process").open = false;
-    })
+    });
+
+    document.querySelector("button[data-type='process-version']").addEventListener("click", () => {
+        document.getElementById("process-version-dialog").open = true;
+    });
+
+    document.querySelector("#process-version-dialog button[data-type='apply']").addEventListener("click", () => {
+        const version = document.querySelector("#process-version-dialog input[data-type='process-version']").value;
+        if (version == null || version === "") {
+            return;
+        }
+
+        const url = new URL(window.location.href)
+        url.searchParams.set("v", version);
+
+        window.location.href = url.href;
+    });
 })
 
 window.addEventListener("keypress", e => {
@@ -210,7 +241,7 @@ function unselectNode() {
         return;
     }
 
-    const node = window.NodeLayer.findOne("#"+window.selectedNodeId);
+    const node = window.NodeLayer.findOne("#" + window.selectedNodeId);
     if (node == null) {
         console.warn(`node ${window.selectedNodeId} not found`);
         return;
@@ -256,7 +287,7 @@ async function renderNode(node, def) {
     return renderNode(def.render, node);
 }
 
-function startDialog(name, focus=null) {
+function startDialog(name, focus = null) {
     return new Promise((resolve, reject) => {
         const $dialog = document.getElementById(name);
         $dialog.open = true;
@@ -315,7 +346,7 @@ function deleteSelectedNode() {
         return
     }
 
-    const node = window.NodeLayer.findOne("#"+window.selectedNodeId);
+    const node = window.NodeLayer.findOne("#" + window.selectedNodeId);
     if (node == null) {
         console.warn(`node ${window.selectedNodeId} not found`);
         return;

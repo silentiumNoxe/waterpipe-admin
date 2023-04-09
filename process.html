@@ -17,7 +17,7 @@
       server offline
     </div>
     <h2 data-type="process-name"></h2>
-    <p id="save-status">All changes are saved</p>
+    <button class="pill" data-type="process-version">Version: 1</button>
     <button class="pill green" data-type="save">Save</button>
   </article>
   <dialog id="select-addr-dialog">
@@ -74,6 +74,17 @@
     <div class="submit">
       <input type="submit" class="pill" data-type="cancel" value="Cancel">
       <input type="submit" class="pill" data-type="apply" value="Apply">
+    </div>
+  </dialog>
+  <dialog id="process-version-dialog">
+    <fieldset class="input">
+      <legend>version</legend>
+      <input type="text" name="version" data-type="process-version">
+    </fieldset>
+    <button class="pill" data-type="apply">Apply</button>
+    <div data-type="versions">
+      <ul class="noorder selectable">
+      </ul>
     </div>
   </dialog>
 </section>
