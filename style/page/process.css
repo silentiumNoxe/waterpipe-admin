@@ -66,3 +66,8 @@ textarea.code {
 #process-version-dialog ul > li {
     padding: 10px;
 }
+
+#process-version-dialog button[data-type="apply"] {
+    margin-top: 10px;
+    margin-left: 82%;
+}

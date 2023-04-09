@@ -9,10 +9,10 @@ export const List = async function () {
 
 /**
  * @param processId {string} - uuid
- * @return Array<string>
+ * @return Promise<Array<string>>
  * */
 export const GetVersions = async function (processId) {
-
+    return ["1", "2", "3"]; //todo: mocked
 }
 
 /**
