@@ -116,7 +116,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
     document.querySelector("#save-process button[data-type='cancel']").addEventListener("click", () => {
         document.getElementById("save-process").open = false;
-    })
+    });
+
+    document.querySelector("button[data-type='process-version']").addEventListener("click", () => {
+        document.getElementById("process-version-dialog").open = true;
+    });
 })
 
 window.addEventListener("keypress", e => {

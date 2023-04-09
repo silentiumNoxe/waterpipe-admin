@@ -42,3 +42,27 @@ textarea.code {
     display: block;
     border: none;
 }
+
+#process-version-dialog {
+    max-height: 40vh;
+}
+
+#process-version-dialog [data-type="versions"] {
+    position: relative;
+    margin-top: 10px;
+}
+
+#process-version-dialog ul {
+    margin-left: 0;
+    padding: 0;
+    height: 150px;
+    overflow-y: scroll;
+}
+
+#process-version-dialog ul > li:not(:last-child) {
+    border-bottom: 1px solid var(--color-light-1);
+}
+
+#process-version-dialog ul > li {
+    padding: 10px;
+}

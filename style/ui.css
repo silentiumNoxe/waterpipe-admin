@@ -120,3 +120,11 @@ dialog.prompt div.submit > input[data-type="apply"] {
     border-color: var(--active-color);
     color: var(--active-color);
 }
+
+ul.noorder {
+    list-style: none;
+}
+
+ul.selectable > li {
+    cursor: pointer;
+}
