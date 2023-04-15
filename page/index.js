@@ -57,3 +57,61 @@ async function loadCustomNodes() {
 async function drawCustomNode(id) {
 
 }
+
+async function startDialog(context) {
+    const $dialog = document.querySelector(`dialog[data-context="${context}"]`);
+    if ($dialog == null) {
+        console.error("Dialog ", context, "not found");
+        return
+    }
+    $dialog.open = true;
+}
+
+async function closeDialog(context) {
+    const $dialog = document.querySelector(`dialog[data-context="${context}"]`);
+    if ($dialog == null) {
+        console.error("Dialog ", context, "not found");
+        return
+    }
+
+    $dialog.open = false;
+}
+
+async function createProcess() {
+    const procName = document.querySelector("dialog[data-context='create-process'] input").value;
+    if (procName === "") {
+        return
+    }
+
+    const client = await import("../client/process.js");
+    const Process = (await import("../model/Process.js")).default;
+    const ProcessNode = (await import("../model/ProcessNode.js")).default;
+
+    const proc = new Process({
+        name: procName,
+        active: true,
+        debug: false,
+        path: "",
+        nodes: []
+    });
+
+    const finalNode = new ProcessNode({
+        id: crypto.randomUUID(),
+        type: "waterpipe.final",
+        title: "Default final",
+        position: {x: 0, y: 400}
+    });
+    proc.nodes.push(finalNode)
+
+    proc.nodes.push(new ProcessNode({
+        id: crypto.randomUUID(),
+        type: "waterpipe.start",
+        title: "Default start",
+        position: {x: 0, y: 0},
+        next: finalNode.id
+    }));
+
+    client.Save(proc, 1)
+        .then(() => closeDialog("create-process"))
+        .catch(console.error);
+}

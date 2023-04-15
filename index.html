@@ -12,6 +12,7 @@
   <div class="warning" data-type="server-addr" onclick="selectServer()">
     server offline
   </div>
+  <button class="pill" onclick="startDialog('create-process')">Create</button>
 </section>
 <section id="body">
   <nav>
@@ -23,5 +24,15 @@
   <article id="list">
   </article>
 </section>
+<dialog data-context="create-process">
+  <h3 class="title">Create process</h3>
+  <fieldset class="input">
+    <input type="text" placeholder="Process name">
+  </fieldset>
+  <div class="control">
+    <button class="pill" data-type="cancel" onclick="closeDialog('create-process')">Cancel</button>
+    <button class="pill" data-type="create" onclick="createProcess()">Create</button>
+  </div>
+</dialog>
 </body>
 </html>

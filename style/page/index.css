@@ -2,6 +2,11 @@
 @import "../commons.css";
 @import "../ui.css";
 
+dialog {
+    top: 40%;
+    left: 40%;
+}
+
 nav > ul {
     margin-top: 15vh;
     font-weight: bold;

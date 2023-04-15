@@ -19,6 +19,16 @@ export default class ProcessNode {
     timeout;
     #position;
 
+    /**
+     * @param source {Object}
+     * @param source.id {string}
+     * @param source.title {string}
+     * @param source.type {string}
+     * @param source.next {string}
+     * @param source.timeout {number}
+     * @param source.position {{x: number, y: number}}
+     * @param source.args {Object}
+     * */
     constructor(source) {
         this.id = source.id;
         this.title = source.title;

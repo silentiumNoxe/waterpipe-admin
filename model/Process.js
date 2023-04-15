@@ -13,6 +13,17 @@ export default class Process {
     debug;
     createdAt;
 
+    /**
+     * @param source {Object}
+     * @param source.id {string}
+     * @param source.name {string}
+     * @param source.author {string}
+     * @param source.active {boolean}
+     * @param source.debug {boolean}
+     * @param source.created_at {string}
+     * @param source.path {string}
+     * @param source.version {number}
+     * */
     constructor(source) {
         if (source == null) {
             throw "empty process data";
