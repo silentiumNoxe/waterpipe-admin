@@ -2,9 +2,19 @@ import Process from "../model/Process.js";
 import * as util from "./init.js";
 
 /**
- * @return Array<string>
+ * @return Promise<Array<string>>
  * */
 export const List = async function () {
+    return [
+        "17819942-ec88-4337-a31d-2305679abba8",
+        "bc552b07-c186-4d1e-8ec3-b034dcabc94b",
+        "f83379f5-fe32-4875-b130-89cd210a911f",
+        "227590f4-704e-48d9-9c58-630e502cb6c7",
+        "fae2a241-eb4d-4b1c-9d73-c577d6d335c4",
+        "eb6d9366-e9b5-4585-8e1f-9efd36a8e6d7",
+        "c9ee557d-a682-43e1-b616-135c62dbb890",
+        "aca07a56-10ed-45f3-9fe1-4793980e5a0e"
+    ];
 }
 
 /**
