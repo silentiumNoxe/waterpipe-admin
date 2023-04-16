@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Waterpipe</title>
+  <link rel="stylesheet" href="style/page/index.css">
+  <script src="page/index.js"></script>
+</head>
+<body>
+<section id="header">
+  <h1 data-type="title">Waterpipe</h1>
+  <div class="warning" data-type="server-addr" onclick="selectServer()">
+    server offline
+  </div>
+  <button class="pill" onclick="startDialog('create-process')">Create</button>
+</section>
+<section id="body">
+  <nav>
+    <ul class="noorder">
+      <li class="selected" data-type="process">Process</li>
+      <li data-type="custom-node">Nodes</li>
+    </ul>
+  </nav>
+  <article id="list">
+  </article>
+</section>
+<dialog id="select-addr-dialog">
+  <h3>Specify server address</h3>
+  <label for="server-addr-input">
+  </label>
+  <input id="server-addr-input" type="url" placeholder="url">
+  <div class="container">
+    <button class="pill" onclick="applyServer()">Apply</button>
+  </div>
+</dialog>
+<dialog data-context="create-process">
+  <h3 class="title">Create process</h3>
+  <fieldset class="input">
+    <input type="text" placeholder="Process name">
+  </fieldset>
+  <div class="control">
+    <button class="pill" data-type="cancel" onclick="closeDialog('create-process')">Cancel</button>
+    <button class="pill" data-type="create" onclick="createProcess()">Create</button>
+  </div>
+</dialog>
+</body>
+</html>

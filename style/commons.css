@@ -19,6 +19,15 @@ dialog {
     border-radius: 10px;
 }
 
+dialog > .title {
+    margin-bottom: 1vh;
+}
+
+dialog > .control {
+    margin-top: 1vh;
+    float: right;
+}
+
 .hide {
     display: none !important;
 }

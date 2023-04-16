@@ -2,9 +2,17 @@ import Process from "../model/Process.js";
 import * as util from "./init.js";
 
 /**
- * @return Array<string>
+ * @return Promise<Array<string>>
  * */
 export const List = async function () {
+    const response = await util.send("/process")
+    const payload = await response.json();
+    if (response.status !== 200 || payload.error) {
+        console.error("Server respond", payload);
+        throw "server error";
+    }
+
+    return payload.list;
 }
 
 /**
