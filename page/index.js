@@ -24,6 +24,9 @@ async function loadProcesses() {
 }
 
 async function drawProcess(id) {
+    const client = await import("../client/process.js")
+    const payload = await client.GetPayload(id, 1)
+
     const $container = document.createElement("div")
     $container.classList.add("card")
     $container.dataset.type = "process"
@@ -45,7 +48,7 @@ async function drawProcess(id) {
     $bottom.classList.add("bottom")
 
     const $name = document.createElement("b")
-    $name.textContent = "Test Process"
+    $name.textContent = payload.name;
     $bottom.append($name)
 
     $container.append($top, $bottom)
