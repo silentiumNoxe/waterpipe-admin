@@ -42,7 +42,7 @@ nav > ul > li.selected {
     height: 100vh;
     padding-bottom: 5vh;
     flex-wrap: wrap;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 div.card {
@@ -52,11 +52,11 @@ div.card {
     border-radius: var(--border-radius);
 
     min-width: 15vw;
-    min-height: 20vh;
+    height: 35vh;
 
     cursor: pointer;
 
-    margin: 10px;
+    margin: 10px 0;
 }
 
 div.card > div.top {

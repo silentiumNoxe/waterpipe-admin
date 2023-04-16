@@ -1,7 +1,3 @@
-if (!document.documentElement.fullscreenElement) {
-    document.documentElement.requestFullscreen().catch(console.error);
-}
-
 window.addEventListener("DOMContentLoaded", () => {
     loadData("process")
 })
