@@ -6,6 +6,7 @@ import * as util from "./init.js";
  * @return Promise<NodeDefinition>
  * */
 export const getDefinition = async function (type) {
+    console.debug(`Get node definition - ${type}`);
     const split = type.split(".")
     const nodeName = split[split.length - 1];
     const pkg = type.substring(0, type.lastIndexOf("." + nodeName));
@@ -26,6 +27,7 @@ export const getDefinition = async function (type) {
  * @return Promise<Object>
  * */
 export const save = async function (def) {
+    console.debug(`Save node definition - ${def.package}.${def.name}`)
     const response = await util.send("/node", {
         method: "PUT",
         body: JSON.stringify(def)

@@ -2,7 +2,7 @@ import FieldRender from "./FieldRender.js";
 
 export default class CodeBlockRender extends FieldRender {
 
-    draw({definition, argument, onchange}) {
+    draw({rules, argument, onchange}) {
         const $fs = document.createElement("fieldset")
         $fs.classList.add("input");
         $fs.dataset.type = "code";
@@ -18,7 +18,7 @@ export default class CodeBlockRender extends FieldRender {
         $textarea.addEventListener("keyup", e => {
             const value = e.target.value;
 
-            if (definition.required && value === "") {
+            if (rules.required && value === "") {
                 return;
             }
 

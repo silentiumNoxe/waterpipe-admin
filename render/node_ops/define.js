@@ -4,6 +4,7 @@ import NumberInputRender from "./NumberInputRender.js";
 import BoolInputRender from "./BoolInputRender.js";
 import AnyInputRender from "./AnyInputRender.js";
 import InputRender from "./InputRender.js";
+import MultilineRender from "./MultilineRender.js";
 
 export default [
     new CodeBlockRender(),
@@ -12,4 +13,5 @@ export default [
     new BoolInputRender(),
     new AnyInputRender(),
     new InputRender(),
+    new MultilineRender(),
 ];

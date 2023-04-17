@@ -116,13 +116,15 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     document.querySelector("#save-process button[data-type='save']").addEventListener("click", () => {
-        const $elem = document.querySelector("[data-type='process-version']");
+        const $elem = document.querySelector("input[data-type='process-version']");
         const version = parseInt($elem.value);
+        if (isNaN(version)) {
+            throw "Invalid version - "+$elem.value;
+        }
 
         import("../client/process.js")
             .then(m => {
                 m.Save(window.CurrentProcess, version)
-                    .then(() => markAsSaved())
                     .catch(console.error);
             })
 
@@ -252,14 +254,6 @@ function unselectNode() {
 
 function hideNodeMenu() {
     document.getElementById("node-menu").open = false;
-}
-
-function markAsUnsaved() {
-    document.getElementById("save-status").textContent = "Changes is not saved";
-}
-
-function markAsSaved() {
-    document.getElementById("save-status").textContent = "All changes are saved";
 }
 
 async function createNode(type, {x = 0, y = 0}) {

@@ -61,6 +61,7 @@ function onclick(view) {
                 return;
             }
 
+            console.debug(`Connect ${from.id()} to ${view.id()}; connector=${window.connectionType}`);
             window.LineLayer.add(from.connectTo(view, window.connectionType));
 
             //Save new connection
@@ -73,19 +74,28 @@ function onclick(view) {
                 return;
             }
 
-            if (window.connectionType !== "next_default") {
-                getDefinition(nFrom.type)
-                    .then(def => def.args)
-                    .then(args => args.forEach((value, key) => {
-                        if (value.type === "node" && value.connector === window.connectionType) {
-                            nFrom.args[key] = view.id();
-                        }
-                    }));
-            }
-            nFrom.next = view.id();
+            console.debug("Update process data");
+            (async function() {
+                if (window.connectionType === "next_default") {
+                    console.debug("Set new connection to default connector")
+                    nFrom.next = view.id();
+                    return;
+                }
 
-            disableCurrentConnection();
-            return;
+                const args = await getDefinition(nFrom.type).then(x => x.args);
+                args.forEach((value, key) => {
+                    if (value.type !== "node") {
+                        return
+                    }
+
+                    if (value.connector !== window.connectionType) {
+                        return;
+                    }
+
+                    console.debug(`Set new connection to "${value.connector}" connector`)
+                    nFrom.args.set(key, view.id());
+                });
+            })().then(disableCurrentConnection).catch(console.error)
         }
     });
 }
@@ -256,6 +266,7 @@ function renderConnector(nodeId, id, {x, y}, title = {text: "", position: {x: 0,
     });
 
     group.on("click", e => {
+        console.debug("start connection");
         e.cancelBubble = true;
 
         if (window.disableCurrentConnection) {
@@ -268,6 +279,7 @@ function renderConnector(nodeId, id, {x, y}, title = {text: "", position: {x: 0,
         window.connectionType = group.id();
 
         window.disableCurrentConnection = function () {
+            console.debug("Disable current connection");
             button.fill(Konva.Color.LIGHT);
             window.connectionStart = false;
             window.connectionFrom = null;
