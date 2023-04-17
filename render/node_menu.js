@@ -1,5 +1,5 @@
 import * as fieldRenders from "./node_ops/define.js";
-import {NodeRenderOptions} from "../../model/NodeRenderOptions.js";
+import {NodeRenderOptions} from "../model/NodeRenderOptions.js";
 import {getDefinition} from "../client/node.js";
 
 /**

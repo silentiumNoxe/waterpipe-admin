@@ -2,7 +2,7 @@ import FieldRender from "./FieldRender.js";
 
 export default class InputRender extends FieldRender {
 
-    draw({rules, title, argument="", onchange}) {
+    draw({rules, title, argument, onchange}) {
         if (rules == null) {
             throw "Missed render rules";
         }
@@ -12,8 +12,16 @@ export default class InputRender extends FieldRender {
         const $legend = document.createElement("legend");
         $legend.textContent = rules.required ? title + "*" : title;
         const $input = document.createElement("input");
-        $input.value = argument+"";
         $input.addEventListener("keyup", e => onchange(e.target.value));
+
+        let value = argument+"";
+        switch (rules.dataType) {
+            case "object":
+                value = JSON.stringify(argument)
+                break
+        }
+
+        $input.value = value;
 
         $fs.append($legend);
         $fs.append($input);

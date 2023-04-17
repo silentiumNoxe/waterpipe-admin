@@ -1,10 +1,11 @@
 #node-menu {
-    min-height: 86vh;
     min-width: 30vw;
+    height: 86vh;
     position: absolute;
     margin-top: 1vw;
     right: 1vw;
     left: inherit;
+    overflow-y: scroll;
 }
 
 #node-menu > .header {

@@ -1,5 +1,5 @@
 /**
- * @interface
+ * @abstract
  * */
 export default class FieldRender {
 
