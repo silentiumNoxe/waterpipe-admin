@@ -125,7 +125,6 @@ window.addEventListener("DOMContentLoaded", () => {
         import("../client/process.js")
             .then(m => {
                 m.Save(window.CurrentProcess, version)
-                    .then(() => markAsSaved())
                     .catch(console.error);
             })
 
