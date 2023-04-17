@@ -59,7 +59,11 @@ export async function nodeMenuRender(view, node) {
                 value: node.args.get(name),
                 node,
                 fieldName: name,
-                fieldRenders: fieldRenders.default
+                fieldRenders: fieldRenders.default,
+                resultFunc: (value) => {
+                    console.debug(`Update node parameter ${name}`);
+                    node.args.set(name, value);
+                }
             });
             if ($elem == null) {
                 throw "renderer did not return view";
@@ -102,6 +106,12 @@ function renderField({
         },
         code: value => {
             resultFunc(btoa(value));
+        },
+        json: value => {
+            resultFunc(JSON.parse(value));
+        },
+        string: value => {
+            resultFunc(value);
         },
         any: value => {
             if (value === "") {

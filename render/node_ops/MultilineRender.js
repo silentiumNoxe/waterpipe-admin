@@ -8,9 +8,9 @@ export default class MultilineRender extends FieldRender {
     constructor() {
         super();
         //todo: define extended render for json & code content
-        this.#dataMapper.json = {stringify: this.#jsonContent, parse: this.#resolveJsonContent};
-        this.#dataMapper.code = {stringify: this.#codeContent, parse: this.#resolveCodeContent};
-        this.#dataMapper.default = {stringify: this.#simpleContent, parse: this.#simpleContent};
+        this.#dataMapper.json = {stringify: this.#jsonContent};
+        this.#dataMapper.code = {stringify: this.#codeContent};
+        this.#dataMapper.default = {stringify: this.#simpleContent};
     }
 
     draw({rules, title, argument, onchange}) {
@@ -48,7 +48,7 @@ export default class MultilineRender extends FieldRender {
                     return;
                 }
 
-                onchange(mapper.parse(value));
+                onchange(value);
             }, 5000);
             cancel = () => clearTimeout(id);
         });
@@ -66,28 +66,12 @@ export default class MultilineRender extends FieldRender {
         return atob(value);
     }
 
-    #resolveCodeContent(value) {
-        if (value == null || value === "") {
-            return ""
-        }
-
-        return btoa(value);
-    }
-
     #jsonContent(value) {
         if (value == null || value === "") {
             return ""
         }
 
         return JSON.stringify(value, null, "\t");
-    }
-
-    #resolveJsonContent(value) {
-        if (value == null || value === "") {
-            return ""
-        }
-
-        return JSON.parse(value);
     }
 
     #simpleContent(value) {
