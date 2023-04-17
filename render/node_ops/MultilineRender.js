@@ -31,19 +31,26 @@ export default class MultilineRender extends FieldRender {
 
         $textarea.value = mapper.stringify(argument);
 
+        let cancel;
         $textarea.addEventListener("keyup", e => {
-            let value = e.target.value;
-
-            if (rules.required && value === "") {
-                return;
+            if (cancel != null) {
+                cancel();
             }
+            const id = setTimeout(() => {
+                let value = e.target.value;
 
-            if (value === "") {
-                onchange(value);
-                return;
-            }
+                if (rules.required && value === "") {
+                    return;
+                }
 
-            onchange(mapper.parse(value));
+                if (value === "") {
+                    onchange(value);
+                    return;
+                }
+
+                onchange(mapper.parse(value));
+            }, 5000);
+            cancel = () => clearTimeout(id);
         });
 
         $fs.append($legend, $textarea);
