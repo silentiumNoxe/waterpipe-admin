@@ -1,5 +1,4 @@
 import * as client from "./client/node.js";
-import {nodeMenuRender} from "./render/node_menu.js";
 import renderNode from "./render/canvas/renderNode.js";
 
 /**

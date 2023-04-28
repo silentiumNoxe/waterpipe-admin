@@ -81,17 +81,17 @@ window.addEventListener("DOMContentLoaded", () => {
     stage.add(lineLayer);
     stage.add(layer);
 
-    const params = new URLSearchParams(window.location.search)
-    const processId = params.get("process")
-    const version = Number(params.get("v"))
+    const entries = window.location.pathname.split("/")
+    const processId = entries[2];
+    const version = entries[3];
 
     document.querySelector("#header button[data-type='process-version']").textContent = "Version: "+version;
 
-    import("../client/process.js")
+    import("/client/process.js")
         .then(m => {
             m.GetPayload(processId, version)
                 .then(process => {
-                    import("../render_process.js").then(m1 => m1.default(process));
+                    import("/render_process.js").then(m1 => m1.default(process));
                     window.CurrentProcess = process;
                     document.querySelector("[data-type='process-name']").textContent = process.name;
                 })
@@ -122,7 +122,7 @@ window.addEventListener("DOMContentLoaded", () => {
             throw "Invalid version - "+$elem.value;
         }
 
-        import("../client/process.js")
+        import("/client/process.js")
             .then(m => {
                 m.Save(window.CurrentProcess, version)
                     .catch(console.error);
@@ -145,10 +145,7 @@ window.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const url = new URL(window.location.href)
-        url.searchParams.set("v", version);
-
-        window.location.href = url.href;
+        window.location.href = `/process/${window.CurrentProcess.id}/${version}`;
     });
 })
 
@@ -235,7 +232,7 @@ function applyServer() {
  * @param def {NodeDefinition}
  * */
 async function showNodeMenu(view, node, def) {
-    (await import("../render/node_menu.js")).nodeMenuRender(view, node).catch(console.error);
+    (await import("/render/node_menu.js")).nodeMenuRender(view, node).catch(console.error);
 }
 
 function unselectNode() {
@@ -257,8 +254,8 @@ function hideNodeMenu() {
 }
 
 async function createNode(type, {x = 0, y = 0}) {
-    const client = (await import("../client/node.js"));
-    const ProcessNode = (await import("../model/ProcessNode.js")).default;
+    const client = (await import("/client/node.js"));
+    const ProcessNode = (await import("./model/ProcessNode.js")).default;
 
     const definition = await client.getDefinition(type);
 
@@ -277,7 +274,7 @@ async function createNode(type, {x = 0, y = 0}) {
  * @return Promise<NodeView>
  * */
 async function renderNode(node, def) {
-    const renderNode = (await import("../render/canvas/renderNode.js")).default;
+    const renderNode = (await import("/render/canvas/renderNode.js")).default;
     return renderNode(def.render, node);
 }
 

@@ -33,15 +33,14 @@ async function drawProcess(id) {
     $container.dataset.type = "process"
     $container.dataset.id = id;
     $container.addEventListener("click", () => {
-        //todo: change url
-        window.open(`/waterpipe-admin/process.html?process=${id}&v=1&_ijt=oe3cc42v78klhei3e6b2dja7e3&_ij_reload=RELOAD_ON_SAVE`);
+        window.open(`/process/${id}/1`);
     })
 
     const $top = document.createElement("div")
     $top.classList.add("top")
 
     const $img = document.createElement("img")
-    $img.src = "../assets/process.png";
+    $img.src = "assets/process.png";
     $img.alt = "icon"
     $top.append($img)
 
