@@ -12,7 +12,7 @@ export default class CodeBlockRender extends FieldRender {
         const $textarea = document.createElement("textarea");
         $textarea.classList.add("code");
         if (argument != null && argument !== "") {
-            $textarea.value = atob(argument);
+            $textarea.value = atob(atob(argument)); //todo: bug - encoded twice
         }
 
         $textarea.addEventListener("keyup", e => {

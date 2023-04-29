@@ -1,0 +1,7 @@
+{
+  "route": {
+    "/process": "process.html",
+    "/process/:id/*version": "process.html",
+    "/node/*qualifier": "node.html"
+  }
+}
