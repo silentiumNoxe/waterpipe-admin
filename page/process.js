@@ -255,7 +255,7 @@ function hideNodeMenu() {
 
 async function createNode(type, {x = 0, y = 0}) {
     const client = (await import("/client/node.js"));
-    const ProcessNode = (await import("./model/ProcessNode.js")).default;
+    const ProcessNode = (await import("../model/ProcessNode.js")).default;
 
     const definition = await client.getDefinition(type);
 
