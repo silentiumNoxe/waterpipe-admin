@@ -2,8 +2,8 @@ export default class NodeView extends Konva.Group {
 
     #center;
 
-    /** @type Array<Konva.Line>*/
-    lines = [];
+    /** @type Map<String,Konva.Line>*/
+    lines = new Map();
 
     type = "";
     #title = "";
@@ -62,36 +62,45 @@ export default class NodeView extends Konva.Group {
      * @return Konva.Line
      * */
     connectTo(node, type) {
-        const button = this.findOne("#" + type);
-        if (button == null) {
+        const connectionButton = this.findOne("#" + type);
+        if (connectionButton == null) {
             throw `not found button connection "${type}" in ${this.id()}`;
         }
 
+        const removeDuplicatedLine = (type) => {
+            const prefix = `${type}_${this.id()}`;
+            this.lines.forEach((l, id) => {
+                if (id.startsWith(prefix)) {
+                    l.destroy()
+                    this.lines.delete(id)
+                }
+            })
+        }
+
+        if (this.id() === node.id()) {
+            removeDuplicatedLine(type);
+            return null;
+        }
+
         const line = new Konva.Line({
-            points: [this.getPosition().x + button.getPosition().x, this.getPosition().y + button.getPosition().y, node.getCenter().x, node.getCenter().y],
+            points: [this.getPosition().x + connectionButton.getPosition().x, this.getPosition().y + connectionButton.getPosition().y, node.getCenter().x, node.getCenter().y],
             stroke: Konva.Color.LIGHT,
             strokeWidth: 2,
             id: `${type}_${this.id()}_${node.id()}`
         });
 
         line.from = () => {
-            const x = this.getPosition().x + button.getPosition().x;
-            const y = this.getPosition().y + button.getPosition().y;
+            const x = this.getPosition().x + connectionButton.getPosition().x;
+            const y = this.getPosition().y + connectionButton.getPosition().y;
             return {x, y};
         };
 
         line.to = () => node.getCenter();
 
-        for (let i = 0; i < this.lines.length; i++) {
-            const l = this.lines[i];
-            if (l.id().startsWith(`${type}_${this.id()}`)) {
-                l.destroy();
-                this.lines.splice(i, 1);
-            }
-        }
+        removeDuplicatedLine(type)
 
-        this.lines.push(line);
-        node.lines.push(line);
+        this.lines.set(line.id(), line);
+        node.lines.set(line.id(), line);
 
         return line;
     }
@@ -199,5 +208,17 @@ export default class NodeView extends Konva.Group {
     destroy() {
         this.lines.forEach(x => x.destroy());
         return super.destroy();
+    }
+
+    equal(x) {
+        if (!(x instanceof NodeView)) {
+            return false
+        }
+
+        if (x.id == null) {
+            return false
+        }
+
+        return this.id() === x.id();
     }
 }
