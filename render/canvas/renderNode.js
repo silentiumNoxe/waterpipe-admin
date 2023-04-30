@@ -62,7 +62,10 @@ function onclick(view) {
             }
 
             console.debug(`Connect ${from.id()} to ${view.id()}; connector=${window.connectionType}`);
-            window.LineLayer.add(from.connectTo(view, window.connectionType));
+            const line = from.connectTo(view, window.connectionType);
+            if (line != null) {
+                window.LineLayer.add(line);
+            }
 
             //Save new connection
             /** @type Process*/
@@ -78,6 +81,10 @@ function onclick(view) {
             (async function() {
                 if (window.connectionType === "next_default") {
                     console.debug("Set new connection to default connector")
+                    if (nFrom.id === view.id()) {
+                        nFrom.next = null;
+                        return
+                    }
                     nFrom.next = view.id();
                     return;
                 }
@@ -93,6 +100,10 @@ function onclick(view) {
                     }
 
                     console.debug(`Set new connection to "${value.connector}" connector`)
+                    if (nFrom.id === view.id()) {
+                        nFrom.args.set(key, null);
+                        return;
+                    }
                     nFrom.args.set(key, view.id());
                 });
             })().then(disableCurrentConnection).catch(console.error)
