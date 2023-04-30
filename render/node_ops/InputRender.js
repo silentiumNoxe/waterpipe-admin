@@ -14,6 +14,9 @@ export default class InputRender extends FieldRender {
         const $input = document.createElement("input");
         $input.addEventListener("keyup", e => onchange(e.target.value));
 
+        if (argument == null) {
+            argument = "";
+        }
         let value = argument+"";
         switch (rules.dataType) {
             case "object":

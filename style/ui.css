@@ -125,6 +125,20 @@ ul.noorder {
     list-style: none;
 }
 
+dialog#process-selector {
+    left: 35vw;
+    top: 25vh;
+}
+
 ul.selectable > li {
     cursor: pointer;
+}
+
+dialog#process-selector > div[data-list="process"] > * {
+    margin-top: 7px;
+    cursor: pointer;
+}
+
+dialog > .submit {
+    margin-top: 5px;
 }

@@ -286,48 +286,24 @@ function startDialog(name, focus = null) {
             $dialog.querySelector(focus).focus();
         }
 
-        const inputs = $dialog.querySelectorAll("input");
-        const response = {};
+        $dialog.querySelector("input[type='submit'][data-type='apply']").onclick = () => {
+            const response = {};
+            $dialog.open = false;
 
-        for (const $input of inputs) {
-            if ($input.type === "submit") {
-                if ($input.dataset.type === "apply") {
-                    $input.onclick = () => {
-                        $dialog.open = false;
-                        resolve(response);
-                        //todo: bug - if press with already defined value here will be empty response
-                    };
+            $dialog.querySelectorAll("input").forEach(x => {
+                if (x.type === "submit") {
+                    return
                 }
-                if ($input.dataset.type === "cancel") {
-                    $input.onclick = () => {
-                        $dialog.open = false;
-                        reject("canceled")
-                    };
-                }
-                continue;
-            }
 
-            $input.onkeyup = e => {
-                const t = e.target;
-                let value = t.value;
-                switch (t.type) {
-                    case "number":
-                        value = parseFloat(value);
-                        if (isNaN(value)) {
-                            reject(`expected number in ${t.name}`)
-                        }
-                        break;
-                    case "checkbox":
-                        value = t.checked;
-                        break;
-                }
-                response[t.name] = t.value;
+                response[x.name] = x.value;
+            })
 
-                if (e.key === "Enter") {
-                    $dialog.querySelector(`[data-type="apply"]`).click();
-                    return;
-                }
-            }
+            resolve(response);
+        }
+
+        $dialog.querySelector("input[type='submit'][data-type='cancel']").onclick = () => {
+            $dialog.open = false;
+            reject("canceled");
         }
     })
 }

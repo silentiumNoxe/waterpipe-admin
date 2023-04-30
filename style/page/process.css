@@ -2,6 +2,7 @@
 @import "../commons.css";
 @import "../ui.css";
 @import "../node_menu.css";
+@import "../node_ops/allin.css";
 
 #header [data-type="save"] {
     margin-left: auto;

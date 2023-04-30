@@ -1,5 +1,6 @@
 /**
  * @abstract
+ * todo: this class should be decorator for class render. Here should be standardized render.
  * */
 export default class FieldRender {
 
