@@ -7,6 +7,11 @@ export class ProcessSelectorDialogRender extends AbstractDialogRender {
 
     draw() {
         const $dialog = document.getElementById(ProcessSelectorDialogRender.ID);
+        if ($dialog == null) {
+            console.info("dialog ", ProcessSelectorDialogRender.ID, " not exists on this page");
+            return null;
+        }
+
         const $datalist = $dialog.querySelector("[data-list='process']");
         const $inputId = $dialog.querySelector("input[data-type='process-id']");
         const $inputName = $dialog.querySelector("input[data-type='process-name']");
