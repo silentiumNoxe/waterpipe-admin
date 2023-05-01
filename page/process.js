@@ -149,6 +149,10 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 })
 
+window.addEventListener("DOMContentLoaded", () => {
+    import("/render/dialog/aggregation.js").then(m => m.default.forEach(x => x.draw())).catch(console.error);
+})
+
 window.addEventListener("keypress", e => {
     switch (e.key) {
         case "Delete":

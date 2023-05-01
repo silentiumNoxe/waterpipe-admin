@@ -18,6 +18,8 @@ export default class ProcessInputRender extends FieldRender {
         }
 
         const $container = document.createElement("fieldset")
+        $container.classList.add("pointer");
+
         const $legend = document.createElement("legend")
         $legend.textContent = rules.required ? title + "*" : title;
         $container.append($legend);
@@ -27,6 +29,10 @@ export default class ProcessInputRender extends FieldRender {
         $input.hidden = true;
         $input.value = argument+"";
         $container.append($input);
+
+        const getProcessId = () => {
+            return $input.value;
+        }
 
         $container.classList.add("process_selector");
 
@@ -45,54 +51,19 @@ export default class ProcessInputRender extends FieldRender {
             })()
         }
 
-        const $open = document.createElement("span")
-        $open.textContent = "<open>";
-        $container.append($value);
+        const $open = document.createElement("button")
+        $open.textContent = "open";
+        $open.classList.add("float-right");
+        $open.classList.add("pill");
+        $open.onclick = e => {
+            window.open(`/process/${getProcessId()}/1`);
+            e.cancelable = true;
+            e.cancelBubble = true;
+            e.preventDefault();
+        }
+        $container.append($open);
 
         $container.addEventListener("click", async () => {
-            const idList = await client.List();
-            /** @type Array<Process>*/
-            const processList = [];
-            for (const id of idList) {
-                processList.push(await client.GetPayload(id, 1));// todo: always version 1
-            }
-
-            const $datalist = document.querySelector("div[data-list='process']")
-            $datalist.innerHTML = "";
-
-            const $inputId = document.querySelector("#process-selector input[data-type='process-id']")
-
-            const $inputName = document.querySelector("#process-selector input[data-type='process-name']")
-            $inputName.oninput = () => {
-                const value = $inputName.value;
-                $datalist.childNodes.forEach(ch => {
-                    ch.hidden = ch.textContent.indexOf(value) === -1;
-                    if (ch.textContent === value) {
-                        $inputId.value = ch.dataset.id;
-                    }
-                })
-            }
-
-            const optionList = [];
-            for (const x of processList) {
-                const $process = document.createElement("div")
-                $process.addEventListener("click", e => {
-                    $inputName.value = e.target.textContent;
-                    $inputId.value = e.target.dataset.id;
-                })
-                let name = x.name;
-                if (x.path != null || x.path !== "") {
-                    name = x.path + name;
-                }
-                $process.textContent = name;
-
-                $process.dataset.id = x.id;
-
-                optionList.push($process);
-            }
-
-            $datalist.append(...optionList);
-
             const response = await startDialog("process-selector");
 
             if (util.validateUUID(response.process_id)) {
