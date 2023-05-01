@@ -1,6 +1,7 @@
 import * as fieldRenders from "./node_ops/define.js";
 import {NodeRenderOptions} from "../model/NodeRenderOptions.js";
 import {getDefinition} from "../client/node.js";
+import NodeDefinitionArgument from "../model/NodeDefinitionArgument.js";
 
 /**
  * @param view {NodeView}
@@ -35,15 +36,25 @@ export async function nodeMenuRender(view, node) {
     const $body = $menu.querySelector(".body");
     $body.innerHTML = "";
 
-    const $commonsGroup = group("Commons", true);
-    $body.append($commonsGroup);
+    $body.append(commonsGroup(view, node, def));
+    $body.append(additionalGroup(view, node, def));
+}
 
-    const $additionalGroup = group("Additional");
-    $body.append($additionalGroup);
+/**
+ * @param view {NodeView}
+ * @param node {ProcessNode}
+ * @param def {NodeDefinition}
+ * @return HTMLDetailsElement
+ * */
+function commonsGroup(view, node, def) {
+    const $group = group("Logic", true);
+    const put = (x) => {
+        $group.addField(x);
+    }
 
     if (def.render == null) {
         console.warn(`Definition of node ${node.type} does not has render options`);
-        return;
+        return null;
     }
 
     if (def.render.args == null) {
@@ -67,18 +78,52 @@ export async function nodeMenuRender(view, node) {
                 fieldName: name,
                 fieldRenders: fieldRenders.default,
                 resultFunc: (value) => {
-                    console.debug(`Update node parameter ${name}`);
+                    console.debug(`Update node parameter "${name}"`);
                     node.args.set(name, value);
                 }
             });
             if ($elem == null) {
                 throw "renderer did not return view";
             }
-            $commonsGroup.addField($elem);
+            put($elem);
         } catch (e) {
             console.warn(`render field ${name} failed - ${e}`);
         }
     });
+
+    return $group;
+}
+
+/**
+ * @param view {NodeView}
+ * @param node {ProcessNode}
+ * @param def {NodeDefinition}
+ * @return HTMLDetailsElement
+ * */
+function additionalGroup(view, node, def) {
+    const $group = group("Additional");
+    const put = (x) => {
+        $group.addField(x);
+    }
+
+    const $timeout = renderField({
+        renderOps: new NodeRenderOptions({view: "number", type: "number"}),
+        argument: new NodeDefinitionArgument({type: "number"}),
+        value: node.timeout,
+        fieldName: "timeout (ms)",
+        fieldRenders: fieldRenders.default,
+        resultFunc: (value) => {
+            console.debug(`Update node parameter "timeout"`);
+            if (value < 0) {
+                value = 0;
+            }
+            node.timeout = value;
+        }
+    })
+
+    put($timeout);
+
+    return $group;
 }
 
 /**
