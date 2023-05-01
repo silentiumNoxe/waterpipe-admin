@@ -35,6 +35,12 @@ export async function nodeMenuRender(view, node) {
     const $body = $menu.querySelector(".body");
     $body.innerHTML = "";
 
+    const $commonsGroup = group("Commons", true);
+    $body.append($commonsGroup);
+
+    const $additionalGroup = group("Additional");
+    $body.append($additionalGroup);
+
     if (def.render == null) {
         console.warn(`Definition of node ${node.type} does not has render options`);
         return;
@@ -68,11 +74,35 @@ export async function nodeMenuRender(view, node) {
             if ($elem == null) {
                 throw "renderer did not return view";
             }
-            $body.append($elem);
+            $commonsGroup.addField($elem);
         } catch (e) {
             console.warn(`render field ${name} failed - ${e}`);
         }
     });
+}
+
+/**
+ * @return HTMLDetailsElement
+ * */
+function group(name, open=false) {
+    const $group = document.createElement("details");
+    $group.classList.add("field-group")
+    $group.dataset.type = name.toLowerCase();
+    $group.open = open;
+
+    const $name = document.createElement("summary");
+    $name.textContent = name;
+    $group.append($name);
+
+    const $container = document.createElement("div");
+    $container.dataset.list = "field";
+    $group.append($container);
+
+    $group.addField = function (child) {
+        $container.append(child);
+    }
+
+    return $group;
 }
 
 /**
