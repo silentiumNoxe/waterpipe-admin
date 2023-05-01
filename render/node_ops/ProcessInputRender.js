@@ -55,12 +55,10 @@ export default class ProcessInputRender extends FieldRender {
         $open.textContent = "open";
         $open.classList.add("float-right");
         $open.classList.add("pill");
-        $open.onclick = e => {
+        $open.addEventListener("click", e => {
+            e.preventDefault(); //todo: bug - not working
             window.open(`/process/${getProcessId()}/1`);
-            e.cancelable = true;
-            e.cancelBubble = true;
-            e.preventDefault();
-        }
+        })
         $container.append($open);
 
         $container.addEventListener("click", async () => {
