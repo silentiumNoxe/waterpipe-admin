@@ -1,5 +1,6 @@
 import FieldRender from "./FieldRender.js";
 import * as client from "../../client/process.js";
+import * as util from "/util/module.js";
 
 export default class ProcessInputRender extends FieldRender {
 
@@ -12,7 +13,7 @@ export default class ProcessInputRender extends FieldRender {
             argument = "";
         }
 
-        if (!(typeof argument === "string")) {
+        if (typeof argument !== "string") {
             throw "illegal argument type - expected string";
         }
 
@@ -33,7 +34,7 @@ export default class ProcessInputRender extends FieldRender {
         $value.textContent = argument+"";
         $container.append($value);
 
-        if (this.#validate(argument)) {
+        if (util.validateUUID(argument)) {
             (async function() {
                 const process = await client.GetPayload(argument, 1);
                 let name = process.name;
@@ -94,7 +95,7 @@ export default class ProcessInputRender extends FieldRender {
 
             const response = await startDialog("process-selector");
 
-            if (this.#validate(response.process_id)) {
+            if (util.validateUUID(response.process_id)) {
                 (async function(processId) {
                     const process = await client.GetPayload(processId, 1);
                     let name = process.name;
@@ -114,22 +115,5 @@ export default class ProcessInputRender extends FieldRender {
 
     support(ops) {
         return ops.view === "process_selector";
-    }
-
-    /**
-     * @param id {string|null}
-     * @return boolean
-     * */
-    #validate(id) {
-        if (id == null || id === "") {
-            return false;
-        }
-
-        if (id.length < 36) {
-            return false;
-        }
-
-        const reg = new RegExp(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
-        return reg.test(id)
     }
 }
