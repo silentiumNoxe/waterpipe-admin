@@ -65,3 +65,12 @@ p.green {
 .mgw-lr-1 {
     margin: 1vw;
 }
+
+.float-right {
+    margin-left: auto;
+    float: right;
+}
+
+.pointer {
+    cursor: pointer;
+}

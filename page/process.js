@@ -1,6 +1,6 @@
-window.addEventListener("DOMContentLoaded", () => {
-    showConnectedServer()
+window.addEventListener("DOMContentLoaded", showConnectedServer);
 
+window.addEventListener("DOMContentLoaded", () => {
     const width = window.innerWidth;
     const height = window.innerHeight;
     const stage = new Konva.Stage({container: "editor", width, height, draggable: true});
@@ -80,7 +80,50 @@ window.addEventListener("DOMContentLoaded", () => {
 
     stage.add(lineLayer);
     stage.add(layer);
+})
 
+window.addEventListener("DOMContentLoaded", () => {
+    document.querySelector("#process-version-dialog button[data-type='apply']").addEventListener("click", () => {
+        const version = document.querySelector("#process-version-dialog input[data-type='process-version']").value;
+        if (version == null || version === "") {
+            return;
+        }
+
+        window.location.href = `/process/${window.CurrentProcess.id}/${version}`;
+    });
+})
+
+window.addEventListener("DOMContentLoaded", () => {
+    document.querySelector("button[data-type='process-version']").addEventListener("click", () => {
+        document.getElementById("process-version-dialog").open = true;
+    });
+})
+
+window.addEventListener("DOMContentLoaded", () => {
+    document.querySelector("#save-process button[data-type='cancel']").addEventListener("click", () => {
+        document.getElementById("save-process").open = false;
+    });
+})
+
+window.addEventListener("DOMContentLoaded", () => {
+    document.querySelector("#save-process button[data-type='save']").addEventListener("click", () => {
+        const $elem = document.querySelector("input[data-type='process-version']");
+        const version = parseInt($elem.value);
+        if (isNaN(version)) {
+            throw "Invalid version - "+$elem.value;
+        }
+
+        import("/client/process.js")
+            .then(m => {
+                m.Save(window.CurrentProcess, version)
+                    .catch(console.error);
+            })
+
+        document.getElementById("save-process").open = false;
+    });
+})
+
+window.addEventListener("DOMContentLoaded", () => {
     const entries = window.location.pathname.split("/")
     const processId = entries[2];
     const version = entries[3];
@@ -89,7 +132,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     import("/client/process.js")
         .then(m => {
-            m.GetPayload(processId, version)
+            m.GetPayload(processId, parseInt(version))
                 .then(process => {
                     import("/render_process.js").then(m1 => m1.default(process));
                     window.CurrentProcess = process;
@@ -109,44 +152,17 @@ window.addEventListener("DOMContentLoaded", () => {
                     })
                 })
         })
+})
 
+window.addEventListener("DOMContentLoaded", () => {
     document.querySelector("[data-type='save']").addEventListener("click", () => {
         const $elem = document.getElementById("save-process");
         $elem.open = true;
     });
+})
 
-    document.querySelector("#save-process button[data-type='save']").addEventListener("click", () => {
-        const $elem = document.querySelector("input[data-type='process-version']");
-        const version = parseInt($elem.value);
-        if (isNaN(version)) {
-            throw "Invalid version - "+$elem.value;
-        }
-
-        import("/client/process.js")
-            .then(m => {
-                m.Save(window.CurrentProcess, version)
-                    .catch(console.error);
-            })
-
-        document.getElementById("save-process").open = false;
-    });
-
-    document.querySelector("#save-process button[data-type='cancel']").addEventListener("click", () => {
-        document.getElementById("save-process").open = false;
-    });
-
-    document.querySelector("button[data-type='process-version']").addEventListener("click", () => {
-        document.getElementById("process-version-dialog").open = true;
-    });
-
-    document.querySelector("#process-version-dialog button[data-type='apply']").addEventListener("click", () => {
-        const version = document.querySelector("#process-version-dialog input[data-type='process-version']").value;
-        if (version == null || version === "") {
-            return;
-        }
-
-        window.location.href = `/process/${window.CurrentProcess.id}/${version}`;
-    });
+window.addEventListener("DOMContentLoaded", () => {
+    import("/render/dialog/aggregation.js").then(m => m.default.forEach(x => x.draw())).catch(console.error);
 })
 
 window.addEventListener("keypress", e => {
@@ -286,48 +302,24 @@ function startDialog(name, focus = null) {
             $dialog.querySelector(focus).focus();
         }
 
-        const inputs = $dialog.querySelectorAll("input");
-        const response = {};
+        $dialog.querySelector("input[type='submit'][data-type='apply']").onclick = () => {
+            const response = {};
+            $dialog.open = false;
 
-        for (const $input of inputs) {
-            if ($input.type === "submit") {
-                if ($input.dataset.type === "apply") {
-                    $input.onclick = () => {
-                        $dialog.open = false;
-                        resolve(response);
-                        //todo: bug - if press with already defined value here will be empty response
-                    };
+            $dialog.querySelectorAll("input").forEach(x => {
+                if (x.type === "submit") {
+                    return
                 }
-                if ($input.dataset.type === "cancel") {
-                    $input.onclick = () => {
-                        $dialog.open = false;
-                        reject("canceled")
-                    };
-                }
-                continue;
-            }
 
-            $input.onkeyup = e => {
-                const t = e.target;
-                let value = t.value;
-                switch (t.type) {
-                    case "number":
-                        value = parseFloat(value);
-                        if (isNaN(value)) {
-                            reject(`expected number in ${t.name}`)
-                        }
-                        break;
-                    case "checkbox":
-                        value = t.checked;
-                        break;
-                }
-                response[t.name] = t.value;
+                response[x.name] = x.value;
+            })
 
-                if (e.key === "Enter") {
-                    $dialog.querySelector(`[data-type="apply"]`).click();
-                    return;
-                }
-            }
+            resolve(response);
+        }
+
+        $dialog.querySelector("input[type='submit'][data-type='cancel']").onclick = () => {
+            $dialog.open = false;
+            reject("canceled");
         }
     })
 }

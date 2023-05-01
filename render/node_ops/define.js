@@ -5,6 +5,7 @@ import BoolInputRender from "./BoolInputRender.js";
 import AnyInputRender from "./AnyInputRender.js";
 import InputRender from "./InputRender.js";
 import MultilineRender from "./MultilineRender.js";
+import ProcessInputRender from "./ProcessInputRender.js";
 
 export default [
     new CodeBlockRender(),
@@ -14,4 +15,5 @@ export default [
     new AnyInputRender(),
     new InputRender(),
     new MultilineRender(),
+    new ProcessInputRender(),
 ];
