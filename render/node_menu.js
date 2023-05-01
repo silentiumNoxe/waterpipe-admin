@@ -1,6 +1,7 @@
 import * as fieldRenders from "./node_ops/define.js";
 import {NodeRenderOptions} from "../model/NodeRenderOptions.js";
 import {getDefinition} from "../client/node.js";
+import NodeDefinitionArgument from "../model/NodeDefinitionArgument.js";
 
 /**
  * @param view {NodeView}
@@ -35,9 +36,25 @@ export async function nodeMenuRender(view, node) {
     const $body = $menu.querySelector(".body");
     $body.innerHTML = "";
 
+    $body.append(commonsGroup(view, node, def));
+    $body.append(additionalGroup(view, node, def));
+}
+
+/**
+ * @param view {NodeView}
+ * @param node {ProcessNode}
+ * @param def {NodeDefinition}
+ * @return HTMLDetailsElement
+ * */
+function commonsGroup(view, node, def) {
+    const $group = group("Logic", true);
+    const put = (x) => {
+        $group.addField(x);
+    }
+
     if (def.render == null) {
         console.warn(`Definition of node ${node.type} does not has render options`);
-        return;
+        return null;
     }
 
     if (def.render.args == null) {
@@ -61,18 +78,76 @@ export async function nodeMenuRender(view, node) {
                 fieldName: name,
                 fieldRenders: fieldRenders.default,
                 resultFunc: (value) => {
-                    console.debug(`Update node parameter ${name}`);
+                    console.debug(`Update node parameter "${name}"`);
                     node.args.set(name, value);
                 }
             });
             if ($elem == null) {
                 throw "renderer did not return view";
             }
-            $body.append($elem);
+            put($elem);
         } catch (e) {
             console.warn(`render field ${name} failed - ${e}`);
         }
     });
+
+    return $group;
+}
+
+/**
+ * @param view {NodeView}
+ * @param node {ProcessNode}
+ * @param def {NodeDefinition}
+ * @return HTMLDetailsElement
+ * */
+function additionalGroup(view, node, def) {
+    const $group = group("Additional");
+    const put = (x) => {
+        $group.addField(x);
+    }
+
+    const $timeout = renderField({
+        renderOps: new NodeRenderOptions({view: "number", type: "number"}),
+        argument: new NodeDefinitionArgument({type: "number"}),
+        value: node.timeout,
+        fieldName: "timeout (ms)",
+        fieldRenders: fieldRenders.default,
+        resultFunc: (value) => {
+            console.debug(`Update node parameter "timeout"`);
+            if (value < 0) {
+                value = 0;
+            }
+            node.timeout = value;
+        }
+    })
+
+    put($timeout);
+
+    return $group;
+}
+
+/**
+ * @return HTMLDetailsElement
+ * */
+function group(name, open=false) {
+    const $group = document.createElement("details");
+    $group.classList.add("field-group")
+    $group.dataset.type = name.toLowerCase();
+    $group.open = open;
+
+    const $name = document.createElement("summary");
+    $name.textContent = name;
+    $group.append($name);
+
+    const $container = document.createElement("div");
+    $container.dataset.list = "field";
+    $group.append($container);
+
+    $group.addField = function (child) {
+        $container.append(child);
+    }
+
+    return $group;
 }
 
 /**

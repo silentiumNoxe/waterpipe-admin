@@ -2,14 +2,14 @@ import FieldRender from "./FieldRender.js";
 
 export default class NumberInputRender extends FieldRender {
 
-    draw({definition, title, argument, onchange}) {
+    draw({rules, title, argument, onchange}) {
         const $fs = document.createElement("fieldset");
         $fs.classList.add("input");
         const $legend = document.createElement("legend");
-        $legend.textContent = definition.required ? title + "*" : title;
+        $legend.textContent = rules.required ? title + "*" : title;
         const $input = document.createElement("input");
         $input.type = "number";
-        $input.value = argument || definition.default || 0;
+        $input.value = argument || 0;
         $input.addEventListener("keyup", e => {
             onchange(e.target.value);
         });

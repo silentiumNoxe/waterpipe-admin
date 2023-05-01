@@ -142,3 +142,11 @@ dialog#process-selector > div[data-list="process"] > * {
 dialog > .submit {
     margin-top: 5px;
 }
+
+details.field-group > summary {
+    font-size: 1.3em;
+}
+
+details.field-group > div[data-list="field"] > * {
+    margin-top: 8px;
+}
