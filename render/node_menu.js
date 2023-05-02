@@ -29,7 +29,12 @@ export async function nodeMenuRender(view, node) {
         titleView.text(node.title);
     }
 
-    $menu.querySelector("[data-type='node-id']").textContent = node.id;
+    const $nodeId = $menu.querySelector("[data-type='node-id']");
+    $nodeId.textContent = node.id;
+    $nodeId.onclick = function (e) {
+        const id = e.target.textContent;
+        navigator.clipboard.writeText(id).catch(console.error);
+    }
     $menu.querySelector("[data-type='node-type']").textContent = node.type;
     $menu.open = true;
 
