@@ -150,3 +150,7 @@ details.field-group > summary {
 details.field-group > div[data-list="field"] > * {
     margin-top: 8px;
 }
+
+[data-type='node-id'] {
+    cursor: pointer;
+}
