@@ -12,8 +12,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
     stage.add(layer);
 
-    const params = new URLSearchParams(window.location.search)
-    const type = params.get("type");
+    const type = window.location.pathname.split("/")[2];
+    console.debug("TYPE", type);
+    document.title = `Node | ${type} | Waterpipe`;
 
     import("../client/node.js")
         .then(m => {
