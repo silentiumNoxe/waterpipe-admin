@@ -14,7 +14,7 @@
   <div class="warning" data-type="server-addr" onclick="selectServer()">
     server offline
   </div>
-  <button class="pill" onclick="startDialog('create-process')">Create</button>
+  <button id="create-button" class="pill" onclick="startDialog('create-process')">Create</button>
 </section>
 <section id="body">
   <nav data-type="categories">
@@ -43,6 +43,16 @@
   <div class="control">
     <button class="pill" data-type="cancel" onclick="closeDialog('create-process')">Cancel</button>
     <button class="pill" data-type="create" onclick="createProcess()">Create</button>
+  </div>
+</dialog>
+<dialog data-context="create-custom-node">
+  <h3 class="title">Create custom node</h3>
+  <fieldset class="input">
+    <input type="text" placeholder="Node qualifier">
+  </fieldset>
+  <div class="control">
+    <button class="pill" data-type="cancel" onclick="closeDialog('create-custom-node')">Cancel</button>
+    <button class="pill" data-type="create" onclick="createCustomNode()">Create</button>
   </div>
 </dialog>
 </body>
