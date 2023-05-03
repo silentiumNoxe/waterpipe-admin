@@ -10,6 +10,19 @@ window.addEventListener("DOMContentLoaded", () => {
     const $nav = document.querySelector("nav[data-type='categories']")
     $nav.querySelectorAll("ul > li").forEach(x => x.addEventListener("click", e => {
         const type = e.target.dataset.type;
+        const createButtonFunc = function (type) {
+            if (type === "process") {
+                return () => startDialog("create-process").catch(console.error);
+            }
+
+            if (type === "custom-node") {
+                return () => startDialog("create-custom-node").catch(console.error);
+            }
+
+            throw "unknown type - "+type;
+        }
+
+        document.getElementById("create-button").onclick = createButtonFunc(type);
         loadData(type)
             .then(() => {
                 $nav.querySelectorAll("ul > li").forEach(el => el.classList.remove("selected"));
@@ -178,4 +191,26 @@ function applyServer() {
 
     updateServer(url);
     document.getElementById("select-addr-dialog").open = false;
+}
+
+async function createCustomNode() {
+    const NodeDefinition = (await import("/model/NodeDefinition.js")).default;
+    const fullName = document.querySelector("dialog[data-context='create-custom-node'] input").value;
+    if (fullName === "") {
+        return
+    }
+
+    const index = fullName.lastIndexOf(".");
+    const name = fullName.substring(index+1);
+    const pkg = fullName.substring(0, index);
+
+    const client = await import("../client/node.js");
+
+    const def = new NodeDefinition({name, package: pkg});
+
+    client.save(def)
+        .then(() => closeDialog("create-process"))
+        .then(() => window.open(`/node/${fullName}`))
+        .then(() => loadData("custom-node"))
+        .catch(console.error);
 }
