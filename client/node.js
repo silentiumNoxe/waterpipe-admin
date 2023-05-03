@@ -41,3 +41,14 @@ export const save = async function (def) {
 
     return null;
 }
+
+export const list = async function() {
+    const response = await util.send("/node");
+    const payload = await response.json();
+    if (response.status !== 200 || payload.error) {
+        console.error("Server respond", payload);
+        throw "server error";
+    }
+
+    return payload;
+}

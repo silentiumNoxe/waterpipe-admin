@@ -6,6 +6,19 @@ window.addEventListener("DOMContentLoaded", () => {
     loadData("process").catch(console.error);
 })
 
+window.addEventListener("DOMContentLoaded", () => {
+    const $nav = document.querySelector("nav[data-type='categories']")
+    $nav.querySelectorAll("ul > li").forEach(x => x.addEventListener("click", e => {
+        const type = e.target.dataset.type;
+        loadData(type)
+            .then(() => {
+                $nav.querySelectorAll("ul > li").forEach(el => el.classList.remove("selected"));
+            })
+            .then(() => x.classList.add("selected"))
+            .catch(console.error);
+    }))
+})
+
 async function loadData(dataType) {
     if (dataType === "process") {
         document.getElementById("list").innerHTML = "";
@@ -19,7 +32,7 @@ async function loadData(dataType) {
         return
     }
 
-    console.warn("Unknown data type - ", dataType)
+    throw "unknown data type - "+dataType;
 }
 
 async function loadProcesses() {
@@ -60,12 +73,37 @@ async function drawProcess(id) {
 }
 
 async function loadCustomNodes() {
-    const client = await import("../client/node.js")
-    return client.List()
+    const client = await import("/client/node.js")
+    return client.list()
 }
 
 async function drawCustomNode(id) {
+    const $container = document.createElement("div")
+    $container.classList.add("card")
+    $container.dataset.type = "custom_node"
+    $container.dataset.id = id;
+    $container.addEventListener("click", () => {
+        window.open(`/node/${id}`);
+    })
 
+    const $top = document.createElement("div")
+    $top.classList.add("top")
+
+    const $img = document.createElement("img")
+    $img.src = "assets/node.png";
+    $img.alt = "icon"
+    $top.append($img)
+
+    const $bottom = document.createElement("div")
+    $bottom.classList.add("bottom")
+
+    const $name = document.createElement("b")
+    $name.textContent = id;
+    $bottom.append($name)
+
+    $container.append($top, $bottom)
+
+    document.getElementById("list").append($container)
 }
 
 async function startDialog(context) {

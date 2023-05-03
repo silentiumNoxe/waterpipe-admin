@@ -1,6 +1,8 @@
 import Process from "../model/Process.js";
 import * as util from "./init.js";
 
+//todo: to lower case
+
 /**
  * @return Promise<Array<string>>
  * */
