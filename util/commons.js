@@ -31,7 +31,7 @@ function applyServer() {
     document.getElementById("select-addr-dialog").open = false;
 }
 
-function NotifyPopup(level, message) {
+function notifyPopup(level, message) {
     const $notify = document.getElementById("notify");
     if ($notify == null) {
         console.error("#notify element not found");
@@ -39,18 +39,22 @@ function NotifyPopup(level, message) {
     }
 
     const $message = document.createElement("article");
-    $message.textContent = message;
+    $message.innerHTML = message;
     $message.classList.add(level);
+
+    if (level === notifyPopup.ERROR) {
+        $message.innerHTML += "<br>Please report about it <a href='mailto:silentium.noxe@gmail.com'>silentium.noxe@gmail.com</a>"
+    }
 
     $notify.append($message);
 
-    const timeoutId = setTimeout(() => $message.remove(), TIME_SECOND * 15);
+    const timeoutId = setTimeout(() => $message.remove(), TIME_SECOND * 30);
     $message.addEventListener("click", () => {
         $message.remove();
         clearTimeout(timeoutId);
     });
 }
 
-NotifyPopup.SUCCESS = "success";
-NotifyPopup.WARNING = "warning";
-NotifyPopup.ERROR = "error";
+notifyPopup.SUCCESS = "success";
+notifyPopup.WARNING = "warning";
+notifyPopup.ERROR = "error";
