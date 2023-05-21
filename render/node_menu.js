@@ -93,6 +93,7 @@ function commonsGroup(view, node, def) {
             put($elem);
         } catch (e) {
             console.warn(`render field ${name} failed - ${e}`);
+            notifyPopup(notifyPopup.ERROR, `render field ${name} failed - ${e}`);
         }
     });
 
