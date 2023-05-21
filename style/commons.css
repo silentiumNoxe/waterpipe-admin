@@ -74,3 +74,40 @@ p.green {
 .pointer {
     cursor: pointer;
 }
+
+#notify {
+    top: 5vh;
+    left: 36vw;
+
+    position: absolute;
+    z-index: 5;
+
+    width: 22vw;
+    height: auto;
+}
+
+#notify > * {
+    margin-top: 20px;
+    padding: 6px 12px;
+
+    border-radius: 15px;
+    border: 2px solid var(--color-light-1);
+
+    background-color: var(--color-primary);
+    color: var(--color-light-1);
+
+    cursor: pointer;
+}
+
+#notify > .success {
+    border-color: var(--color-success);
+
+}
+
+#notify > .warning {
+    border-color: var(--color-warning);
+}
+
+#notify > .error {
+    border-color: var(--color-error);
+}
