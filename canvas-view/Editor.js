@@ -1,4 +1,4 @@
-export class Editor {
+export default class Editor {
 
     /** @type Konva.Stage*/
     #stage;
@@ -20,10 +20,24 @@ export class Editor {
             stage.on("dragend", () => document.body.style.cursor = "auto");
         }
 
-        stage.on("click", () => editor.#eventTarget.dispatchEvent(new CustomEvent("editor/click")));
-        stage.on("dblclick", () => editor.#eventTarget.dispatchEvent(new CustomEvent("editor/dblclick")));
+        stage.on("click", () => {
+            const mouse = editor.mousePos();
+            editor.#eventTarget.dispatchEvent(new CustomEvent("click", {detail: {x: mouse.x, y: mouse.y}}))
+        });
+        stage.on("dblclick", () => {
+            const mouse = editor.mousePos();
+            editor.#eventTarget.dispatchEvent(new CustomEvent("dblclick", {detail: {x: mouse.x, y: mouse.y}}))
+        });
 
         return editor;
+    }
+
+    /**
+     * @param target {string}
+     * @param func {function(CustomEvent)}
+     * */
+    listen(target, func) {
+        this.#eventTarget.addEventListener(target, func);
     }
 
     /**

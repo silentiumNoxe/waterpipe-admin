@@ -1,75 +1,22 @@
+// Startup health shared worker
 window.addEventListener("DOMContentLoaded", () => {
     import("/worker/server_health_starter.js").then(m => m.default()).catch(console.error);
 });
 
-window.addEventListener("DOMContentLoaded", () => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const stage = new Konva.Stage({container: "editor", width, height, draggable: true});
-
-    window.mousePosition = function () {
-        return stage.getPointerPosition();
+// Init editor
+window.addEventListener("DOMContentLoaded", async () => {
+    const Editor = (await import("../canvas-view/Editor.js")).default;
+    if (Editor == null) {
+        notifyPopup(notifyPopup.ERROR, "Failed load editor");
+        return;
     }
 
-    stage.on("wheel", e => {
-        const scaleBy = 1.05;
-        // stop default scrolling
-        e.evt.preventDefault();
-
-        const oldScale = stage.scaleX();
-        const pointer = stage.getPointerPosition();
-
-        const mousePointTo = {
-            x: (pointer.x - stage.x()) / oldScale,
-            y: (pointer.y - stage.y()) / oldScale,
-        };
-
-        // how to scale? Zoom in? Or zoom out?
-        let direction = e.evt.deltaY > 0 ? 1 : -1;
-
-        // when we zoom on trackpad, e.evt.ctrlKey is true
-        // in that case lets revert direction
-        if (e.evt.ctrlKey) {
-            direction = -direction;
-        }
-
-        const newScale = direction > 0 ? oldScale * scaleBy : oldScale / scaleBy;
-
-        stage.scale({x: newScale, y: newScale});
-
-        const newPos = {
-            x: pointer.x - mousePointTo.x * newScale,
-            y: pointer.y - mousePointTo.y * newScale,
-        };
-        stage.position(newPos);
-    })
-
-    stage.on("dragmove", () => {
-        document.body.style.cursor = "grab";
-    })
-
-    stage.on("dragend", () => {
-        document.body.style.cursor = "auto";
-    })
-
-    stage.on("click", hideNodeMenu);
-    stage.on("click", unselectNode)
-
-    stage.on("dblclick", () => {
-        const mouse = mousePosition();
-        startDialog("create-node", `[data-type="node-type"]`)
-            .then(response => {
-                if (response.type == null) {
-                    throw "Type not specified";
-                }
-                createNode(response.type, mouse);
-            })
-            .catch(e => {
-                if (e !== "canceled") {
-                    console.error(e);
-                }
-            })
-    })
+    const editor = window.editor = Editor.build({
+        width: window.innerWidth,
+        height: window.innerHeight,
+        draggable: true,
+        scalable: true,
+    });
 
     const layer = window.NodeLayer = new Konva.Layer({name: "Node"});
     const lineLayer = window.LineLayer = new Konva.Layer({name: "Line"});
@@ -80,8 +27,24 @@ window.addEventListener("DOMContentLoaded", () => {
 
     lineLayer.listening(false);
 
-    stage.add(lineLayer);
-    stage.add(layer);
+    editor.addLayer(layer);
+    editor.addLayer(lineLayer);
+
+    editor.listen("dblclick", (event) => {
+        const {x, y} = event.detail;
+        startDialog("create-node", `[data-type="node-type"]`)
+            .then(response => {
+                if (response.type == null) {
+                    throw "Type not specified";
+                }
+                createNode(response.type, {x, y});
+            })
+            .catch(e => {
+                if (e !== "canceled") {
+                    console.error(e);
+                }
+            })
+    })
 })
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -112,7 +75,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const $elem = document.querySelector("input[data-type='process-version']");
         const version = parseInt($elem.value);
         if (isNaN(version)) {
-            throw "Invalid version - "+$elem.value;
+            throw "Invalid version - " + $elem.value;
         }
 
         import("/client/process.js")
@@ -130,7 +93,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const processId = entries[2];
     const version = entries[3];
 
-    document.querySelector("#header button[data-type='process-version']").textContent = "Version: "+version;
+    document.querySelector("#header button[data-type='process-version']").textContent = "Version: " + version;
 
     import("/client/process.js")
         .then(m => {
