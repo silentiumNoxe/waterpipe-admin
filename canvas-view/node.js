@@ -1,3 +1,6 @@
+import * as client from "../client/node.js";
+import renderNode from "../render/canvas/renderNode.js";
+
 export default class NodeView extends Konva.Group {
 
     #center;
@@ -221,4 +224,22 @@ export default class NodeView extends Konva.Group {
 
         return this.id() === x.id();
     }
+}
+
+/**
+ * @param data {ProcessNode}
+ * @return Promise<NodeView>
+ * */
+export async function render(data) {
+    const def = await client.getDefinition(data.type);
+    if (def.render == null) {
+        def.render = {};
+    }
+
+    def.render.important = def.important;
+
+    const node = renderNode(def.render, data);
+    node.data = data;
+    node.definition = def;
+    return node;
 }

@@ -19,7 +19,9 @@ export default function startServerHealthWorker() {
     serverHealthWorker.addEventListener("error", console.error);
     serverHealthWorker.port.addEventListener("message", e => {
         const resp = e.data;
-        console.debug("got health resp", resp);
+        if (resp.status !== "online") {
+            console.warn("got health resp", resp);
+        }
         showServerHealth(resp.status, resp.url, resp.msg);
     });
     serverHealthWorker.port.addEventListener("messageerror", console.error);

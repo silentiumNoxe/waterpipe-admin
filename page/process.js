@@ -1,3 +1,25 @@
+/**
+ * @return string
+ * */
+function getProcessId() {
+    const entries = window.location.pathname.split("/");
+    if (entries.length < 3) {
+        throw "undefined process id";
+    }
+    return entries[2];
+}
+
+/**
+ * @return string
+ * */
+function getProcessVersion() {
+    const entries = window.location.pathname.split("/");
+    if (entries.length < 4) {
+        throw "undefined process version";
+    }
+    return entries[3];
+}
+
 // Startup health shared worker
 window.addEventListener("DOMContentLoaded", () => {
     import("/worker/server_health_starter.js").then(m => m.default()).catch(console.error);
@@ -88,35 +110,75 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 })
 
-window.addEventListener("DOMContentLoaded", () => {
-    const entries = window.location.pathname.split("/")
-    const processId = entries[2];
-    const version = entries[3];
-
+window.addEventListener("DOMContentLoaded", async () => {
+    const version = getProcessVersion();
     document.querySelector("#header button[data-type='process-version']").textContent = "Version: " + version;
+})
 
-    import("/client/process.js")
-        .then(m => {
-            m.GetPayload(processId, parseInt(version))
-                .then(process => {
-                    import("/render_process.js").then(m1 => m1.default(process));
-                    window.CurrentProcess = process;
-                    document.querySelector("[data-type='process-name']").textContent = process.name;
-                })
+// Set process name in header
+window.addEventListener("DOMContentLoaded", async () => {
+    const client = await import("../client/process.js")
 
-            m.GetVersions(processId)
-                .then(list => {
-                    const $ul = document.querySelector("#process-version-dialog ul")
-                    list.forEach(v => {
-                        const $li = document.createElement("li")
-                        $li.textContent = v
-                        $li.addEventListener("click", e => {
-                            document.querySelector("#process-version-dialog input").value = e.target.textContent;
-                        })
-                        $ul.append($li);
-                    })
-                })
+    const id = getProcessId();
+    const version = getProcessVersion();
+
+    const payload = await client.GetPayload(id, parseInt(version))
+
+    document.querySelector("[data-type='process-name']").textContent = payload.name;
+})
+
+// Setup version list to process-version-dialog
+window.addEventListener("DOMContentLoaded", async () => {
+    const client = await import("../client/process.js")
+
+    const $ul = document.querySelector("#process-version-dialog ul")
+
+    const versions = await client.GetVersions(getProcessId());
+    versions.forEach(v => {
+        const $li = document.createElement("li")
+        $li.textContent = v
+        $li.addEventListener("click", e => {
+            document.querySelector("#process-version-dialog input").value = e.target.textContent;
         })
+        $ul.append($li);
+    })
+})
+
+// window.addEventListener("DOMContentLoaded", () => {
+//     // Use EditProcessLayer for aggregation data
+//     // You must use two EditProcessLayer. First show original process version, second is a changed process.
+//     // When the user press save you must take data from second EditProcessLayer, convert to json and send to the server
+//
+//     const entries = window.location.pathname.split("/")
+//     const processId = entries[2];
+//     const version = entries[3];
+//
+//     import("/client/process.js")
+//         .then(m => {
+//             m.GetPayload(processId, parseInt(version))
+//                 .then(process => {
+//                     import("/render_process.js").then(m1 => m1.default(process));
+//                     window.CurrentProcess = process;
+//                 })
+//         })
+// })
+
+// Render process
+window.addEventListener("DOMContentLoaded", async () => {
+    const EditProcessLayer = (await import("../canvas-view/EditProcessLayer.js")).default;
+    const client = (await import("../client/process.js"));
+
+    const processId = getProcessId();
+    const processVersion = getProcessVersion();
+
+    const payload = await client.GetPayload(processId, parseInt(processVersion));
+
+    EditProcessLayer.build(payload)
+        .then(x => window.editor.addLayer(x))
+        .catch(err => {
+            console.error(err);
+            notifyPopup(notifyPopup.ERROR, "Fail render process - " + err);
+        });
 })
 
 window.addEventListener("DOMContentLoaded", () => {
