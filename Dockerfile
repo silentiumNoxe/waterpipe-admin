@@ -1,4 +1,8 @@
-FROM snoxe/gosfs:latest
+FROM node:18
 
 COPY . /app/public
-COPY gosfs.json /app/gosfs.json
+
+RUN npm install http-server -g
+
+EXPOSE 8080
+CMD ["http-server", "/app/public"]
