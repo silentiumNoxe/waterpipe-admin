@@ -15,14 +15,23 @@
   <button id="create-button" class="pill" onclick="startDialog('create-process')">Create</button>
 </section>
 <section id="body">
-  <nav data-type="categories">
-    <ul class="noorder">
-      <li class="selected" data-type="process">Process</li>
-      <li data-type="custom-node">Nodes</li>
-    </ul>
-  </nav>
-  <article id="list">
-  </article>
+  <div id="filesystem" data-path="root">
+    <div data-type="breadcrumbs">
+      <span>Root</span>
+    </div>
+    <div data-type="content">
+      <div data-type="list">
+<!--        <div class="line">-->
+<!--          <span class="material-symbols-outlined filled">folder</span>-->
+<!--          <span data-type="name">Foobar</span>-->
+<!--          <span data-type="author">System</span>-->
+<!--          <span data-type="timestamp">2023/06/12 00:00:00</span>-->
+<!--          <span class="material-symbols-outlined cursor float-right">more_vert</span>-->
+<!--        </div>-->
+        <waterpipe-line-item type="pipe" name="Foobar" author="admin" timestamp="2023-07-16T20:50:25.683Z"></waterpipe-line-item>
+      </div>
+    </div>
+  </div>
 </section>
 <dialog id="select-addr-dialog">
   <h3>Specify server address</h3>

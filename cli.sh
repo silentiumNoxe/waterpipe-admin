@@ -5,8 +5,7 @@ if [ "$command" = "package" ]; then
 fi
 
 if [ "$command" = "run" ]; then
-  ./cli.sh package
-  docker run -p 8080:8080 snoxe/waterpipe_admin
+  http-server .
 fi
 
 if [ "$command" = "publish" ]; then

@@ -6,7 +6,7 @@ export default class Process {
     name;
     version;
     author;
-    path;
+    package;
     /** @type Array<ProcessNode>*/
     nodes = [];
     active;
@@ -35,7 +35,7 @@ export default class Process {
         this.active = source.active;
         this.debug = source.debug;
         this.createdAt = source.created_at;
-        this.path = source.path;
+        this.package = source.path;
         this.version = source.version;
 
         for (const x of source.nodes) {

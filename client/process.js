@@ -7,6 +7,7 @@ import * as util from "./init.js";
  * @return Promise<Array<string>>
  * */
 export const List = async function () {
+    console.info("Get process list")
     const response = await util.send("/process")
     const payload = await response.json();
     if (response.status !== 200 || payload.error) {
@@ -22,6 +23,7 @@ export const List = async function () {
  * @return Promise<Array<string>>
  * */
 export const GetVersions = async function (processId) {
+    console.info(`Get process version list; id=${processId}`)
     const response = await util.send(`/process/${processId}/version`)
     const payload = await response.json();
     if (response.status !== 200 || payload.error) {
@@ -46,7 +48,13 @@ export const GetPayload = async function (processId, version) {
         throw "invalid process version. Must be great then zero";
     }
 
+    console.info(`Get process payload; id=${processId}; version=${version}`)
+
     const server = localStorage.getItem("server-addr")
+    if (server == null || server === "") {
+        throw "Server address not specified"
+    }
+
     const response = await fetch(`${server}/process/${processId}?v=${version}`)
     const payload = await response.json();
     if (response.status !== 200 || payload.error) {
@@ -63,6 +71,8 @@ export const GetPayload = async function (processId, version) {
  * @return Promise<Object>
  * */
 export const Save = async function(process, version=1) {
+    console.info(`Save process; id=${process.id}; version=${version}`)
+
     const dto = {
         id: process.id,
         name: process.name,
