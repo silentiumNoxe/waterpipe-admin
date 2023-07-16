@@ -1,6 +1,7 @@
-window.addEventListener("DOMContentLoaded", () => {
-    import("/worker/server_health_starter.js").then(m => m.default()).catch(console.error);
-})
+(async function () {
+    console.debug("Load server health component");
+    import("/component/ServerHealth.js").catch(console.error);
+})();
 
 window.addEventListener("DOMContentLoaded", () => {
     loadData("process").catch(console.error);
@@ -19,7 +20,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 return () => startDialog("create-custom-node").catch(console.error);
             }
 
-            throw "unknown type - "+type;
+            throw "unknown type - " + type;
         }
 
         document.getElementById("create-button").onclick = createButtonFunc(type);
@@ -45,7 +46,7 @@ async function loadData(dataType) {
         return
     }
 
-    throw "unknown data type - "+dataType;
+    throw "unknown data type - " + dataType;
 }
 
 async function loadProcesses() {
@@ -201,7 +202,7 @@ async function createCustomNode() {
     }
 
     const index = fullName.lastIndexOf(".");
-    const name = fullName.substring(index+1);
+    const name = fullName.substring(index + 1);
     const pkg = fullName.substring(0, index);
 
     const client = await import("../client/node.js");
