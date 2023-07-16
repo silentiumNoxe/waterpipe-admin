@@ -11,9 +11,7 @@
 <body>
 <section id="header">
   <h1 data-type="title">Waterpipe</h1>
-  <div class="warning" data-type="server-addr" onclick="selectServer()">
-    server offline
-  </div>
+  <waterpipe-server-health target="http://127.0.0.1:8000"></waterpipe-server-health>
   <button id="create-button" class="pill" onclick="startDialog('create-process')">Create</button>
 </section>
 <section id="body">
