@@ -126,8 +126,7 @@ div[data-type="breadcrumbs"] span.material-symbols-outlined {
 }
 
 #filesystem > div[data-type="breadcrumbs"] > span.clickable:hover {
-    background-color: var(--color-light-2);
-    border-radius: 25px;
+    cursor: pointer;
 }
 
 #filesystem > div[data-type="content"] {

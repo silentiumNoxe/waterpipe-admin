@@ -90,7 +90,8 @@ async function loadData() {
                 const path = x.path.split(".")
                 let folder = FS;
                 let currentFolderPath = "root"
-                for (const p of path) {
+                for (let i = 0; i < path.length; i++) {
+                    const p = path[i]
                     currentFolderPath += "."+p
                     if (p == null || p === "") {
                         continue
@@ -99,6 +100,9 @@ async function loadData() {
                     let entry = folder.getEntry(p)
                     if (entry == null) {
                         entry = new FSFolder(folder, currentFolderPath, p);
+                        if (i === path.length-1) {
+                            entry.type = "folder-pipe"
+                        }
                         folder.put(entry);
                     }
 
@@ -274,6 +278,7 @@ async function drawFilesystem() {
     $container.innerHTML = "";
 
     const render = {
+        "folder-pipe": renderFolder,
         folder: renderFolder,
         pipe: renderPipe,
         node: renderNode
@@ -304,7 +309,7 @@ async function drawFilesystem() {
  * */
 function renderFolder(data, path) {
     const $elem = document.createElement("waterpipe-line-item")
-    $elem.setAttribute("type", "folder")
+    $elem.setAttribute("type", data.type)
     $elem.setAttribute("name", data.name)
 
     $elem.addEventListener("dblclick", () => {

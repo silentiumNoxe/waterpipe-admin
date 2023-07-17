@@ -115,7 +115,8 @@ customElements.define("waterpipe-line-item", class extends HTMLElement {
 
         const icon = {
             folder: "folder",
-            pipe: "schema",
+            "folder-pipe": "polyline",
+            pipe: "deployed_code",
             node: "category"
         }
 
