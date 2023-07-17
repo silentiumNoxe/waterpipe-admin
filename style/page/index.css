@@ -36,14 +36,14 @@ nav > ul > li.selected {
     display: flex;
 }
 
-#list {
-    margin-left: 2vw;
-    display: flex;
-    height: 100vh;
-    padding-bottom: 5vh;
-    flex-wrap: wrap;
-    overflow-y: auto;
-}
+/*#filesystem {*/
+/*    margin-left: 2vw;*/
+/*    display: flex;*/
+/*    height: 100vh;*/
+/*    padding-bottom: 5vh;*/
+/*    flex-wrap: wrap;*/
+/*    overflow-y: auto;*/
+/*}*/
 
 div.card {
     --border-radius: 20px;
@@ -76,10 +76,79 @@ div.card div.bottom {
     border-top: 1px solid var(--color-light-1);
 }
 
-#list {
+div.line {
+    width: 100%;
+    height: 2vh;
+
+    display: flex;
+
+    border: 1px solid var(--color-dark-1);
+    border-radius: 25px;
+
+    background-color: var(--color-dark-1);
+
+    margin-bottom: 2vh;
+    padding: 15px;
+}
+
+div.line [data-type="name"] {
+    margin-right: 40vw;
+    padding-left: 1vw;
+}
+
+div.line [data-type="author"] {
+    margin-right: 20%;
+}
+
+#filesystem {
+    overflow: hidden;
+    height: 90vh;
+    width: 100vw;
+    margin-left: 4vw;
+}
+
+#filesystem > div[data-type="breadcrumbs"] {
+    margin-top: 3vh;
+    margin-bottom: 3vh;
+    font-size: 1.5vw;
+    font-weight: bold;
+
     display: flex;
 }
 
-#list > * {
+div[data-type="breadcrumbs"] span.material-symbols-outlined {
+    font-size: 1.8vw;
+}
+
+#filesystem > div[data-type="breadcrumbs"] > span {
+    display: block;
+    padding: 0 0.3vw;
+}
+
+#filesystem > div[data-type="breadcrumbs"] > span.clickable:hover {
+    cursor: pointer;
+}
+
+#filesystem > div[data-type="content"] {
+    width: 100%;
+    overflow-y: scroll;
+    height: 100%;
+}
+
+#filesystem > div[data-type="content"] > div[data-type="list"]{
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+#filesystem div[data-type="content"] > div[data-type="list"] > * {
+    margin-bottom: 2vh;
+}
+
+#filesystem div[data-type="content"]::-webkit-scrollbar {
+    display: none;
+}
+
+#filesystem > * {
     margin-left: 20px;
 }

@@ -38,4 +38,13 @@ export default class NodeDefinition {
             this.args.set(name, new NodeDefinitionArgument(source.args[name]));
         }
     }
+
+    get id() {
+        let pkg = this.package;
+        if (pkg !== null || pkg !== "") {
+            pkg += "."
+        }
+
+        return pkg+this.name;
+    }
 }

@@ -1,52 +1,165 @@
 (async function () {
-    console.debug("Load server health component");
     import("/component/ServerHealth.js").catch(console.error);
+    import("/component/LineItem.js").catch(console.error);
 })();
 
 window.addEventListener("DOMContentLoaded", () => {
-    loadData("process").catch(console.error);
+    loadData().catch(console.error);
 })
 
 window.addEventListener("DOMContentLoaded", () => {
-    const $nav = document.querySelector("nav[data-type='categories']")
-    $nav.querySelectorAll("ul > li").forEach(x => x.addEventListener("click", e => {
-        const type = e.target.dataset.type;
-        const createButtonFunc = function (type) {
-            if (type === "process") {
-                return () => startDialog("create-process").catch(console.error);
-            }
-
-            if (type === "custom-node") {
-                return () => startDialog("create-custom-node").catch(console.error);
-            }
-
-            throw "unknown type - " + type;
-        }
-
-        document.getElementById("create-button").onclick = createButtonFunc(type);
-        loadData(type)
-            .then(() => {
-                $nav.querySelectorAll("ul > li").forEach(el => el.classList.remove("selected"));
-            })
-            .then(() => x.classList.add("selected"))
-            .catch(console.error);
-    }))
+    document.querySelector("#filesystem > div[data-type='breadcrumbs'] > span")
+        .addEventListener("click", x => {
+            document.getElementById("filesystem").dataset.path = "root"
+            document.querySelector("#filesystem > div[data-type='breadcrumbs']").innerHTML = "Root"
+            drawFilesystem()
+        })
 })
 
-async function loadData(dataType) {
-    if (dataType === "process") {
-        document.getElementById("list").innerHTML = "";
-        loadProcesses().then(ids => ids.forEach(drawProcess)).catch(console.error)
-        return
+class FSFolder {
+    name;
+    type = "folder";
+    parent;
+    pwd;
+    #entries = [];
+
+    constructor(parent, path, name) {
+        this.name = name;
+        this.parent = parent;
+        this.path = path;
     }
 
-    if (dataType === "custom-node") {
-        document.getElementById("list").innerHTML = "";
-        loadCustomNodes().then(ids => ids.forEach(drawCustomNode)).catch(console.error)
-        return
+    put(entry) {
+        this.#entries.push(entry);
     }
 
-    throw "unknown data type - " + dataType;
+    getEntry(name) {
+        for (const x of this.#entries) {
+            if (x.name === name) {
+                return x;
+            }
+        }
+
+        return null;
+    }
+
+    get entries() {
+        return this.#entries;
+    }
+}
+
+class FSFile {
+
+    name;
+    type;
+    data;
+
+    constructor(name, type, data) {
+        this.name = name;
+        this.type = type;
+        this.data = data;
+    }
+}
+
+const FS = new FSFolder("root");
+
+//todo: make it lazy
+async function loadData() {
+    loadProcesses()
+        .then(async list => {
+            const client = await import("../client/process.js")
+            const result = [];
+            for (const x of list) {
+                const versions = await client.GetVersions(x)
+                for (const version of versions) {
+                    const payload = await client.GetPayload(x, parseInt(version)) //todo: version should be string
+                    result.push(payload)
+                }
+            }
+            return result;
+        })
+        .then(list => {
+            const result = [];
+            for (const x of list) {
+                result.push({path: `${x.package}.${x.name}`, name: x.version, type: "pipe", data: x})
+            }
+            return result;
+        })
+        .then(list => {
+            for (const x of list) {
+                const path = x.path.split(".")
+                let folder = FS;
+                let currentFolderPath = "root"
+                for (let i = 0; i < path.length; i++) {
+                    const p = path[i]
+                    currentFolderPath += "."+p
+                    if (p == null || p === "") {
+                        continue
+                    }
+
+                    let entry = folder.getEntry(p)
+                    if (entry == null) {
+                        entry = new FSFolder(folder, currentFolderPath, p);
+                        if (i === path.length-1) {
+                            entry.type = "folder-pipe"
+                        }
+                        folder.put(entry);
+                    }
+
+                    folder = entry
+                }
+
+                folder.put(new FSFile(x.name, x.type, x.data));
+            }
+            return list
+        })
+        .then(drawFilesystem)
+        .catch(console.error)
+
+    loadCustomNodes()
+        .then(async list => {
+            const client = await import("../client/node.js")
+            const result = [];
+            for (const x of list) {
+                const def = await client.getDefinition(x)
+                result.push(def)
+            }
+            return result;
+        })
+        .then(list => {
+            const result = [];
+            for (const x of list) {
+                result.push({path: x.package, name: x.name, type: "node", data: x})
+            }
+            return result;
+        })
+        .then(list => {
+            for (const x of list) {
+                const path = x.path.split(".")
+                let folder = FS;
+                let currentFolderPath = "root";
+                for (const p of path) {
+                    currentFolderPath += "."+p
+
+                    if (p == null || p === "") {
+                        continue
+                    }
+
+                    let entry = folder.getEntry(p)
+                    if (entry == null) {
+                        entry = new FSFolder(folder, currentFolderPath, p);
+                        folder.put(entry)
+                    }
+
+                    folder = entry
+                }
+
+                folder.put(new FSFile(x.name, x.type, x.data));
+            }
+            return list
+        })
+        .then(drawFilesystem)
+        .catch(console.error);
 }
 
 async function loadProcesses() {
@@ -54,70 +167,9 @@ async function loadProcesses() {
     return client.List()
 }
 
-async function drawProcess(id) {
-    const client = await import("../client/process.js")
-    const payload = await client.GetPayload(id, 1)
-
-    const $container = document.createElement("div")
-    $container.classList.add("card")
-    $container.dataset.type = "process"
-    $container.dataset.id = id;
-    $container.addEventListener("click", () => {
-        window.open(`/process/${id}/1`);
-    })
-
-    const $top = document.createElement("div")
-    $top.classList.add("top")
-
-    const $img = document.createElement("img")
-    $img.src = "assets/process.png";
-    $img.alt = "icon"
-    $top.append($img)
-
-    const $bottom = document.createElement("div")
-    $bottom.classList.add("bottom")
-
-    const $name = document.createElement("b")
-    $name.textContent = payload.name;
-    $bottom.append($name)
-
-    $container.append($top, $bottom)
-
-    document.getElementById("list").append($container)
-}
-
 async function loadCustomNodes() {
     const client = await import("/client/node.js")
     return client.list()
-}
-
-async function drawCustomNode(id) {
-    const $container = document.createElement("div")
-    $container.classList.add("card")
-    $container.dataset.type = "custom_node"
-    $container.dataset.id = id;
-    $container.addEventListener("click", () => {
-        window.open(`/node/${id}`);
-    })
-
-    const $top = document.createElement("div")
-    $top.classList.add("top")
-
-    const $img = document.createElement("img")
-    $img.src = "assets/node.png";
-    $img.alt = "icon"
-    $top.append($img)
-
-    const $bottom = document.createElement("div")
-    $bottom.classList.add("bottom")
-
-    const $name = document.createElement("b")
-    $name.textContent = id;
-    $bottom.append($name)
-
-    $container.append($top, $bottom)
-
-    document.getElementById("list").append($container)
 }
 
 async function startDialog(context) {
@@ -214,4 +266,156 @@ async function createCustomNode() {
         .then(() => window.open(`/node/${fullName}`))
         .then(() => loadData("custom-node"))
         .catch(console.error);
+}
+
+async function drawFilesystem() {
+    const $filesystem = document.querySelector("#filesystem")
+    const folder = getFolder($filesystem.dataset.path)
+
+    drawBreadcrumbs($filesystem.dataset.path).catch(console.error)
+
+    const $container = $filesystem.querySelector("div[data-type='content'] > [data-type='list']")
+    $container.innerHTML = "";
+
+    const render = {
+        "folder-pipe": renderFolder,
+        folder: renderFolder,
+        pipe: renderPipe,
+        node: renderNode
+    }
+
+    const list = folder.entries.sort((a, b) => {
+        if (a.name > b.name) {
+            return 1
+        }
+
+        if (a.name < b.name) {
+            return -1
+        }
+
+        return 0
+    })
+
+    for (const entry of list) {
+        const view = render[entry.type](entry, $filesystem.dataset.path)
+        $container.append(view);
+    }
+}
+
+/**
+ * @param data {FSFolder}
+ * @param path {string}
+ * @return HTMLElement
+ * */
+function renderFolder(data, path) {
+    const $elem = document.createElement("waterpipe-line-item")
+    $elem.setAttribute("type", data.type)
+    $elem.setAttribute("name", data.name)
+
+    $elem.addEventListener("dblclick", () => {
+        document.querySelector("#filesystem").dataset.path += "." + data.name;
+
+        const $breadcrumbs = document.querySelector("#filesystem > div[data-type='breadcrumbs']")
+        const $a = document.createElement("span")
+        $a.innerHTML = "> " + data.name
+        $a.dataset.path = path + "." + data.name;
+        $a.addEventListener("click", event => {
+            document.getElementById("filesystem").dataset.path = event.target.dataset.path;
+            document.querySelector("#filesystem div[data-type='breadcrumbs']").
+            drawFilesystemItem()
+        })
+
+        $breadcrumbs.append($a)
+
+        drawFilesystem();
+    })
+
+    return $elem;
+}
+
+/**
+ * @param data {FSFile}
+ * @return HTMLElement
+ * */
+function renderPipe(data) {
+    const $elem = document.createElement("waterpipe-line-item")
+    $elem.setAttribute("type", "pipe")
+    $elem.setAttribute("name", data.name)
+    $elem.setAttribute("author", data.data.author)
+    $elem.setAttribute("timestamp", data.data.createdAt)
+    $elem.setAttribute("href", `/process/${data.data.id}/${data.data.version}`)
+    return $elem
+}
+
+/**
+ * @param data {FSFile}
+ * @return HTMLElement
+ * */
+function renderNode(data) {
+    const $elem = document.createElement("waterpipe-line-item")
+    $elem.setAttribute("type", "node")
+    $elem.setAttribute("name", data.name)
+    $elem.setAttribute("author", data.data.author)
+    $elem.setAttribute("timestamp", data.data.createdAt)
+    $elem.setAttribute("href", `/node/${data.data.id}`)
+    return $elem
+}
+
+/** @return FSFolder */
+function getFolder(breadcrumbs) {
+    const path = breadcrumbs.split(".")
+    let folder = FS
+    for (let i = 0; i < path.length; i++) {
+        if (i === 0) {
+            continue
+        }
+
+        const x = folder.getEntry(path[i])
+        if (x === null) {
+            throw `not found folder ${breadcrumbs}`
+        }
+        folder = x
+    }
+
+    return folder;
+}
+
+async function drawBreadcrumbs(path) {
+    console.debug("draw breadcrumbs", path)
+    const $x = document.querySelector("#filesystem div[data-type='breadcrumbs']")
+    $x.innerHTML = ""
+
+    const steps = path.split(".")
+    if (steps.length === 1) {
+        const $a = document.createElement("span")
+        $a.textContent = steps[0]
+        $x.append($a)
+        return
+    }
+
+    let currentPath = ""
+    for (let i = 0; i < steps.length; i++) {
+        const step = steps[i]
+        currentPath += step+"."
+        const $a = document.createElement("span")
+        $a.innerText = step
+
+        $x.append($a)
+
+        if (i < steps.length-1) {
+            $a.classList.add("clickable")
+            $a.addEventListener("click", ((path) => {
+                return () => {
+                    console.debug("jump to", path)
+                    document.querySelector("#filesystem").dataset.path = path.substring(0, path.length-1)
+                    drawFilesystem()
+                }
+            })(currentPath))
+
+            const $delimiter = document.createElement("span")
+            $delimiter.classList.add("material-symbols-outlined")
+            $delimiter.textContent = "chevron_right"
+            $x.append($delimiter)
+        }
+    }
 }
