@@ -5,4 +5,4 @@ COPY . /app/public
 RUN npm install http-server -g
 
 EXPOSE 8080
-CMD ["http-server", "/app/public"]
+CMD ["http-server", "--no-dotfiles", "/app/public"]

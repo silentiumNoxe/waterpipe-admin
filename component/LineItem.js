@@ -7,6 +7,9 @@ const style = `
       }
       
       .line {
+        outline: none;
+        user-select: none;
+        
         width: 100%;
         
         display: flex;
@@ -52,6 +55,9 @@ const style = `
       button[data-type="menu"] span {
         width: 10%;
       }
+      button[data-type="menu"]:focus {
+        background-color: transparent;
+      }
     </style>
 `;
 
@@ -74,9 +80,10 @@ customElements.define("waterpipe-line-item", class extends HTMLElement {
     #name;
     #author;
     #timestamp;
+    #href;
 
     static get observedAttributes() {
-        return ["type", "name", "author", "timestamp"]
+        return ["type", "name", "author", "timestamp", "href"]
     }
 
     constructor() {
@@ -90,6 +97,13 @@ customElements.define("waterpipe-line-item", class extends HTMLElement {
     }
 
     connectedCallback() {
+        this.addEventListener("dblclick", () => {
+            if (this.#href == null || this.#href === "") {
+                return
+            }
+
+            window.open(this.#href)
+        })
     }
 
     attributeChangedCallback(name, _, value) {
@@ -137,5 +151,9 @@ customElements.define("waterpipe-line-item", class extends HTMLElement {
 
         this.#timestamp = val;
         this.root.querySelector("[data-type='timestamp']").textContent = val.toLocaleString();
+    }
+
+    set href(val) {
+        this.#href = val;
     }
 })

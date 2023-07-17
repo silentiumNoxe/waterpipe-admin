@@ -5,7 +5,7 @@ if [ "$command" = "package" ]; then
 fi
 
 if [ "$command" = "run" ]; then
-  http-server .
+  http-server --no-dotfiles .
 fi
 
 if [ "$command" = "publish" ]; then

@@ -1,5 +1,4 @@
 (async function () {
-    console.debug("Load server health component");
     import("/component/ServerHealth.js").catch(console.error);
     import("/component/LineItem.js").catch(console.error);
 })();
@@ -13,7 +12,7 @@ window.addEventListener("DOMContentLoaded", () => {
         .addEventListener("click", x => {
             document.getElementById("filesystem").dataset.path = "root"
             document.querySelector("#filesystem > div[data-type='breadcrumbs']").innerHTML = "Root"
-            drawFilesystemItem()
+            drawFilesystem()
         })
 })
 
@@ -110,7 +109,7 @@ async function loadData() {
             }
             return list
         })
-        .then(drawFilesystemItem)
+        .then(drawFilesystem)
         .catch(console.error)
 
     loadCustomNodes()
@@ -155,7 +154,7 @@ async function loadData() {
             }
             return list
         })
-        .then(drawFilesystemItem)
+        .then(drawFilesystem)
         .catch(console.error);
 }
 
@@ -164,46 +163,9 @@ async function loadProcesses() {
     return client.List()
 }
 
-async function drawProcess(id) {
-    const client = await import("../client/process.js")
-    const payload = await client.GetPayload(id, 1)
-
-    const $container = document.createElement("div")
-    $container.classList.add("line")
-    $container.dataset.type = "process"
-    $container.dataset.id = id;
-    $container.addEventListener("click", () => {
-        window.open(`/process/${id}/1`);
-    })
-
-    const $name = document.createElement("b")
-    $name.dataset.type = "name";
-    $name.innerHTML = "<span class='material-symbols-outlined'>schema</span>" + payload.name;
-    $container.append($name)
-
-    document.querySelector("#filesystem > div[data-type='content'] > div[data-type='list']").append($container)
-}
-
 async function loadCustomNodes() {
     const client = await import("/client/node.js")
     return client.list()
-}
-
-async function drawCustomNode(id) {
-    const $container = document.createElement("div")
-    $container.classList.add("line")
-    $container.dataset.type = "custom_node"
-    $container.dataset.id = id;
-    $container.addEventListener("click", () => {
-        window.open(`/node/${id}`);
-    })
-
-    const $name = document.createElement("b")
-    $name.dataset.type = "name";
-    $name.innerHTML = "<span class='material-symbols-outlined'>category</span>" + id;
-    $container.append($name)
-
-    document.querySelector("#filesystem > div[data-type='content'] > div[data-type='list']").append($container)
 }
 
 async function startDialog(context) {
@@ -302,9 +264,11 @@ async function createCustomNode() {
         .catch(console.error);
 }
 
-function drawFilesystemItem() {
+async function drawFilesystem() {
     const $filesystem = document.querySelector("#filesystem")
     const folder = getFolder($filesystem.dataset.path)
+
+    drawBreadcrumbs($filesystem.dataset.path).catch(console.error)
 
     const $container = $filesystem.querySelector("div[data-type='content'] > [data-type='list']")
     $container.innerHTML = "";
@@ -358,7 +322,7 @@ function renderFolder(data, path) {
 
         $breadcrumbs.append($a)
 
-        drawFilesystemItem();
+        drawFilesystem();
     })
 
     return $elem;
@@ -374,6 +338,7 @@ function renderPipe(data) {
     $elem.setAttribute("name", data.name)
     $elem.setAttribute("author", data.data.author)
     $elem.setAttribute("timestamp", data.data.createdAt)
+    $elem.setAttribute("href", `/process/${data.data.id}/${data.data.version}`)
     return $elem
 }
 
@@ -387,6 +352,7 @@ function renderNode(data) {
     $elem.setAttribute("name", data.name)
     $elem.setAttribute("author", data.data.author)
     $elem.setAttribute("timestamp", data.data.createdAt)
+    $elem.setAttribute("href", `/node/${data.data.id}`)
     return $elem
 }
 
@@ -409,19 +375,42 @@ function getFolder(breadcrumbs) {
     return folder;
 }
 
-function drawBreadcrumbs(path) {
+async function drawBreadcrumbs(path) {
+    console.debug("draw breadcrumbs", path)
     const $x = document.querySelector("#filesystem div[data-type='breadcrumbs']")
     $x.innerHTML = ""
 
-    let pathX = ""
-    for (const step of path.split(".")) {
-        pathX += step+"."
-        const x = document.createElement("span")
-        x.innerText = "> "+step
-        x.addEventListener("click", () => {
-            document.querySelector("#filesystem").dataset.path = pathX.substring(0, pathX.length-1)
-        })
+    const steps = path.split(".")
+    if (steps.length === 1) {
+        const $a = document.createElement("span")
+        $a.textContent = steps[0]
+        $x.append($a)
+        return
+    }
 
-        $x.append(x)
+    let currentPath = ""
+    for (let i = 0; i < steps.length; i++) {
+        const step = steps[i]
+        currentPath += step+"."
+        const $a = document.createElement("span")
+        $a.innerText = step
+
+        $x.append($a)
+
+        if (i < steps.length-1) {
+            $a.classList.add("clickable")
+            $a.addEventListener("click", ((path) => {
+                return () => {
+                    console.debug("jump to", path)
+                    document.querySelector("#filesystem").dataset.path = path.substring(0, path.length-1)
+                    drawFilesystem()
+                }
+            })(currentPath))
+
+            const $delimiter = document.createElement("span")
+            $delimiter.classList.add("material-symbols-outlined")
+            $delimiter.textContent = "chevron_right"
+            $x.append($delimiter)
+        }
     }
 }

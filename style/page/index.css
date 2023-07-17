@@ -111,13 +111,21 @@ div.line [data-type="author"] {
     margin-top: 3vh;
     margin-bottom: 3vh;
     font-size: 1.5vw;
+    font-weight: bold;
+
+    display: flex;
+}
+
+div[data-type="breadcrumbs"] span.material-symbols-outlined {
+    font-size: 1.8vw;
 }
 
 #filesystem > div[data-type="breadcrumbs"] > span {
-    padding: 10px;
+    display: block;
+    padding: 0 0.3vw;
 }
 
-#filesystem > div[data-type="breadcrumbs"] > span:hover {
+#filesystem > div[data-type="breadcrumbs"] > span.clickable:hover {
     background-color: var(--color-light-2);
     border-radius: 25px;
 }
