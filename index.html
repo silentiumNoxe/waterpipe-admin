@@ -12,12 +12,18 @@
 <section id="header">
   <h1 data-type="title">Waterpipe</h1>
   <waterpipe-server-health target="http://127.0.0.1:8000"></waterpipe-server-health>
-  <button id="create-button" class="pill" onclick="startDialog('create-process')">Create</button>
 </section>
 <section id="body">
   <div id="filesystem" data-path="root">
     <div data-type="breadcrumbs">
       <span>root</span>
+    </div>
+    <div data-type="controls">
+      <button class="rounded" onclick="startDialog('create-process')" data-action="create"
+              data-dialog="create-process">
+        <span class="material-symbols-outlined bold">add</span>
+        <span class="bold" data-type="title">Create</span>
+      </button>
     </div>
     <div data-type="content">
       <div data-type="list">

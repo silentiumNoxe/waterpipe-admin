@@ -16,6 +16,13 @@ window.addEventListener("DOMContentLoaded", () => {
         })
 })
 
+window.addEventListener("DOMContentLoaded", () => {
+    document.querySelector("#filesystem div[data-type='content']")
+        .addEventListener("contextmenu", () => {
+        console.debug("context menu requested")
+    })
+})
+
 class FSFolder {
     name;
     type = "folder";

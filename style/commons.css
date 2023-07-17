@@ -124,3 +124,7 @@ p.green {
     'GRAD' 0,
     'opsz' 48
 }
+
+.material-symbols-outlined.bold {
+    font-weight: bold;
+}

@@ -51,6 +51,7 @@ const style = `
         margin-left: auto;
         margin-right: 1vw;
         float: right;
+        color: var(--color-light-1);
       }
       button[data-type="menu"] span {
         width: 10%;
