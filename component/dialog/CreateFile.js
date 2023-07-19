@@ -12,14 +12,12 @@ const template = `
 </header>
 <div>
   <div class="hide" data-type="warning"></div>
+  <div data-type="path">root</div>
   <form autocomplete="off">
     <label>
       <span class="bold">File type:</span>
       <input class="bold" name="type" type="text" list="file-type">
       <datalist id="file-type">
-        <option value="folder"/>
-        <option value="pipe"/>
-        <option value="node"/>
       </datalist>
     </label>
     <label>
@@ -29,7 +27,17 @@ const template = `
     <input type="submit" value="Create" formmethod="dialog">
   </form>
 </div>
-`;
+`
+
+const fileTypesPipesFolder = `
+<option value="folder"/>
+<option value="pipe"/>
+`
+
+const fileTypesNodesFolder = `
+<option value="folder"/>
+<option value="node"/>
+`
 
 const warningFolderType = `
 <p><span class="material-symbols-outlined filled warning icon">warning</span>Folder without content will not be saved</p>
@@ -37,8 +45,10 @@ const warningFolderType = `
 
 customElements.define("waterpipe-create-file", class extends HTMLDialogElement {
 
+    #path = "root"
+
     static get observedAttributes() {
-        return []
+        return ["path"]
     }
 
     constructor() {
@@ -68,11 +78,21 @@ customElements.define("waterpipe-create-file", class extends HTMLDialogElement {
     }
 
     connectedCallback() {
+        let options = "";
+        if (this.#path.startsWith("root.pipes")) {
+            options = fileTypesPipesFolder
+        }
+        if (this.#path.startsWith("root.nodes")) {
+            options = fileTypesNodesFolder
+        }
 
+        this.querySelector("datalist").innerHTML = options;
     }
 
     attributeChangedCallback(name, _, value) {
-
+        if (name === "path") {
+            this.path = value
+        }
     }
 
     #createFile(data) {
@@ -83,6 +103,11 @@ customElements.define("waterpipe-create-file", class extends HTMLDialogElement {
         const $x = this.querySelector("[data-type='warning']")
         $x.innerHTML = template
         $x.classList.remove("hide")
+    }
+
+    set path(value) {
+        this.querySelector("[data-type='path']").textContent = value
+        this.#path = value
     }
 
 }, {extends: "dialog"})

@@ -195,8 +195,10 @@ async function loadCustomNodes() {
 
 async function startDialog(context) {
     if (context === "create-file") {
+        const path = document.querySelector("#filesystem").dataset.path;
         const x = document.createElement("dialog", {is: "waterpipe-create-file"})
         x.dataset.context = context
+        x.setAttribute("path", path)
         document.body.append(x)
         x.showModal()
         return
