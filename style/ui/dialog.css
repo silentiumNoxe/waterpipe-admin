@@ -37,9 +37,15 @@ dialog div[data-type="warning"] {
     border-radius: 5px;
 
     width: 100%;
-    height: 150px;
+    box-sizing: border-box;
 
     margin-bottom: 2vh;
+
+    padding: 10px 7px;
+}
+
+dialog div[data-type="warning"] .icon {
+    margin: 0 5px;
 }
 
 /* FOOTER */
