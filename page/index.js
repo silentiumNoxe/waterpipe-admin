@@ -343,20 +343,7 @@ function renderFolder(data, path) {
 
     $elem.addEventListener("dblclick", () => {
         document.querySelector("#filesystem").dataset.path += "." + data.name;
-
-        const $breadcrumbs = document.querySelector("#filesystem > div[data-type='breadcrumbs']")
-        const $a = document.createElement("span")
-        $a.innerHTML = "> " + data.name
-        $a.dataset.path = path + "." + data.name;
-        $a.addEventListener("click", event => {
-            document.getElementById("filesystem").dataset.path = event.target.dataset.path;
-            document.querySelector("#filesystem div[data-type='breadcrumbs']").
-            drawFilesystemItem()
-        })
-
-        $breadcrumbs.append($a)
-
-        drawFilesystem();
+        drawFilesystem().catch(console.error)
     })
 
     return $elem;
@@ -419,6 +406,7 @@ async function drawBreadcrumbs(path) {
         const $a = document.createElement("span")
         $a.textContent = steps[0]
         $x.append($a)
+        hideCreateButton()
         return
     }
 
@@ -447,4 +435,14 @@ async function drawBreadcrumbs(path) {
             $x.append($delimiter)
         }
     }
+
+    showCreateButton()
+}
+
+function showCreateButton() {
+    document.querySelector("button[data-action='create']").classList.remove("hide")
+}
+
+function hideCreateButton() {
+    document.querySelector("button[data-action='create']").classList.add("hide")
 }
