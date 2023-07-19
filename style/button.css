@@ -1,12 +1,12 @@
 button {
-    background-color: var(--color-light-1);
+    background-color: var(--color-primary-invert);
 
     cursor: pointer;
     outline: none;
 
     padding: 5px 10px;
 
-    border: 1px solid var(--color-light-1);
+    border: 1px solid var(--color-primary-invert);
 
     color: var(--color-primary);
     text-align: center;
@@ -14,7 +14,7 @@ button {
 }
 
 button:active {
-    background-color: var(--color-light-1);
+    background-color: var(--color-primary-invert);
 }
 
 button.pill {

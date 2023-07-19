@@ -19,8 +19,7 @@
       <span>root</span>
     </div>
     <div data-type="controls">
-      <button class="rounded" onclick="startDialog('create-process')" data-action="create"
-              data-dialog="create-process">
+      <button class="rounded" data-action="create" data-dialog="create-file">
         <span class="material-symbols-outlined bold">add</span>
         <span class="bold" data-type="title">Create</span>
       </button>
@@ -38,16 +37,6 @@
   <input id="server-addr-input" type="url" placeholder="url">
   <div class="container">
     <button class="pill" onclick="applyServer()">Apply</button>
-  </div>
-</dialog>
-<dialog data-context="create-process">
-  <h3 class="title">Create process</h3>
-  <fieldset class="input">
-    <input type="text" placeholder="Process name">
-  </fieldset>
-  <div class="control">
-    <button class="pill" data-type="cancel" onclick="closeDialog('create-process')">Cancel</button>
-    <button class="pill" data-type="create" onclick="createProcess()">Create</button>
   </div>
 </dialog>
 <dialog data-context="create-custom-node">

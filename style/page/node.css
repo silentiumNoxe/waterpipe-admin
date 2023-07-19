@@ -20,7 +20,7 @@
 }
 
 #categories > ul > * {
-    color: var(--color-light-1);
+    color: var(--color-primary-invert);
     cursor: pointer;
     padding: 8px;
 }
@@ -30,12 +30,12 @@
 }
 
 #categories > ul > .active {
-    background-color: var(--color-light-1);
+    background-color: var(--color-primary-invert);
     color: var(--color-primary);
 }
 
 #categories > hr {
-    border: 2px solid var(--color-light-1);
+    border: 2px solid var(--color-primary-invert);
 }
 
 #menus {
@@ -89,7 +89,7 @@
 #commons-menu [data-type="node-important"] {
     font-weight: bold;
     border-radius: 15px;
-    border: 2px solid var(--color-light-1);
+    border: 2px solid var(--color-primary-invert);
     font-size: .9em;
     height: 50px;
     padding: 0 15px;

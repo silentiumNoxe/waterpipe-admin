@@ -1,6 +1,7 @@
 (async function () {
     import("/component/ServerHealth.js").catch(console.error);
     import("/component/LineItem.js").catch(console.error);
+    import("/component/dialog/CreateFile.js").catch(console.error);
 })();
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -12,7 +13,7 @@ window.addEventListener("DOMContentLoaded", () => {
         .addEventListener("click", x => {
             document.getElementById("filesystem").dataset.path = "root"
             document.querySelector("#filesystem > div[data-type='breadcrumbs']").innerHTML = "Root"
-            drawFilesystem()
+            drawFilesystem().catch(console.error)
         })
 })
 
@@ -21,6 +22,19 @@ window.addEventListener("DOMContentLoaded", () => {
         .addEventListener("contextmenu", () => {
         console.debug("context menu requested")
     })
+})
+
+window.addEventListener("DOMContentLoaded", () => {
+    for (const button of document.querySelectorAll("button")) {
+        const dialog = button.dataset.dialog
+        if (dialog == null || dialog === "") {
+            continue
+        }
+
+        button.addEventListener("click", () => {
+            startDialog(dialog).catch(console.error)
+        })
+    }
 })
 
 class FSFolder {
@@ -180,6 +194,14 @@ async function loadCustomNodes() {
 }
 
 async function startDialog(context) {
+    if (context === "create-file") {
+        const x = document.createElement("dialog", {is: "waterpipe-create-file"})
+        x.dataset.context = context
+        document.body.append(x)
+        x.showModal()
+        return
+    }
+
     const $dialog = document.querySelector(`dialog[data-context="${context}"]`);
     if ($dialog == null) {
         console.error("Dialog ", context, "not found");

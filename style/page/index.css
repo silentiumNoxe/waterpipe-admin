@@ -4,11 +4,6 @@
 
 @import "index/filesystem.css";
 
-dialog {
-    top: 40%;
-    left: 40%;
-}
-
 nav > ul {
     margin-top: 15vh;
     font-weight: bold;
@@ -36,4 +31,26 @@ nav > ul > li.selected {
 
 #body {
     display: flex;
+}
+
+dialog[data-context="create-file"] form > * {
+    font-size: 1em;
+}
+
+dialog[data-context="create-file"] form > *:not(input[type="submit"]) {
+    display: block;
+    margin-bottom: 25px;
+
+    border-bottom: 2px solid var(--color-primary-invert);
+
+    padding: 7px;
+}
+
+dialog[data-context="create-file"] input:not([type="submit"]) {
+    background-color: transparent;
+    border: none;
+}
+
+dialog[data-context="create-file"] button[data-action="create"] {
+    font-size: 1em;
 }

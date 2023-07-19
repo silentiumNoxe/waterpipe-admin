@@ -13,22 +13,6 @@ body {
     overflow: hidden;
 }
 
-dialog {
-    position: absolute;
-    background-color: var(--color-primary);
-    border: 1px solid var(--color-light-1);
-    border-radius: 10px;
-}
-
-dialog > .title {
-    margin-bottom: 1vh;
-}
-
-dialog > .control {
-    margin-top: 1vh;
-    float: right;
-}
-
 .hide {
     display: none !important;
 }
@@ -92,10 +76,10 @@ p.green {
     padding: 6px 12px;
 
     border-radius: 15px;
-    border: 2px solid var(--color-light-1);
+    border: 2px solid var(--color-primary-invert);
 
     background-color: var(--color-primary);
-    color: var(--color-light-1);
+    color: var(--color-primary-invert);
 
     cursor: pointer;
 }
