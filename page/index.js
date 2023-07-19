@@ -102,7 +102,7 @@ async function loadData() {
         .then(list => {
             const result = [];
             for (const x of list) {
-                result.push({path: `${x.package}.${x.name}`, name: x.version, type: "pipe", data: x})
+                result.push({path: `pipes.${x.package}.${x.name}`, name: x.version, type: "pipe", data: x})
             }
             return result;
         })
@@ -150,7 +150,7 @@ async function loadData() {
         .then(list => {
             const result = [];
             for (const x of list) {
-                result.push({path: x.package, name: x.name, type: "node", data: x})
+                result.push({path: "nodes."+x.package, name: x.name, type: "node", data: x})
             }
             return result;
         })
