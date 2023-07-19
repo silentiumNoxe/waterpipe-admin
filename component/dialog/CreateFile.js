@@ -75,6 +75,10 @@ customElements.define("waterpipe-create-file", class extends HTMLDialogElement {
                 this.#writeWarning(warningFolderType)
             }
         })
+
+        this.addEventListener("close", () => {
+            this.remove()
+        })
     }
 
     connectedCallback() {
