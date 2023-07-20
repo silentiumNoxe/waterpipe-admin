@@ -1,0 +1,26 @@
+dialog[data-context="create-file"] form > * {
+    font-size: 1em;
+}
+
+dialog[data-context="create-file"] form > label:not(.pill) {
+    display: block;
+    margin-bottom: 25px;
+
+    border-bottom: 2px solid var(--color-primary-invert);
+
+    padding: 7px;
+}
+
+dialog[data-context="create-file"] input:not([type="submit"]) {
+    background-color: transparent;
+    border: none;
+}
+
+dialog[data-context="create-file"] button[data-action="create"] {
+    font-size: 1em;
+}
+
+dialog[data-context="create-file"] [data-type="path"] {
+    font-size: 1em;
+    opacity: 0.7;
+}

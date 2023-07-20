@@ -5,6 +5,12 @@
     --layer-level-dialog: 5;
 }
 
+div.pill {
+    border: 1px solid var(--color-primary-invert);
+    border-radius: 25px;
+    padding: 5px 7px;
+}
+
 #ui {
     position: absolute;
     z-index: 1000;

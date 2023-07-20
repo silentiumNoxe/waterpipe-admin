@@ -1,9 +1,3 @@
-const style = `
-    <style>
-      
-    </style>
-`;
-
 const template = `
 <header>
   <button data-action="close">
@@ -12,7 +6,6 @@ const template = `
 </header>
 <div>
   <div class="hide" data-type="warning"></div>
-  <div data-type="path">root</div>
   <form autocomplete="off">
     <label>
       <span class="bold">File type:</span>
@@ -95,7 +88,7 @@ customElements.define("waterpipe-create-file", class extends HTMLDialogElement {
 
     attributeChangedCallback(name, _, value) {
         if (name === "path") {
-            this.path = value
+            this.path = value+"."
         }
     }
 
@@ -110,7 +103,6 @@ customElements.define("waterpipe-create-file", class extends HTMLDialogElement {
     }
 
     set path(value) {
-        this.querySelector("[data-type='path']").textContent = value
         this.#path = value
     }
 
