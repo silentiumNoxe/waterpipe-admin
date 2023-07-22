@@ -2,6 +2,32 @@ import ProcessNode from "./ProcessNode.js";
 
 export default class Process {
 
+    static empty(path, name, author) {
+        const final = new ProcessNode({
+            id: crypto.randomUUID(),
+            type: "waterpipe.final",
+            position: {x: 0, y: 200}
+        })
+        const start = new ProcessNode({
+            id: crypto.randomUUID(),
+            type: "waterpipe.start",
+            next: final.id,
+            position: {x: 0, y: 0},
+        })
+
+        return new Process({
+            id: crypto.randomUUID(),
+            name,
+            author,
+            path,
+            active: true,
+            debug: false,
+            version: 1,
+            created_at: new Date(),
+            nodes: [start, final]
+        })
+    }
+
     id;
     name;
     version;

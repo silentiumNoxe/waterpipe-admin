@@ -20,8 +20,8 @@ window.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("DOMContentLoaded", () => {
     document.querySelector("#filesystem div[data-type='content']")
         .addEventListener("contextmenu", () => {
-        console.debug("context menu requested")
-    })
+            console.debug("context menu requested")
+        })
 })
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -37,17 +37,99 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 })
 
+//Create node file
+window.addEventListener("createfile", async event => {
+    const data = event.detail
+    if (data == null) {
+        console.warn("Missed file creation data")
+        return
+    }
+
+
+    const isNodeDir = new RegExp("^root\\.nodes\\.").test(data.path)
+    if (!isNodeDir) {
+        return
+    }
+
+    const NodeDefinition = (await import("../model/NodeDefinition.js")).default
+
+    let pkg = data.path
+    let folder = mkdirAll(data.path)
+
+    pkg = pkg.replace(new RegExp("^root\\.\\w+\\."), "")
+    if (pkg.length > 0 && !pkg.endsWith(".")) {
+        pkg += "."
+    }
+
+    let qualifier = data.name
+    if (pkg.length > 0) {
+        qualifier = pkg + qualifier
+    }
+
+    const file = new FSFile(data.name, "node", new NodeDefinition({
+        name: data.name,
+        package: pkg,
+        author: "Me",
+        createdAt: new Date()
+    }))
+
+    console.debug("create new file", file, "in folder", folder)
+    folder.put(file)
+
+    setTimeout(() => drawFilesystem())
+    window.open(`/node/${qualifier}`)
+})
+
+//Create pipe file
+window.addEventListener("createfile", async event => {
+    const data = event.detail
+    if (data == null) {
+        console.warn("Missed file creation data")
+        return
+    }
+
+
+    const isPipeDir = new RegExp("^root\\.pipes\\.").test(data.path)
+    if (!isPipeDir) {
+        return
+    }
+
+    const Process = (await import("../model/Process.js")).default
+
+    let pkg = data.path
+    let folder = mkdirAll(data.path)
+
+    pkg = pkg.replace(new RegExp("^root\\.\\w+\\."), "")
+    if (pkg.length > 0 && !pkg.endsWith(".")) {
+        pkg += "."
+    }
+
+    const uuid = crypto.randomUUID()
+    const version = 1 //todo: must be string (v0.1)
+
+    let path = pkg + data.name
+
+    const pipeDir = new FSFolder(null, null, data.name)
+    pipeDir.type = "folder-pipe"
+    folder.put(pipeDir)
+
+    const file = new FSFile(version, "pipe", Process.empty(path, name, "me"))
+    pipeDir.put(file)
+
+    const cache = await caches.open("pipe.v1")
+    await cache.put(`/process/${uuid}?v=${version}`, new Response(JSON.stringify(file.data), {headers: [["Content-Type", "application/json"]]}))
+
+    setTimeout(() => drawFilesystem())
+    window.open(`/pipe/${uuid}/${version}`)
+})
+
 class FSFolder {
     name;
     type = "folder";
-    parent;
-    pwd;
     #entries = [];
 
-    constructor(parent, path, name) {
+    constructor(__, _, name) {
         this.name = name;
-        this.parent = parent;
-        this.path = path;
     }
 
     put(entry) {
@@ -82,7 +164,7 @@ class FSFile {
     }
 }
 
-const FS = new FSFolder("root");
+const FS = new FSFolder(null, null, "root");
 
 //todo: make it lazy
 async function loadData() {
@@ -113,7 +195,7 @@ async function loadData() {
                 let currentFolderPath = "root"
                 for (let i = 0; i < path.length; i++) {
                     const p = path[i]
-                    currentFolderPath += "."+p
+                    currentFolderPath += "." + p
                     if (p == null || p === "") {
                         continue
                     }
@@ -121,7 +203,7 @@ async function loadData() {
                     let entry = folder.getEntry(p)
                     if (entry == null) {
                         entry = new FSFolder(folder, currentFolderPath, p);
-                        if (i === path.length-1) {
+                        if (i === path.length - 1) {
                             entry.type = "folder-pipe"
                         }
                         folder.put(entry);
@@ -150,7 +232,7 @@ async function loadData() {
         .then(list => {
             const result = [];
             for (const x of list) {
-                result.push({path: "nodes."+x.package, name: x.name, type: "node", data: x})
+                result.push({path: "nodes." + x.package, name: x.name, type: "node", data: x})
             }
             return result;
         })
@@ -160,7 +242,7 @@ async function loadData() {
                 let folder = FS;
                 let currentFolderPath = "root";
                 for (const p of path) {
-                    currentFolderPath += "."+p
+                    currentFolderPath += "." + p
 
                     if (p == null || p === "") {
                         continue
@@ -201,6 +283,14 @@ async function startDialog(context) {
         x.setAttribute("path", path)
         document.body.append(x)
         x.showModal()
+
+        x.addEventListener("close", async e => {
+            if (e.target.returnValue == null || e.target.returnValue === "" || !e.target.returnValue.startsWith("{")) {
+                return
+            }
+
+            window.dispatchEvent(new CustomEvent("createfile", {detail: JSON.parse(e.target.returnValue)}))
+        })
         return
     }
 
@@ -381,6 +471,7 @@ function renderNode(data) {
 
 /** @return FSFolder */
 function getFolder(breadcrumbs) {
+    breadcrumbs = breadcrumbs.replace(new RegExp("\\.$"), "")
     const path = breadcrumbs.split(".")
     let folder = FS
     for (let i = 0; i < path.length; i++) {
@@ -391,6 +482,26 @@ function getFolder(breadcrumbs) {
         const x = folder.getEntry(path[i])
         if (x === null) {
             throw `not found folder ${breadcrumbs}`
+        }
+        folder = x
+    }
+
+    return folder;
+}
+
+function mkdirAll(path) {
+    path = path.replace(new RegExp("\\.$"), "")
+    const steps = path.split(".")
+    let folder = FS
+    for (let i = 0; i < steps.length; i++) {
+        if (i === 0) {
+            continue
+        }
+
+        let x = folder.getEntry(steps[i])
+        if (x == null) {
+            x = new FSFolder(null, null, steps[i]);
+            folder.put(x)
         }
         folder = x
     }
@@ -415,18 +526,18 @@ async function drawBreadcrumbs(path) {
     let currentPath = ""
     for (let i = 0; i < steps.length; i++) {
         const step = steps[i]
-        currentPath += step+"."
+        currentPath += step + "."
         const $a = document.createElement("span")
         $a.innerText = step
 
         $x.append($a)
 
-        if (i < steps.length-1) {
+        if (i < steps.length - 1) {
             $a.classList.add("clickable")
             $a.addEventListener("click", ((path) => {
                 return () => {
                     console.debug("jump to", path)
-                    document.querySelector("#filesystem").dataset.path = path.substring(0, path.length-1)
+                    document.querySelector("#filesystem").dataset.path = path.substring(0, path.length - 1)
                     drawFilesystem()
                 }
             })(currentPath))

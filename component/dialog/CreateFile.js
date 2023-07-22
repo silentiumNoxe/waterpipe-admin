@@ -7,11 +7,9 @@ const template = `
 <div>
   <div class="hide" data-type="warning"></div>
   <form autocomplete="off">
-    <label>
-      <span class="bold">File type:</span>
-      <input class="bold" name="type" type="text" list="file-type">
-      <datalist id="file-type">
-      </datalist>
+    <label title="The path from current directory. Dot is a delimiter">
+      <span class="bold">Path:</span>
+      <input name="path" type="text">
     </label>
     <label>
       <span class="bold">Name:</span>
@@ -22,23 +20,10 @@ const template = `
 </div>
 `
 
-const fileTypesPipesFolder = `
-<option value="folder"/>
-<option value="pipe"/>
-`
-
-const fileTypesNodesFolder = `
-<option value="folder"/>
-<option value="node"/>
-`
-
-const warningFolderType = `
-<p><span class="material-symbols-outlined filled warning icon">warning</span>Folder without content will not be saved</p>
-`
-
 customElements.define("waterpipe-create-file", class extends HTMLDialogElement {
 
     #path = "root"
+    #data = {}
 
     static get observedAttributes() {
         return ["path"]
@@ -56,34 +41,18 @@ customElements.define("waterpipe-create-file", class extends HTMLDialogElement {
         })
 
         this.querySelector("input[type='submit']").addEventListener("click", event => {
-            const $form = event.target.parentElement;
-            const data = new FormData($form);
-
-            setTimeout(() => this.#createFile(data))
-        })
-
-        this.querySelector("input[name='type']").addEventListener("change", event => {
-            const value = event.target.value;
-            if (value === "folder") {
-                this.#writeWarning(warningFolderType)
-            }
+            const $form = event.target.parentElement
+            this.#data = Object.fromEntries(new FormData($form).entries())
+            this.#data.path = this.#path + this.#data.path
         })
 
         this.addEventListener("close", () => {
+            this.returnValue = JSON.stringify(this.#data)
             this.remove()
         })
     }
 
     connectedCallback() {
-        let options = "";
-        if (this.#path.startsWith("root.pipes")) {
-            options = fileTypesPipesFolder
-        }
-        if (this.#path.startsWith("root.nodes")) {
-            options = fileTypesNodesFolder
-        }
-
-        this.querySelector("datalist").innerHTML = options;
     }
 
     attributeChangedCallback(name, _, value) {
@@ -94,12 +63,6 @@ customElements.define("waterpipe-create-file", class extends HTMLDialogElement {
 
     #createFile(data) {
         data.get("type")
-    }
-
-    #writeWarning(template) {
-        const $x = this.querySelector("[data-type='warning']")
-        $x.innerHTML = template
-        $x.classList.remove("hide")
     }
 
     set path(value) {
