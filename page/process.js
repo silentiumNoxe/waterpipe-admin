@@ -1,6 +1,46 @@
-window.addEventListener("DOMContentLoaded", () => {
-    import("/worker/server_health_starter.js").then(m => m.default()).catch(console.error);
-});
+(async function () {
+    import("/component/ServerHealth.js").catch(console.error);
+    import("/component/LineItem.js").catch(console.error);
+    import("/component/dialog/CreateFile.js").catch(console.error);
+})();
+
+window.addEventListener("pipeloaded", () => {
+    document.querySelector("[data-type='process-name']").textContent = CurrentProcess.name
+    document.querySelector("#header button[data-type='process-version']").textContent = "Version: "+CurrentProcess.version
+})
+
+window.addEventListener("pipeloaded", async () => {
+    const render = (await import("../render_process.js")).default
+    await render(window.CurrentProcess)
+})
+
+window.addEventListener("DOMContentLoaded", async () => {
+    const params = new URLSearchParams(window.location.search)
+    const pipeId = window.processId = params.get("id")
+    const version = window.processVersion = params.get("version")
+
+    //todo: error if id or version missed
+
+    const client = await import("../client/process.js")
+    window.CurrentProcess = await client.GetPayload(pipeId, parseInt(version))
+    window.pipeVersions = await client.GetVersions(pipeId)
+    showVersionList(pipeVersions).catch(console.error)
+
+
+    window.dispatchEvent(new CustomEvent("pipeloaded"))
+})
+
+async function showVersionList(list) {
+    const $ul = document.querySelector("#process-version-dialog ul")
+    list.forEach(v => {
+        const $li = document.createElement("li")
+        $li.textContent = v
+        $li.addEventListener("click", e => {
+            document.querySelector("#process-version-dialog input").value = e.target.textContent;
+        })
+        $ul.append($li);
+    })
+}
 
 window.addEventListener("DOMContentLoaded", () => {
     const width = window.innerWidth;
@@ -123,37 +163,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("save-process").open = false;
     });
-})
-
-window.addEventListener("DOMContentLoaded", () => {
-    const entries = window.location.pathname.split("/")
-    const processId = entries[2];
-    const version = entries[3];
-
-    document.querySelector("#header button[data-type='process-version']").textContent = "Version: "+version;
-
-    import("/client/process.js")
-        .then(m => {
-            m.GetPayload(processId, parseInt(version))
-                .then(process => {
-                    import("/render_process.js").then(m1 => m1.default(process));
-                    window.CurrentProcess = process;
-                    document.querySelector("[data-type='process-name']").textContent = process.name;
-                })
-
-            m.GetVersions(processId)
-                .then(list => {
-                    const $ul = document.querySelector("#process-version-dialog ul")
-                    list.forEach(v => {
-                        const $li = document.createElement("li")
-                        $li.textContent = v
-                        $li.addEventListener("click", e => {
-                            document.querySelector("#process-version-dialog input").value = e.target.textContent;
-                        })
-                        $ul.append($li);
-                    })
-                })
-        })
 })
 
 window.addEventListener("DOMContentLoaded", () => {

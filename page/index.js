@@ -443,7 +443,7 @@ function renderPipe(data) {
     $elem.setAttribute("name", data.name)
     $elem.setAttribute("author", data.data.author)
     $elem.setAttribute("timestamp", data.data.createdAt)
-    $elem.setAttribute("href", `/process/${data.data.id}/${data.data.version}`)
+    $elem.setAttribute("href", `/process?id=${data.data.id}&version=${data.data.version}`)
     return $elem
 }
 
@@ -457,7 +457,7 @@ function renderNode(data) {
     $elem.setAttribute("name", data.name)
     $elem.setAttribute("author", data.data.author)
     $elem.setAttribute("timestamp", data.data.createdAt)
-    $elem.setAttribute("href", `/node/${data.data.id}`)
+    $elem.setAttribute("href", `/node?qualifier=${data.data.id}`)
     return $elem
 }
 
