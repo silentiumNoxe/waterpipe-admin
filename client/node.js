@@ -27,7 +27,12 @@ export const getDefinition = async function (type) {
  * @return Promise<Object>
  * */
 export const save = async function (def) {
-    console.info(`Save node definition; id=${def.package}.${def.name}`)
+    let qualifier = def.name;
+    if (def.package.length > 0) {
+        qualifier = `${def.package}.${def.name}`
+    }
+
+    console.info(`Save node definition; id=${qualifier}`)
     const response = await util.send("/node", {
         method: "PUT",
         body: JSON.stringify(def)

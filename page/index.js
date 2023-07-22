@@ -18,13 +18,6 @@ window.addEventListener("DOMContentLoaded", () => {
 })
 
 window.addEventListener("DOMContentLoaded", () => {
-    document.querySelector("#filesystem div[data-type='content']")
-        .addEventListener("contextmenu", () => {
-            console.debug("context menu requested")
-        })
-})
-
-window.addEventListener("DOMContentLoaded", () => {
     for (const button of document.querySelectorAll("button")) {
         const dialog = button.dataset.dialog
         if (dialog == null || dialog === "") {
@@ -51,6 +44,7 @@ window.addEventListener("createfile", async event => {
         return
     }
 
+    const client = (await import("../client/node.js"))
     const NodeDefinition = (await import("../model/NodeDefinition.js")).default
 
     let pkg = data.path
@@ -72,9 +66,9 @@ window.addEventListener("createfile", async event => {
         author: "Me",
         createdAt: new Date()
     }))
-
-    console.debug("create new file", file, "in folder", folder)
     folder.put(file)
+
+    await client.save(file.data)
 
     setTimeout(() => drawFilesystem())
     window.open(`/node/${qualifier}`)
@@ -94,6 +88,7 @@ window.addEventListener("createfile", async event => {
         return
     }
 
+    const client = (await import("../client/process.js"))
     const Process = (await import("../model/Process.js")).default
 
     let pkg = data.path
@@ -107,17 +102,14 @@ window.addEventListener("createfile", async event => {
     const uuid = crypto.randomUUID()
     const version = 1 //todo: must be string (v0.1)
 
-    let path = pkg + data.name
-
     const pipeDir = new FSFolder(null, null, data.name)
     pipeDir.type = "folder-pipe"
     folder.put(pipeDir)
 
-    const file = new FSFile(version, "pipe", Process.empty(path, name, "me"))
+    const file = new FSFile(version, "pipe", Process.empty(pkg.replace(new RegExp("\\.$"), ""), data.name, "me"))
     pipeDir.put(file)
 
-    const cache = await caches.open("pipe.v1")
-    await cache.put(`/process/${uuid}?v=${version}`, new Response(JSON.stringify(file.data), {headers: [["Content-Type", "application/json"]]}))
+    await client.Save(file.data, 1)
 
     setTimeout(() => drawFilesystem())
     window.open(`/pipe/${uuid}/${version}`)
