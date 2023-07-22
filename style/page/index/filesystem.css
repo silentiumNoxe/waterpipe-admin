@@ -1,0 +1,78 @@
+#filesystem {
+    height: 90vh;
+    width: 100vw;
+
+    margin-top: 1vw;
+    margin-left: 4vw;
+
+    overflow: hidden;
+}
+
+#filesystem div[data-type="controls"] {
+    margin-top: 2vh;
+    margin-left: 2vw;
+}
+
+#filesystem div[data-type="controls"] > button {
+    box-shadow: 9px 10px 22px 0 rgba(0,0,0,0.65);
+}
+
+#filesystem div[data-type="controls"] > button:active {
+    box-shadow: none;
+}
+
+#filesystem div[data-type="controls"] button * {
+    color: var(--color-primary);
+    font-size: 1vw;
+
+    vertical-align: center;
+}
+
+#filesystem div[data-type="breadcrumbs"] {
+    margin-top: 1.5vh;
+    margin-left: 2vw;
+
+    font-size: 1.5vw;
+    font-weight: bold;
+
+    display: flex;
+}
+
+#filesystem div[data-type="breadcrumbs"] span.material-symbols-outlined {
+    font-size: 1.8vw;
+}
+
+#filesystem div[data-type="breadcrumbs"] > span {
+    display: block;
+    padding: 0 0.3vw;
+}
+
+#filesystem div[data-type="breadcrumbs"] > span.clickable:hover {
+    cursor: pointer;
+}
+
+#filesystem > div[data-type="content"] {
+    margin-top: 1.5vh;
+
+    width: 100%;
+    overflow-y: scroll;
+    height: 100%;
+}
+
+#filesystem > div[data-type="content"] > div[data-type="list"]{
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+#filesystem div[data-type="content"] > div[data-type="list"] > * {
+    margin-bottom: 2vh;
+}
+
+#filesystem div[data-type="content"]::-webkit-scrollbar {
+    display: none;
+}
+
+#filesystem > * {
+    margin-left: 20px;
+}

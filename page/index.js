@@ -1,6 +1,7 @@
 (async function () {
     import("/component/ServerHealth.js").catch(console.error);
     import("/component/LineItem.js").catch(console.error);
+    import("/component/dialog/CreateFile.js").catch(console.error);
 })();
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -12,21 +13,115 @@ window.addEventListener("DOMContentLoaded", () => {
         .addEventListener("click", x => {
             document.getElementById("filesystem").dataset.path = "root"
             document.querySelector("#filesystem > div[data-type='breadcrumbs']").innerHTML = "Root"
-            drawFilesystem()
+            drawFilesystem().catch(console.error)
         })
+})
+
+window.addEventListener("DOMContentLoaded", () => {
+    for (const button of document.querySelectorAll("button")) {
+        const dialog = button.dataset.dialog
+        if (dialog == null || dialog === "") {
+            continue
+        }
+
+        button.addEventListener("click", () => {
+            startDialog(dialog).catch(console.error)
+        })
+    }
+})
+
+//Create node file
+window.addEventListener("createfile", async event => {
+    const data = event.detail
+    if (data == null) {
+        console.warn("Missed file creation data")
+        return
+    }
+
+
+    const isNodeDir = new RegExp("^root\\.nodes\\.").test(data.path)
+    if (!isNodeDir) {
+        return
+    }
+
+    const client = (await import("../client/node.js"))
+    const NodeDefinition = (await import("../model/NodeDefinition.js")).default
+
+    let pkg = data.path
+    let folder = mkdirAll(data.path)
+
+    pkg = pkg.replace(new RegExp("^root\\.\\w+\\."), "")
+    if (pkg.length > 0 && !pkg.endsWith(".")) {
+        pkg += "."
+    }
+
+    let qualifier = data.name
+    if (pkg.length > 0) {
+        qualifier = pkg + qualifier
+    }
+
+    const file = new FSFile(data.name, "node", new NodeDefinition({
+        name: data.name,
+        package: pkg,
+        author: "Me",
+        createdAt: new Date()
+    }))
+    folder.put(file)
+
+    await client.save(file.data)
+
+    setTimeout(() => drawFilesystem())
+    window.open(`/node/${qualifier}`)
+})
+
+//Create pipe file
+window.addEventListener("createfile", async event => {
+    const data = event.detail
+    if (data == null) {
+        console.warn("Missed file creation data")
+        return
+    }
+
+
+    const isPipeDir = new RegExp("^root\\.pipes\\.").test(data.path)
+    if (!isPipeDir) {
+        return
+    }
+
+    const client = (await import("../client/process.js"))
+    const Process = (await import("../model/Process.js")).default
+
+    let pkg = data.path
+    let folder = mkdirAll(data.path)
+
+    pkg = pkg.replace(new RegExp("^root\\.\\w+\\."), "")
+    if (pkg.length > 0 && !pkg.endsWith(".")) {
+        pkg += "."
+    }
+
+    const uuid = crypto.randomUUID()
+    const version = 1 //todo: must be string (v0.1)
+
+    const pipeDir = new FSFolder(null, null, data.name)
+    pipeDir.type = "folder-pipe"
+    folder.put(pipeDir)
+
+    const file = new FSFile(version, "pipe", Process.empty(pkg.replace(new RegExp("\\.$"), ""), data.name, "me"))
+    pipeDir.put(file)
+
+    await client.Save(file.data, 1)
+
+    setTimeout(() => drawFilesystem())
+    window.open(`/pipe/${uuid}/${version}`)
 })
 
 class FSFolder {
     name;
     type = "folder";
-    parent;
-    pwd;
     #entries = [];
 
-    constructor(parent, path, name) {
+    constructor(__, _, name) {
         this.name = name;
-        this.parent = parent;
-        this.path = path;
     }
 
     put(entry) {
@@ -61,7 +156,7 @@ class FSFile {
     }
 }
 
-const FS = new FSFolder("root");
+const FS = new FSFolder(null, null, "root");
 
 //todo: make it lazy
 async function loadData() {
@@ -81,7 +176,7 @@ async function loadData() {
         .then(list => {
             const result = [];
             for (const x of list) {
-                result.push({path: `${x.package}.${x.name}`, name: x.version, type: "pipe", data: x})
+                result.push({path: `pipes.${x.package}.${x.name}`, name: x.version, type: "pipe", data: x})
             }
             return result;
         })
@@ -92,7 +187,7 @@ async function loadData() {
                 let currentFolderPath = "root"
                 for (let i = 0; i < path.length; i++) {
                     const p = path[i]
-                    currentFolderPath += "."+p
+                    currentFolderPath += "." + p
                     if (p == null || p === "") {
                         continue
                     }
@@ -100,7 +195,7 @@ async function loadData() {
                     let entry = folder.getEntry(p)
                     if (entry == null) {
                         entry = new FSFolder(folder, currentFolderPath, p);
-                        if (i === path.length-1) {
+                        if (i === path.length - 1) {
                             entry.type = "folder-pipe"
                         }
                         folder.put(entry);
@@ -129,7 +224,7 @@ async function loadData() {
         .then(list => {
             const result = [];
             for (const x of list) {
-                result.push({path: x.package, name: x.name, type: "node", data: x})
+                result.push({path: "nodes." + x.package, name: x.name, type: "node", data: x})
             }
             return result;
         })
@@ -139,7 +234,7 @@ async function loadData() {
                 let folder = FS;
                 let currentFolderPath = "root";
                 for (const p of path) {
-                    currentFolderPath += "."+p
+                    currentFolderPath += "." + p
 
                     if (p == null || p === "") {
                         continue
@@ -173,6 +268,24 @@ async function loadCustomNodes() {
 }
 
 async function startDialog(context) {
+    if (context === "create-file") {
+        const path = document.querySelector("#filesystem").dataset.path;
+        const x = document.createElement("dialog", {is: "waterpipe-create-file"})
+        x.dataset.context = context
+        x.setAttribute("path", path)
+        document.body.append(x)
+        x.showModal()
+
+        x.addEventListener("close", async e => {
+            if (e.target.returnValue == null || e.target.returnValue === "" || !e.target.returnValue.startsWith("{")) {
+                return
+            }
+
+            window.dispatchEvent(new CustomEvent("createfile", {detail: JSON.parse(e.target.returnValue)}))
+        })
+        return
+    }
+
     const $dialog = document.querySelector(`dialog[data-context="${context}"]`);
     if ($dialog == null) {
         console.error("Dialog ", context, "not found");
@@ -314,20 +427,7 @@ function renderFolder(data, path) {
 
     $elem.addEventListener("dblclick", () => {
         document.querySelector("#filesystem").dataset.path += "." + data.name;
-
-        const $breadcrumbs = document.querySelector("#filesystem > div[data-type='breadcrumbs']")
-        const $a = document.createElement("span")
-        $a.innerHTML = "> " + data.name
-        $a.dataset.path = path + "." + data.name;
-        $a.addEventListener("click", event => {
-            document.getElementById("filesystem").dataset.path = event.target.dataset.path;
-            document.querySelector("#filesystem div[data-type='breadcrumbs']").
-            drawFilesystemItem()
-        })
-
-        $breadcrumbs.append($a)
-
-        drawFilesystem();
+        drawFilesystem().catch(console.error)
     })
 
     return $elem;
@@ -363,6 +463,7 @@ function renderNode(data) {
 
 /** @return FSFolder */
 function getFolder(breadcrumbs) {
+    breadcrumbs = breadcrumbs.replace(new RegExp("\\.$"), "")
     const path = breadcrumbs.split(".")
     let folder = FS
     for (let i = 0; i < path.length; i++) {
@@ -380,6 +481,26 @@ function getFolder(breadcrumbs) {
     return folder;
 }
 
+function mkdirAll(path) {
+    path = path.replace(new RegExp("\\.$"), "")
+    const steps = path.split(".")
+    let folder = FS
+    for (let i = 0; i < steps.length; i++) {
+        if (i === 0) {
+            continue
+        }
+
+        let x = folder.getEntry(steps[i])
+        if (x == null) {
+            x = new FSFolder(null, null, steps[i]);
+            folder.put(x)
+        }
+        folder = x
+    }
+
+    return folder;
+}
+
 async function drawBreadcrumbs(path) {
     console.debug("draw breadcrumbs", path)
     const $x = document.querySelector("#filesystem div[data-type='breadcrumbs']")
@@ -390,24 +511,25 @@ async function drawBreadcrumbs(path) {
         const $a = document.createElement("span")
         $a.textContent = steps[0]
         $x.append($a)
+        hideCreateButton()
         return
     }
 
     let currentPath = ""
     for (let i = 0; i < steps.length; i++) {
         const step = steps[i]
-        currentPath += step+"."
+        currentPath += step + "."
         const $a = document.createElement("span")
         $a.innerText = step
 
         $x.append($a)
 
-        if (i < steps.length-1) {
+        if (i < steps.length - 1) {
             $a.classList.add("clickable")
             $a.addEventListener("click", ((path) => {
                 return () => {
                     console.debug("jump to", path)
-                    document.querySelector("#filesystem").dataset.path = path.substring(0, path.length-1)
+                    document.querySelector("#filesystem").dataset.path = path.substring(0, path.length - 1)
                     drawFilesystem()
                 }
             })(currentPath))
@@ -418,4 +540,14 @@ async function drawBreadcrumbs(path) {
             $x.append($delimiter)
         }
     }
+
+    showCreateButton()
+}
+
+function showCreateButton() {
+    document.querySelector("button[data-action='create']").classList.remove("hide")
+}
+
+function hideCreateButton() {
+    document.querySelector("button[data-action='create']").classList.add("hide")
 }

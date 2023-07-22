@@ -1,0 +1,54 @@
+dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    background-color: var(--color-dark-1);
+    border: none;
+    border-radius: 15px;
+
+    box-shadow: 9px 10px 22px 0 rgba(0,0,0,0.65);
+
+    z-index: var(--layer-level-dialog);
+}
+
+/* HEADER */
+dialog > header {
+    padding-bottom: 5px;
+
+    display: flex;
+}
+
+dialog > header > button[data-action="close"] {
+    margin-left: auto;
+    float: right;
+
+    cursor: pointer;
+
+    background-color: transparent;
+    border: none;
+}
+
+/* BODY */
+dialog div[data-type="warning"] {
+    background-color: var(--color-primary);
+
+    border-radius: 5px;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    margin-bottom: 2vh;
+
+    padding: 10px 7px;
+}
+
+dialog div[data-type="warning"] .icon {
+    margin: 0 5px;
+}
+
+/* FOOTER */
+dialog > footer {
+    display: flex;
+}

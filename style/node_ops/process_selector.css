@@ -1,5 +1,5 @@
 fieldset.process_selector {
-    border: 2px solid var(--color-light-1);
+    border: 2px solid var(--color-primary-invert);
     border-radius: 10px;
     min-height: 1.5em;
 }

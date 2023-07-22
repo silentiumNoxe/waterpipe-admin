@@ -1,3 +1,16 @@
+@import "ui/dialog.css";
+
+:root {
+    --layer-level-ui: 1;
+    --layer-level-dialog: 5;
+}
+
+div.pill {
+    border: 1px solid var(--color-primary-invert);
+    border-radius: 25px;
+    padding: 5px 7px;
+}
+
 #ui {
     position: absolute;
     z-index: 1000;
@@ -28,7 +41,7 @@
 [data-type="server-addr"] {
     min-width: 100px;
 
-    border: 1px solid var(--color-light-1);
+    border: 1px solid var(--color-primary-invert);
     border-radius: 25px;
 
     text-align: center;
@@ -38,21 +51,6 @@
     padding: 10px 20px;
     margin-right: 0;
     margin-left: 0;
-}
-
-[data-type="server-addr"].warning {
-    border-color: var(--color-warning);
-    color: var(--color-warning);
-}
-
-[data-type="server-addr"].error {
-    border-color: var(--color-error);
-    color: var(--color-error);
-}
-
-[data-type="server-addr"].success {
-    border-color: var(--color-success);
-    color: var(--color-success);
 }
 
 #select-addr-dialog {
@@ -104,7 +102,7 @@ dialog.prompt div.submit {
 }
 
 dialog.prompt div.submit > input {
-    --active-color: var(--color-light-1);
+    --active-color: var(--color-primary-invert);
 
     font-size: .9em;
     cursor: pointer;

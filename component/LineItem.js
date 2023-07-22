@@ -19,7 +19,16 @@ const style = `
         
         background-color: var(--color-dark-1);
         
-        padding: 1.5vh 1vw;
+        padding: 5px;
+      }
+      
+      .line > span {
+        display: block;
+      }
+      
+      .line > * {
+        padding-left: 10px;
+        padding-top: 6px;
       }
       
       button {
@@ -33,17 +42,14 @@ const style = `
       }
       
       [data-type="name"] {
-        padding-top: 3px;
         width: 50%;
       }
       
       [data-type="author"] {
-        padding-top: 3px;
         width: 10%;
       }
       
       [data-type="timestamp"] {
-        padding-top: 3px;
         width: 20%;
       }
       
@@ -51,6 +57,7 @@ const style = `
         margin-left: auto;
         margin-right: 1vw;
         float: right;
+        color: var(--color-primary-invert);
       }
       button[data-type="menu"] span {
         width: 10%;

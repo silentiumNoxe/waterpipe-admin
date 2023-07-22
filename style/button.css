@@ -1,22 +1,29 @@
 button {
-    background-color: var(--color-primary);
-    border: 1px solid var(--color-light-1);
-    color: var(--color-light-1);
-    font-weight: bold;
-    text-align: center;
+    background-color: var(--color-primary-invert);
+
     cursor: pointer;
     outline: none;
+
+    padding: 5px 10px;
+
+    border: 1px solid var(--color-primary-invert);
+
+    color: var(--color-primary);
+    text-align: center;
+    text-decoration: none;
 }
 
 button:active {
-    background-color: var(--color-light-1);
+    background-color: var(--color-primary-invert);
 }
 
 button.pill {
     border-radius: 20px;
-    padding: 5px 10px;
     display: inline-block;
-    text-decoration: none;
+}
+
+button.rounded {
+    border-radius: 5px;
 }
 
 button.green {
