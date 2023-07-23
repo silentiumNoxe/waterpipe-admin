@@ -14,6 +14,10 @@ window.addEventListener("pipeloaded", async () => {
     await render(window.CurrentProcess)
 })
 
+window.addEventListener("pipeloaded", async () => {
+    document.title = `${CurrentProcess.name} (${CurrentProcess.version}) | Waterpipe`
+})
+
 window.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(window.location.search)
     const pipeId = window.processId = params.get("id")
@@ -24,8 +28,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     const client = await import("../client/process.js")
     window.CurrentProcess = await client.GetPayload(pipeId, parseInt(version))
     window.pipeVersions = await client.GetVersions(pipeId)
-    showVersionList(pipeVersions).catch(console.error)
 
+    showVersionList(pipeVersions).catch(console.error)
 
     window.dispatchEvent(new CustomEvent("pipeloaded"))
 })

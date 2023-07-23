@@ -443,7 +443,7 @@ function renderPipe(data) {
     $elem.setAttribute("name", data.name)
     $elem.setAttribute("author", data.data.author)
     $elem.setAttribute("timestamp", data.data.createdAt)
-    $elem.setAttribute("href", `/process?id=${data.data.id}&version=${data.data.version}`)
+    $elem.setAttribute("href", `/pipe?id=${data.data.id}&version=${data.data.version}`)
     return $elem
 }
 
