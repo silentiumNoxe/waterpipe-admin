@@ -18,22 +18,27 @@ div.pill {
     width: 100%;
 }
 
-#header {
+#ui > header, body > header {
     display: flex;
     width: 100%;
     padding: 10px 0;
 }
 
-#header > * {
+#ui > header > *, body > header > * {
     margin-left: 1vw;
     margin-right: 1vw;
 }
 
-#header > [data-type="title"] {
+#ui > header > a, body > header > a {
+    text-decoration: none;
     font-size: 2em;
 }
 
-#header > button[data-type="save"] {
+#ui > header > [data-type="title"], body > header > [data-type="title"] {
+    font-size: 2em;
+}
+
+#ui > header > button[data-type="save"], body > header > button[data-type="save"] {
     margin-left: auto;
     float: right;
 }
