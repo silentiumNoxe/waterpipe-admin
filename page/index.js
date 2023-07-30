@@ -122,16 +122,6 @@ window.addEventListener("createfile", async event => {
     window.open(`/pipe/${uuid}/${version}`)
 })
 
-window.addEventListener("storage", async event => {
-    if (event.key !== "breadcrumbs") {
-        return;
-    }
-
-    console.debug("FS path changed to", event.newValue);
-    drawBreadcrumbs(event.newValue).catch(console.error);
-    drawFilesystem().catch(console.error);
-})
-
 class FSFolder {
     name;
     type = "folder";
@@ -329,7 +319,9 @@ function applyServer() {
 
 async function drawFilesystem() {
     const $filesystem = document.querySelector("#filesystem")
-    const folder = getFolder($filesystem.dataset.path)
+    const folder = getFolder(sessionStorage.getItem("breadcrumbs"))
+
+    drawBreadcrumbs(sessionStorage.getItem("breadcrumbs")).catch(console.error);
 
     const $container = $filesystem.querySelector("div[data-type='content'] > [data-type='list']")
     $container.innerHTML = "";
@@ -372,8 +364,9 @@ function renderFolder(data, path) {
     $elem.setAttribute("name", data.name)
 
     $elem.addEventListener("dblclick", () => {
-        const path = sessionStorage.getItem("breadcrumbs")
-        sessionStorage.setItem("breadcrumbs", path + "." + data.name)
+        const path = sessionStorage.getItem("breadcrumbs");
+        sessionStorage.setItem("breadcrumbs", path + "." + data.name);
+        drawFilesystem().catch(console.error)
     })
 
     return $elem;
@@ -474,7 +467,8 @@ async function drawBreadcrumbs(path) {
             $a.classList.add("clickable")
             $a.addEventListener("click", ((path) => {
                 return () => {
-                    sessionStorage.setItem("breadcrumbs", path);
+                    sessionStorage.setItem("breadcrumbs", path.substring(0, path.length-1));
+                    drawFilesystem()
                 }
             })(currentPath))
 
