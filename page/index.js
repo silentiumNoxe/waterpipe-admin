@@ -1,3 +1,10 @@
+(function () {
+    const x = sessionStorage.getItem("breadcrumbs");
+    if (x == null || x === "") {
+        sessionStorage.setItem("breadcrumbs", "root");
+    }
+})();
+
 (async function () {
     import("/component/ServerHealth.js").catch(console.error);
     import("/component/LineItem.js").catch(console.error);
@@ -113,6 +120,16 @@ window.addEventListener("createfile", async event => {
 
     setTimeout(() => drawFilesystem())
     window.open(`/pipe/${uuid}/${version}`)
+})
+
+window.addEventListener("storage", async event => {
+    if (event.key !== "breadcrumbs") {
+        return;
+    }
+
+    console.debug("FS path changed to", event.newValue);
+    drawBreadcrumbs(event.newValue).catch(console.error);
+    drawFilesystem().catch(console.error);
 })
 
 class FSFolder {
@@ -294,55 +311,6 @@ async function startDialog(context) {
     $dialog.open = true;
 }
 
-async function closeDialog(context) {
-    const $dialog = document.querySelector(`dialog[data-context="${context}"]`);
-    if ($dialog == null) {
-        console.error("Dialog ", context, "not found");
-        return
-    }
-
-    $dialog.open = false;
-}
-
-async function createProcess() {
-    const procName = document.querySelector("dialog[data-context='create-process'] input").value;
-    if (procName === "") {
-        return
-    }
-
-    const client = await import("../client/process.js");
-    const Process = (await import("../model/Process.js")).default;
-    const ProcessNode = (await import("../model/ProcessNode.js")).default;
-
-    const proc = new Process({
-        name: procName,
-        active: true,
-        debug: false,
-        path: "",
-        nodes: []
-    });
-
-    const finalNode = new ProcessNode({
-        id: crypto.randomUUID(),
-        type: "waterpipe.final",
-        title: "Default final",
-        position: {x: 0, y: 400}
-    });
-    proc.nodes.push(finalNode)
-
-    proc.nodes.push(new ProcessNode({
-        id: crypto.randomUUID(),
-        type: "waterpipe.start",
-        title: "Default start",
-        position: {x: 0, y: 0},
-        next: finalNode.id
-    }));
-
-    client.Save(proc, 1)
-        .then(() => closeDialog("create-process"))
-        .catch(console.error);
-}
-
 function selectServer() {
     document.getElementById("select-addr-dialog").open = true;
 }
@@ -359,33 +327,9 @@ function applyServer() {
     document.getElementById("select-addr-dialog").open = false;
 }
 
-async function createCustomNode() {
-    const NodeDefinition = (await import("/model/NodeDefinition.js")).default;
-    const fullName = document.querySelector("dialog[data-context='create-custom-node'] input").value;
-    if (fullName === "") {
-        return
-    }
-
-    const index = fullName.lastIndexOf(".");
-    const name = fullName.substring(index + 1);
-    const pkg = fullName.substring(0, index);
-
-    const client = await import("../client/node.js");
-
-    const def = new NodeDefinition({name, package: pkg});
-
-    client.save(def)
-        .then(() => closeDialog("create-process"))
-        .then(() => window.open(`/node/${fullName}`))
-        .then(() => loadData("custom-node"))
-        .catch(console.error);
-}
-
 async function drawFilesystem() {
     const $filesystem = document.querySelector("#filesystem")
     const folder = getFolder($filesystem.dataset.path)
-
-    drawBreadcrumbs($filesystem.dataset.path).catch(console.error)
 
     const $container = $filesystem.querySelector("div[data-type='content'] > [data-type='list']")
     $container.innerHTML = "";
@@ -409,8 +353,10 @@ async function drawFilesystem() {
         return 0
     })
 
-    for (const entry of list) {
-        const view = render[entry.type](entry, $filesystem.dataset.path)
+    for (const i in list) {
+        const entry = list[i];
+        const view = render[entry.type](entry, $filesystem.dataset.path);
+        view.tabIndex = i+1;
         $container.append(view);
     }
 }
@@ -426,8 +372,8 @@ function renderFolder(data, path) {
     $elem.setAttribute("name", data.name)
 
     $elem.addEventListener("dblclick", () => {
-        document.querySelector("#filesystem").dataset.path += "." + data.name;
-        drawFilesystem().catch(console.error)
+        const path = sessionStorage.getItem("breadcrumbs")
+        sessionStorage.setItem("breadcrumbs", path + "." + data.name)
     })
 
     return $elem;
@@ -528,9 +474,7 @@ async function drawBreadcrumbs(path) {
             $a.classList.add("clickable")
             $a.addEventListener("click", ((path) => {
                 return () => {
-                    console.debug("jump to", path)
-                    document.querySelector("#filesystem").dataset.path = path.substring(0, path.length - 1)
-                    drawFilesystem()
+                    sessionStorage.setItem("breadcrumbs", path);
                 }
             })(currentPath))
 

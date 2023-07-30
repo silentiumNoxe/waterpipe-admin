@@ -3,19 +3,25 @@ const style = `
       @import "../style/commons.css";
       
       :host {
-        width: 90vw;
+        --border-radius: 25px;
+        
+        width: 100%;
+        padding: 5px;
+      }
+      
+      :host(:host:focus) {
+        outline: var(--color-blue) solid 2px;
+        border-radius: var(--border-radius);
       }
       
       .line {
         outline: none;
         user-select: none;
         
-        width: 100%;
-        
         display: flex;
         
         border: 1px solid var(--color-dark-1);
-        border-radius: 25px;
+        border-radius: var(--border-radius);
         
         background-color: var(--color-dark-1);
         

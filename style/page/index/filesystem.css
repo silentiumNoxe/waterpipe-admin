@@ -1,6 +1,6 @@
 #filesystem {
     height: 90vh;
-    width: 100vw;
+    width: 91vw;
 
     margin-top: 1vw;
     margin-left: 4vw;
@@ -54,7 +54,6 @@
 #filesystem > div[data-type="content"] {
     margin-top: 1.5vh;
 
-    width: 100%;
     overflow-y: scroll;
     height: 100%;
 }
@@ -62,7 +61,8 @@
 #filesystem > div[data-type="content"] > div[data-type="list"]{
     display: flex;
     flex-wrap: wrap;
-    width: 100%;
+
+    padding: 3px;
 }
 
 #filesystem div[data-type="content"] > div[data-type="list"] > * {

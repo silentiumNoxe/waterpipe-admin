@@ -23,6 +23,10 @@
         <span class="material-symbols-outlined bold">add</span>
         <span class="bold" data-type="title">Create</span>
       </button>
+      <button class="rounded hide" data-action="fork" data-dialog="fork-version">
+        <span class="material-symbols-outlined bold">fork_right</span>
+        <span class="bold" data-type="title">Fork</span>
+      </button>
     </div>
     <div data-type="content">
       <div data-type="list">
@@ -37,16 +41,6 @@
   <input id="server-addr-input" type="url" placeholder="url">
   <div class="container">
     <button class="pill" onclick="applyServer()">Apply</button>
-  </div>
-</dialog>
-<dialog data-context="create-custom-node">
-  <h3 class="title">Create custom node</h3>
-  <fieldset class="input">
-    <input type="text" placeholder="Node qualifier">
-  </fieldset>
-  <div class="control">
-    <button class="pill" data-type="cancel" onclick="closeDialog('create-custom-node')">Cancel</button>
-    <button class="pill" data-type="create" onclick="createCustomNode()">Create</button>
   </div>
 </dialog>
 </body>
