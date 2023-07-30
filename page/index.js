@@ -126,9 +126,11 @@ class FSFolder {
     name;
     type = "folder";
     #entries = [];
+    meta = {};
 
-    constructor(__, _, name) {
+    constructor(__, _, name, meta={}) {
         this.name = name;
+        this.meta = meta;
     }
 
     put(entry) {
@@ -203,7 +205,7 @@ async function loadData() {
                     if (entry == null) {
                         entry = new FSFolder(folder, currentFolderPath, p);
                         if (i === path.length - 1) {
-                            entry.type = "folder-pipe"
+                            entry.meta.isPipe = true;
                         }
                         folder.put(entry);
                     }
@@ -327,7 +329,6 @@ async function drawFilesystem() {
     $container.innerHTML = "";
 
     const render = {
-        "folder-pipe": renderFolder,
         folder: renderFolder,
         pipe: renderPipe,
         node: renderNode
@@ -360,12 +361,16 @@ async function drawFilesystem() {
  * */
 function renderFolder(data, path) {
     const $elem = document.createElement("waterpipe-line-item")
-    $elem.setAttribute("type", data.type)
+    $elem.setAttribute("type", "folder")
+    if (data.meta.isPipe) {
+        $elem.setAttribute("type", "folder-pipe")
+    }
     $elem.setAttribute("name", data.name)
 
     $elem.addEventListener("dblclick", () => {
         const path = sessionStorage.getItem("breadcrumbs");
         sessionStorage.setItem("breadcrumbs", path + "." + data.name);
+        sessionStorage.setItem("is_pipe", "true")
         drawFilesystem().catch(console.error)
     })
 
@@ -468,6 +473,7 @@ async function drawBreadcrumbs(path) {
             $a.addEventListener("click", ((path) => {
                 return () => {
                     sessionStorage.setItem("breadcrumbs", path.substring(0, path.length-1));
+                    sessionStorage.setItem("is_pipe", "false")
                     drawFilesystem()
                 }
             })(currentPath))
@@ -480,6 +486,10 @@ async function drawBreadcrumbs(path) {
     }
 
     showCreateButton()
+
+    if (sessionStorage.getItem("is_pipe") === "true") {
+        hideCreateButton()
+    }
 }
 
 function showCreateButton() {
