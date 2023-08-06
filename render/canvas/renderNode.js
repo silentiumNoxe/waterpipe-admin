@@ -41,8 +41,8 @@ export default async function (renderOps, node) {
     });
 
     const title = await buildTitle(renderOps, node);
-    title.x(shape.x()+10)
-    title.y(shape.y()+10)
+    title.x(shape.x()+10);
+    title.y(shape.y()+10);
 
     const contentWidth = title.width()+30;
     const contentHeight = title.height()+20;
@@ -54,6 +54,14 @@ export default async function (renderOps, node) {
     shape.height(group.height());
 
     group.add(shape, title);
+
+    if (renderOps.important) {
+        console.debug("render important icon");
+        const important = await loadImage("/assets/icon/warning.svg");
+        important.scale({x: 0.5, y: 0.5});
+        important.position({x: 0, y: -10});
+        group.add(important);
+    }
 
     return group;
 }
