@@ -72,3 +72,17 @@ textarea.code {
     margin-top: 10px;
     margin-left: 82%;
 }
+
+nav[data-type="nodes"] {
+    position: absolute;
+    top: 8vh;
+    z-index: 10;
+    background-color: var(--color-primary-invert);
+    color: var(--color-primary);
+    width: 200px;
+    height: 400px;
+}
+
+nav[data-type="nodes"] li {
+    color: var(--color-primary);
+}

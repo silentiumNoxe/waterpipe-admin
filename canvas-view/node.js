@@ -45,9 +45,9 @@ export default class NodeView extends Konva.Group {
     #mainShape() {
         return new Konva.Rect({
             width: 300,
-            height: 150,
-            fill: Konva.Color.LIGHT,
-            cornerRadius: 10,
+            height: 50,
+            fill: Konva.Color.PRIMARY_INVERT,
+            cornerRadius: 25,
             overflow: "hidden"
         });
     }
@@ -84,7 +84,7 @@ export default class NodeView extends Konva.Group {
 
         const line = new Konva.Line({
             points: [this.getPosition().x + connectionButton.getPosition().x, this.getPosition().y + connectionButton.getPosition().y, node.getCenter().x, node.getCenter().y],
-            stroke: Konva.Color.LIGHT,
+            stroke: Konva.Color.PRIMARY_INVERT,
             strokeWidth: 2,
             id: `${type}_${this.id()}_${node.id()}`
         });
@@ -158,7 +158,7 @@ export default class NodeView extends Konva.Group {
         if (this.#important === true) {
             this.#view.shape.fill(Konva.Color.WARNING);
         } else {
-            this.#view.shape.fill(Konva.Color.LIGHT);
+            this.#view.shape.fill(Konva.Color.PRIMARY_INVERT);
         }
 
         return this.#important;
@@ -197,7 +197,7 @@ export default class NodeView extends Konva.Group {
     }
 
     fillDefaultColor() {
-        let color = Konva.Color.LIGHT;
+        let color = Konva.Color.PRIMARY_INVERT;
         if (this.#important) {
             color = Konva.Color.WARNING;
         }

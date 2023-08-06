@@ -8,30 +8,111 @@ import {getDefinition} from "../../client/node.js";
  * @param node {ProcessNode}
  * @return NodeView
  * */
-export default function (renderOps, node) {
-    const render = Render.of(NodeView);
+export default async function (renderOps, node) {
+    // const render = Render.of(NodeView);
+    //
+    // if (renderOps == null) {
+    //     renderOps = {};
+    // }
+    // //todo: remove hardcore
+    // renderOps.width = 300;
+    // renderOps.height = 50;
+    //
+    // render.next(ondblclick)
+    //     .next(onclick)
+    //     .next(onmouseover)
+    //     .next(onmouseout)
+    //     .next(view => ondragmove(view, node))
+    //     .next(view => view.id(node.id))
+    //     .next(view => view.setPosition(node.position))
+    //     .next(view => view.important(renderOps.important || false))
+    //     .next(view => title(renderOps, node.title || node.type.substring(node.type.lastIndexOf(".") + 1), x => view.put(x)))
+    //     .next(view => subTitle(renderOps, node, x => view.put(x)))
+    //     .next(view => connectors(renderOps, node, x => view.put(x)))
+    //
+    // return render.build();
 
-    if (renderOps == null) {
-        renderOps = {};
+    const group = new Konva.Group({listening: true});
+
+    const shape = new Konva.Rect({
+        fill: Konva.Color.DARK_1,
+        cornerRadius: 25,
+        overflow: "hidden"
+    });
+
+    const title = await buildTitle(renderOps, node);
+    title.x(shape.x()+10)
+    title.y(shape.y()+10)
+
+    const contentWidth = title.width()+30;
+    const contentHeight = title.height()+20;
+
+    group.width(contentWidth);
+    group.height(contentHeight);
+
+    shape.width(group.width());
+    shape.height(group.height());
+
+    group.add(shape, title);
+
+    return group;
+}
+
+/**
+ * @param renderOps {Object}
+ * @param node {ProcessNode}
+ * @return Promise<Konva.Group>
+ * */
+async function buildTitle(renderOps, node) {
+    const group = new Konva.Group();
+
+    let image;
+    if (renderOps.icon) {
+        image = await loadImage("/assets/icon/"+renderOps.icon+".svg");
+        image.position({x: 0, y: -6})
+        group.add(image);
     }
-    //todo: remove hardcore
-    renderOps.width = 300;
-    renderOps.height = 150;
 
-    render.next(ondblclick)
-        .next(onclick)
-        .next(onmouseover)
-        .next(onmouseout)
-        .next(view => showNodeMenu(view, node))
-        .next(view => ondragmove(view, node))
-        .next(view => view.id(node.id))
-        .next(view => view.setPosition(node.position))
-        .next(view => view.important(renderOps.important || false))
-        .next(view => title(renderOps, node.title || node.type.substring(node.type.lastIndexOf(".") + 1), x => view.put(x)))
-        .next(view => subTitle(renderOps, node, x => view.put(x)))
-        .next(view => connectors(renderOps, node, x => view.put(x)))
+    const titleText = new Konva.Text({
+        fontFamily: Konva.DEFAULT_FONT,
+        fontSize: 25,
+        fontStyle: "bold",
+        text: node.title,
+        align: "left",
+        wrap: "none",
+        fill: Konva.Color.PRIMARY_INVERT,
+    })
 
-    return render.build();
+    if (image) {
+        titleText.x(image.width() + 8);
+    }
+
+    const typeText = new Konva.Text({
+        x: titleText.x(),
+        y: titleText.y()+titleText.height(),
+        fontFamily: Konva.DEFAULT_FONT,
+        fontSize: 10,
+        text: node.type,
+        align: "left",
+        wrap: "none",
+        fill: Konva.Color.PRIMARY_INVERT
+    })
+
+    let width = titleText.width() > typeText.width() ? titleText.width() : typeText.width();
+    if (image) {
+        width += image.width()
+    }
+
+    group.add(titleText, typeText);
+    group.width(width);
+    group.height(titleText.height()+typeText.height());
+
+    return group;
+}
+
+/** @return Promise<Konva.Image>*/
+async function loadImage(path) {
+    return new Promise((resolve, reject) => Konva.Image.fromURL(path, resolve, reject));
 }
 
 function ondblclick(view) {
@@ -78,7 +159,7 @@ function onclick(view) {
             }
 
             console.debug("Update process data");
-            (async function() {
+            (async function () {
                 if (window.connectionType === "next_default") {
                     console.debug("Set new connection to default connector")
                     if (nFrom.id === view.id()) {
@@ -141,7 +222,7 @@ function showNodeMenu(view, node) {
         e.cancelBubble = true;
 
         if (window.selectedNodeId != null && window.selectedNodeId !== node.id) {
-            const prev = window.NodeLayer.findOne("#"+window.selectedNodeId);
+            const prev = window.NodeLayer.findOne("#" + window.selectedNodeId);
             if (prev != null) {
                 prev.selected = false;
             }
@@ -266,7 +347,7 @@ function renderConnector(nodeId, id, {x, y}, title = {text: "", position: {x: 0,
         radius: 15,
         stroke: Konva.Color.PRIMARY,
         strokeWidth: 2,
-        fill: Konva.Color.LIGHT,
+        fill: Konva.Color.PRIMARY_INVERT,
     });
 
     button.on("mouseover", () => {
@@ -291,7 +372,7 @@ function renderConnector(nodeId, id, {x, y}, title = {text: "", position: {x: 0,
 
         window.disableCurrentConnection = function () {
             console.debug("Disable current connection");
-            button.fill(Konva.Color.LIGHT);
+            button.fill(Konva.Color.PRIMARY_INVERT);
             window.connectionStart = false;
             window.connectionFrom = null;
             window.connectionType = null;

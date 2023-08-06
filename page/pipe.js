@@ -291,3 +291,4 @@ function deleteSelectedNode() {
 
     node.destroy();
 }
+
