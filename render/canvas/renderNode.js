@@ -9,30 +9,10 @@ import {getDefinition} from "../../client/node.js";
  * @return NodeView
  * */
 export default async function (renderOps, node) {
-    // const render = Render.of(NodeView);
-    //
-    // if (renderOps == null) {
-    //     renderOps = {};
-    // }
-    // //todo: remove hardcore
-    // renderOps.width = 300;
-    // renderOps.height = 50;
-    //
-    // render.next(ondblclick)
-    //     .next(onclick)
-    //     .next(onmouseover)
-    //     .next(onmouseout)
-    //     .next(view => ondragmove(view, node))
-    //     .next(view => view.id(node.id))
-    //     .next(view => view.setPosition(node.position))
-    //     .next(view => view.important(renderOps.important || false))
-    //     .next(view => title(renderOps, node.title || node.type.substring(node.type.lastIndexOf(".") + 1), x => view.put(x)))
-    //     .next(view => subTitle(renderOps, node, x => view.put(x)))
-    //     .next(view => connectors(renderOps, node, x => view.put(x)))
-    //
-    // return render.build();
+    console.debug("render", node.type);
 
     const group = new Konva.Group({listening: true});
+    group.position(node.position);
 
     const shape = new Konva.Rect({
         fill: Konva.Color.DARK_1,
@@ -41,7 +21,7 @@ export default async function (renderOps, node) {
     });
 
     const title = await buildTitle(renderOps, node);
-    title.x(shape.x()+10);
+    title.x(shape.x()+6);
     title.y(shape.y()+10);
 
     const contentWidth = title.width()+30;
