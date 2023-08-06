@@ -57,7 +57,7 @@ export default async function (renderOps, node) {
 
     if (renderOps.important) {
         console.debug("render important icon");
-        const important = await loadImage("/assets/icon/warning.svg");
+        const important = await loadImage("/assets/icon/warning_circle.svg");
         important.scale({x: 0.5, y: 0.5});
         important.position({x: 0, y: -10});
         group.add(important);
