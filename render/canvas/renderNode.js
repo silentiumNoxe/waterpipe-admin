@@ -4,24 +4,168 @@ import {nodeMenuRender} from "../node_menu.js";
 import {getDefinition} from "../../client/node.js";
 
 /**
- * @param renderOps {Object}
+ * @param def {NodeDefinition}
  * @param node {ProcessNode}
- * @return NodeView
+ * @return Konva.Group
  * */
-export default async function (renderOps, node) {
+export default async function (def, node) {
     console.debug("render", node.type);
+
+    if (def.injectable) {
+        return renderInjectable(def, node);
+    }
+
+    return renderNode(def, node);
+}
+
+/**
+ * @param def {NodeDefinition}
+ * @param node {ProcessNode}
+ * @return Konva.Group
+ * */
+async function renderNode(def, node) {
+    const renderOps = def.render;
 
     const group = new Konva.Group({listening: true});
     group.position(node.position);
 
     const shape = new Konva.Rect({
-        fill: Konva.Color.DARK_1,
+        fill: Konva.Color.PRIMARY_LIGHT_2,
         cornerRadius: 25,
         overflow: "hidden"
     });
 
-    const title = await buildTitle(renderOps, node);
+    async function buildTitle() {
+        const group = new Konva.Group();
+
+        let image;
+        if (renderOps.icon) {
+            image = await loadImage("/assets/icon/"+renderOps.icon+".svg");
+            image.position({x: 0, y: -6})
+            group.add(image);
+        }
+
+        const titleText = new Konva.Text({
+            fontFamily: Konva.DEFAULT_FONT,
+            fontSize: 25,
+            fontStyle: "bold",
+            text: node.title,
+            align: "left",
+            wrap: "none",
+            fill: Konva.Color.PRIMARY_INVERT,
+        })
+
+        if (image) {
+            titleText.x(image.width() + 8);
+        }
+
+        const typeText = new Konva.Text({
+            x: titleText.x(),
+            y: titleText.y()+titleText.height(),
+            fontFamily: Konva.DEFAULT_FONT,
+            fontSize: 10,
+            text: node.type,
+            align: "left",
+            wrap: "none",
+            fill: Konva.Color.PRIMARY_INVERT
+        })
+
+        let width = titleText.width() > typeText.width() ? titleText.width() : typeText.width();
+        if (image) {
+            width += image.width()
+        }
+
+        group.add(titleText, typeText);
+        group.width(width);
+        group.height(titleText.height()+typeText.height());
+
+        return group;
+    }
+
+    const title = await buildTitle();
     title.x(shape.x()+6);
+    title.y(shape.y()+10);
+
+    group.add(shape, title);
+
+    if (def.important) {
+        console.debug("render important icon");
+        const important = await loadImage("/assets/icon/warning_circle.svg");
+        important.scale({x: 0.5, y: 0.5});
+        important.position({x: 0, y: -10});
+        group.add(important);
+    }
+
+    const argsContainer = new Konva.Group();
+    let last = null;
+    for (const x of def.args.entries()) {
+        console.debug("arg", x);
+        const args = await renderArg(x.at(0), x.at(1).type);
+        if (last) {
+            args.y(last.height()+10)
+        }
+        argsContainer.height(argsContainer.height()+args.height()+10)
+        argsContainer.add(args);
+        last = args;
+    }
+
+    argsContainer.x(15);
+    argsContainer.y(title.height()+20);
+
+    group.add(argsContainer);
+
+    const contentWidth = title.width()+30;
+    const contentHeight = title.height()+argsContainer.height()+20;
+
+    group.width(contentWidth);
+    group.height(contentHeight);
+
+    shape.width(group.width());
+    shape.height(group.height());
+
+    return group;
+}
+
+/**
+ * @param def {NodeDefinition}
+ * @param node {ProcessNode}
+ * @return Konva.Group
+ * */
+async function renderInjectable(def, node) {
+    const renderOps = def.render;
+
+    const group = new Konva.Group({listening: true});
+    group.position(node.position);
+
+    const shape = new Konva.Rect({
+        fill: Konva.Color.PRIMARY_INVERT,
+        cornerRadius: 10,
+        overflow: "hidden"
+    });
+
+    async function buildTitle() {
+        const group = new Konva.Group();
+
+        const titleText = new Konva.Text({
+            fontFamily: Konva.DEFAULT_FONT,
+            fontSize: 15,
+            fontStyle: "bold",
+            text: def.providedType,
+            align: "left",
+            wrap: "none",
+            fill: Konva.Color.PRIMARY,
+        })
+
+        group.add(titleText);
+
+        group.width(titleText.width());
+        group.height(titleText.height());
+
+        return group;
+    }
+
+    const title = await buildTitle();
+    title.x(shape.x()+15);
     title.y(shape.y()+10);
 
     const contentWidth = title.width()+30;
@@ -35,7 +179,7 @@ export default async function (renderOps, node) {
 
     group.add(shape, title);
 
-    if (renderOps.important) {
+    if (def.important) {
         console.debug("render important icon");
         const important = await loadImage("/assets/icon/warning_circle.svg");
         important.scale({x: 0.5, y: 0.5});
@@ -46,61 +190,64 @@ export default async function (renderOps, node) {
     return group;
 }
 
+/** @return Promise<Konva.Image>*/
+async function loadImage(path) {
+    return new Promise((resolve, reject) => Konva.Image.fromURL(path, resolve, reject));
+}
+
 /**
- * @param renderOps {Object}
- * @param node {ProcessNode}
- * @return Promise<Konva.Group>
+ * @return Konva.Group
  * */
-async function buildTitle(renderOps, node) {
+async function renderArg(label, type) {
     const group = new Konva.Group();
 
-    let image;
-    if (renderOps.icon) {
-        image = await loadImage("/assets/icon/"+renderOps.icon+".svg");
-        image.position({x: 0, y: -6})
-        group.add(image);
-    }
-
-    const titleText = new Konva.Text({
+    const labelText = new Konva.Text({
         fontFamily: Konva.DEFAULT_FONT,
-        fontSize: 25,
-        fontStyle: "bold",
-        text: node.title,
-        align: "left",
-        wrap: "none",
-        fill: Konva.Color.PRIMARY_INVERT,
-    })
-
-    if (image) {
-        titleText.x(image.width() + 8);
-    }
-
-    const typeText = new Konva.Text({
-        x: titleText.x(),
-        y: titleText.y()+titleText.height(),
-        fontFamily: Konva.DEFAULT_FONT,
-        fontSize: 10,
-        text: node.type,
+        fontSize: 15,
+        fontStyle: "normal",
+        text: label,
         align: "left",
         wrap: "none",
         fill: Konva.Color.PRIMARY_INVERT
     })
 
-    let width = titleText.width() > typeText.width() ? titleText.width() : typeText.width();
-    if (image) {
-        width += image.width()
-    }
+    const button = new Konva.Group({overflow: "hidden"});
 
-    group.add(titleText, typeText);
-    group.width(width);
-    group.height(titleText.height()+typeText.height());
+    const shape = new Konva.Rect({
+        fill: Konva.Color.PRIMARY_LIGHT_1,
+        cornerRadius: 10
+    });
+
+    const titleText = new Konva.Text({
+        fontFamily: Konva.DEFAULT_FONT,
+        fontSize: 15,
+        fontStyle: "normal",
+        text: type,
+        align: "left",
+        wrap: "none",
+        fill: Konva.Color.PRIMARY_INVERT,
+    })
+
+    titleText.x(15);
+    titleText.y(10);
+
+    labelText.y(titleText.height()/2);
+
+    button.add(shape, titleText);
+    button.x(labelText.width()+15);
+
+    button.width(titleText.width()+30);
+    button.height(titleText.height()+20);
+
+    shape.width(button.width());
+    shape.height(button.height());
+
+    group.width(labelText.width()+button.width())
+    group.height(button.height())
+
+    group.add(labelText, button);
 
     return group;
-}
-
-/** @return Promise<Konva.Image>*/
-async function loadImage(path) {
-    return new Promise((resolve, reject) => Konva.Image.fromURL(path, resolve, reject));
 }
 
 function ondblclick(view) {

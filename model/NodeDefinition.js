@@ -12,6 +12,8 @@ export default class NodeDefinition {
     render;
     script;
     important;
+    injectable;
+    providedType;
 
     /**
      * @param source {Object}
@@ -22,6 +24,8 @@ export default class NodeDefinition {
      * @param source.args {Object|null}
      * @param source.script {string|null}
      * @param source.important {boolean} - sync task after completing this node
+     * @param source.injectable {boolean}
+     * @param source.inject_type {string}
      * */
     constructor(source) {
         if (source.name == null || source.name === "" ) {
@@ -33,6 +37,8 @@ export default class NodeDefinition {
         this.render = source.render || {};
         this.script = source.script || "";
         this.important = source.important;
+        this.injectable = source.injectable;
+        this.providedType = source.inject_type;
 
         for (const name of Object.keys(source.args || {})) {
             this.args.set(name, new NodeDefinitionArgument(source.args[name]));
