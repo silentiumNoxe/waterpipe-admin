@@ -28,7 +28,7 @@ export default async function (def, node) {
 async function renderNode(def, node) {
     const renderOps = def.render;
 
-    const group = new Konva.Group({listening: true, draggable: true});
+    const group = new Konva.Group({id: `node_${node.id}`, listening: true, draggable: true});
     group.offset({x: 0.5, y: 0.5})
     group.position(node.position);
     group.on("mouseover", () => document.body.style.cursor = "grab");
@@ -52,6 +52,7 @@ async function renderNode(def, node) {
     })
 
     const shape = new Konva.Rect({
+        name: "shape",
         fill: Konva.Color.PRIMARY_LIGHT_2,
         cornerRadius: 25,
         overflow: "hidden"
@@ -166,6 +167,29 @@ async function renderInjectable(def, node) {
         e.target.moveTo(window.MidLayer);
         window.MidLayer.draw();
     })
+    group.on("dragmove", e => {
+        const position = mousePosition();
+        const shape = MidLayer.getIntersection(position);
+
+        if (e.target.lastIntersection) {
+            e.target.lastIntersection.fill(Konva.Color.PRIMARY_LIGHT_1);
+        }
+
+        if (shape == null || shape.parent == null) {
+            return;
+        }
+
+        const p = shape.parent;
+        if (!p.id().startsWith("arg")) {
+            return;
+        }
+
+        const x = e.target.lastIntersection = p.find(".shape")[0];
+        if (x == null) {
+            return;
+        }
+        x.fill(Konva.Color.BLUE);
+    })
 
     const shape = new Konva.Rect({
         fill: Konva.Color.PRIMARY_INVERT,
@@ -241,7 +265,7 @@ async function renderArg(label, type) {
         fill: Konva.Color.PRIMARY_INVERT
     })
 
-    const button = new Konva.Group({overflow: "hidden"});
+    const button = new Konva.Group({id: `arg_${type}_${label}`, overflow: "hidden"});
 
     const shape = new Konva.Rect({
         name: "shape",
