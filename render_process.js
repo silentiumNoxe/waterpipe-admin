@@ -14,8 +14,7 @@ export default async function (process) {
             def.render = {};
         }
 
-        def.render.important = def.important;
-        nodes[n.id] = await renderNode(def.render, n);
+        nodes[n.id] = await renderNode(def, n);
 
         // if (n.next != null) {
         //     connections.push({from: n.id, to: n.next, type: "next_default"});
@@ -40,12 +39,10 @@ export default async function (process) {
 
     for (const id of Object.keys(nodes)) {
         const n = nodes[id];
-        window.NodeLayer.add(n);
-        window.NodeLayer.draw();
+        window.MidLayer.add(n);
     }
 
     for (const l of lines) {
-        window.LineLayer.add(l);
+        window.BottomLayer.add(l);
     }
-    window.LineLayer.draw();
 }

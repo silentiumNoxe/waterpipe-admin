@@ -115,17 +115,19 @@ window.addEventListener("DOMContentLoaded", () => {
             })
     })
 
-    const layer = window.NodeLayer = new Konva.Layer({name: "Node"});
-    const lineLayer = window.LineLayer = new Konva.Layer({name: "Line"});
+    const topLayer = window.TopLayer = new Konva.Layer({name: "Top"})
+    const midLayer = window.MidLayer = new Konva.Layer({name: "Middle"});
+    const bottomLayer = window.BottomLayer = new Konva.Layer({name: "Bottom"});
 
     window.addNode = node => {
-        layer.add(node);
+        midLayer.add(node);
     };
 
-    lineLayer.listening(false);
+    bottomLayer.listening(false);
 
-    stage.add(lineLayer);
-    stage.add(layer);
+    stage.add(bottomLayer);
+    stage.add(midLayer);
+    stage.add(topLayer);
 })
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -202,7 +204,7 @@ function unselectNode() {
         return;
     }
 
-    const node = window.NodeLayer.findOne("#" + window.selectedNodeId);
+    const node = window.MidLayer.findOne("#" + window.selectedNodeId);
     if (node == null) {
         console.warn(`node ${window.selectedNodeId} not found`);
         return;
@@ -275,7 +277,7 @@ function deleteSelectedNode() {
         return
     }
 
-    const node = window.NodeLayer.findOne("#" + window.selectedNodeId);
+    const node = window.MidLayer.findOne("#" + window.selectedNodeId);
     if (node == null) {
         console.warn(`node ${window.selectedNodeId} not found`);
         return;

@@ -30,14 +30,14 @@ export default async function (def) {
     const redraw = () => {
         view.destroy();
         view = rn();
-        NodeLayer.add(view);
+        MidLayer.add(view);
     }
 
     let view = rn();
 
     nodeMenuRender(view, node, def);
 
-    window.NodeLayer.add(view);
+    window.MidLayer.add(view);
 
     renderParametersList(def.args, value => {
         def.args = value;

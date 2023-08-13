@@ -3,6 +3,8 @@ import Render from "../render.js";
 import {nodeMenuRender} from "../node_menu.js";
 import {getDefinition} from "../../client/node.js";
 
+const stepSize = 50;
+
 /**
  * @param def {NodeDefinition}
  * @param node {ProcessNode}
@@ -26,8 +28,28 @@ export default async function (def, node) {
 async function renderNode(def, node) {
     const renderOps = def.render;
 
-    const group = new Konva.Group({listening: true});
+    const group = new Konva.Group({listening: true, draggable: true});
+    group.offset({x: 0.5, y: 0.5})
     group.position(node.position);
+    group.on("mouseover", () => document.body.style.cursor = "grab");
+    group.on("mouseout", () => document.body.style.cursor = "default");
+    group.on("dragstart", e => {
+        e.target.moveTo(window.TopLayer);
+        window.TopLayer.draw();
+    })
+    group.on("dragend", e => {
+        e.target.moveTo(window.MidLayer);
+        window.MidLayer.draw();
+    })
+    group.on("dragmove", e => {
+        const target = e.target;
+        if (target.x() % stepSize !== 0) {
+            target.x(target.x() - target.x() % stepSize)
+        }
+        if (target.y() % stepSize !== 0) {
+            target.y(target.y() - target.y() % stepSize)
+        }
+    })
 
     const shape = new Konva.Rect({
         fill: Konva.Color.PRIMARY_LIGHT_2,
@@ -134,8 +156,16 @@ async function renderNode(def, node) {
 async function renderInjectable(def, node) {
     const renderOps = def.render;
 
-    const group = new Konva.Group({listening: true});
+    const group = new Konva.Group({listening: true, draggable: true});
     group.position(node.position);
+    group.on("dragstart", e => {
+        e.target.moveTo(window.TopLayer);
+        window.TopLayer.draw();
+    })
+    group.on("dragend", e => {
+        e.target.moveTo(window.MidLayer);
+        window.MidLayer.draw();
+    })
 
     const shape = new Konva.Rect({
         fill: Konva.Color.PRIMARY_INVERT,
@@ -199,7 +229,7 @@ async function loadImage(path) {
  * @return Konva.Group
  * */
 async function renderArg(label, type) {
-    const group = new Konva.Group();
+    const group = new Konva.Group({listening: true});
 
     const labelText = new Konva.Text({
         fontFamily: Konva.DEFAULT_FONT,
@@ -214,6 +244,7 @@ async function renderArg(label, type) {
     const button = new Konva.Group({overflow: "hidden"});
 
     const shape = new Konva.Rect({
+        name: "shape",
         fill: Konva.Color.PRIMARY_LIGHT_1,
         cornerRadius: 10
     });
@@ -271,7 +302,7 @@ function onclick(view) {
                 return;
             }
 
-            const from = window.NodeLayer.findOne("#" + window.connectionFrom);
+            const from = window.MidLayer.findOne("#" + window.connectionFrom);
             if (from == null) {
                 console.warn(`node ${window.connectionFrom} not found`);
                 return;
@@ -280,7 +311,7 @@ function onclick(view) {
             console.debug(`Connect ${from.id()} to ${view.id()}; connector=${window.connectionType}`);
             const line = from.connectTo(view, window.connectionType);
             if (line != null) {
-                window.LineLayer.add(line);
+                window.BottomLayer.add(line);
             }
 
             //Save new connection
@@ -357,7 +388,7 @@ function showNodeMenu(view, node) {
         e.cancelBubble = true;
 
         if (window.selectedNodeId != null && window.selectedNodeId !== node.id) {
-            const prev = window.NodeLayer.findOne("#" + window.selectedNodeId);
+            const prev = window.MidLayer.findOne("#" + window.selectedNodeId);
             if (prev != null) {
                 prev.selected = false;
             }
