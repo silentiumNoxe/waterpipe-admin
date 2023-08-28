@@ -166,10 +166,25 @@ async function renderInjectable(def, node) {
     group.on("dragend", e => {
         e.target.moveTo(window.MidLayer);
         window.MidLayer.draw();
+
+        if (e.target.targetField == null) {
+            return;
+        }
+
+        console.log(e.target);
+        const placeholder = e.target.targetField.parent();
+        const parent = placeholder.parent();
+        placeholder.hide();
+
+        parent.add(e.target);
+
+        console.debug("Selected field", e.target.targetField);
     })
     group.on("dragmove", e => {
         const position = mousePosition();
         const shape = MidLayer.getIntersection(position);
+
+        e.target.targetField = null;
 
         if (e.target.lastIntersection) {
             e.target.lastIntersection.fill(Konva.Color.PRIMARY_LIGHT_1);
@@ -184,10 +199,18 @@ async function renderInjectable(def, node) {
             return;
         }
 
-        const x = e.target.lastIntersection = p.find(".shape")[0];
+        const x = e.target.lastIntersection = p.find(".shape_placeholder")[0];
         if (x == null) {
             return;
         }
+
+        const expectedType = p.id().split("_")[1]
+        if (def.providedType.toLowerCase() !== expectedType.toLowerCase()) {
+            x.fill(Konva.Color.ERROR);
+            return;
+        }
+
+        e.target.targetField = x;
         x.fill(Konva.Color.BLUE);
     })
 
@@ -268,7 +291,7 @@ async function renderArg(label, type) {
     const button = new Konva.Group({id: `arg_${type}_${label}`, overflow: "hidden"});
 
     const shape = new Konva.Rect({
-        name: "shape",
+        name: "shape_placeholder",
         fill: Konva.Color.PRIMARY_LIGHT_1,
         cornerRadius: 10
     });
