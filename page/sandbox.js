@@ -110,6 +110,14 @@ window.addEventListener("konva/loaded", () => {
     }));
 
     MidLayer.add(new PipeNodeInjectView({
+        x: 600,
+        y: 200,
+        id: crypto.randomUUID(),
+        type: "string",
+        title: "another one line string"
+    }));
+
+    MidLayer.add(new PipeNodeInjectView({
         x: 500,
         y: 150,
         id: crypto.randomUUID(),
