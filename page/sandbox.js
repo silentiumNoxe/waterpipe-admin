@@ -125,13 +125,29 @@ window.addEventListener("konva/loaded", () => {
         title: "one line string"
     }));
 
-    // const a = drawNode({x: 100, y: 100}, "testA")
-    // drawNode({x: 100, y: 300}, "testB")
-    // drawNode({x: 100, y: 500}, "testC")
-    // const n = drawInjectable({x: 0, y: 0})
+    MidLayer.add(new PipeNodeInjectView({
+        x: 500,
+        y: 150,
+        id: crypto.randomUUID(),
+        type: "bar",
+        title: "bar value"
+    }));
 
-    // const x = a.find(".arg")[0];
-    // n.moveTo(x);
+    MidLayer.add(new PipeNodeInjectView({
+        x: 500,
+        y: 200,
+        id: crypto.randomUUID(),
+        type: "foo",
+        title: "foo value"
+    }));
+
+    MidLayer.add(new PipeNodeInjectView({
+        x: 500,
+        y: 250,
+        id: crypto.randomUUID(),
+        type: "code",
+        title: "JS code"
+    }));
 })
 
 class PipeNodeView extends Konva.Group {
