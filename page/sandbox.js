@@ -67,22 +67,6 @@ window.addEventListener("DOMContentLoaded", () => {
         document.body.style.cursor = "auto";
     })
 
-    stage.on("dblclick", () => {
-        const mouse = mousePosition();
-        startDialog("create-node", `[data-type="node-type"]`)
-            .then(response => {
-                if (response.type == null) {
-                    throw "Type not specified";
-                }
-                createNode(response.type, mouse);
-            })
-            .catch(e => {
-                if (e !== "canceled") {
-                    console.error(e);
-                }
-            })
-    })
-
     const topLayer = window.TopLayer = new Konva.Layer({name: "Top"})
     const midLayer = window.MidLayer = new Konva.Layer({name: "Middle"});
     const bottomLayer = window.BottomLayer = new Konva.Layer({name: "Bottom"});
@@ -205,8 +189,11 @@ class FieldView extends Konva.Group {
     }
 
     injectValue(node) {
+        console.debug("inject value", node.id());
         this.placeholder.hide();
-        const copy = node.getInjectValueView();
+
+        const copy= this.injected = node.getInjectValueView(this);
+
         copy.addName("injected")
         copy.addName("ref-"+node.id())
 
@@ -215,6 +202,13 @@ class FieldView extends Konva.Group {
 
         this.add(copy);
         node.hide();
+    }
+
+    resetInjectValue() {
+        console.debug("reset inject value", this.injected.id());
+
+        this.placeholder.show();
+        this.injected.remove();
     }
 
     equals(x) {
@@ -353,8 +347,12 @@ class PipeNodeInjectView extends Konva.Group {
     }
 
     /** @return Konva.Group */
-    getInjectValueView() {
-        const group = new Konva.Group({id: this.id(), name: this.name(), listening: true, draggable: false});
+    getInjectValueView(field) {
+        if (field == null) {
+            throw new Error("required non null value - field is null");
+        }
+        const group = new Konva.Group({id: "copy:"+this.id(), name: this.name(), listening: true, draggable: false});
+        group.field = field;
 
         const titleView = new Konva.Text({
             x: 10,
@@ -364,19 +362,35 @@ class PipeNodeInjectView extends Konva.Group {
             fontSize: 14,
             text: this.title,
             fontStyle: "bold",
-            fontFamily: Konva.DEFAULT_FONT
+            fontFamily: Konva.DEFAULT_FONT,
+            listening: false,
         });
 
-        group.add(new Konva.Rect({
+        const shape = new Konva.Rect({
             width: titleView.width() + titleView.x() * 2,
             height: titleView.height() + titleView.y() * 2,
             name: "inject-shape",
             fill: Konva.Color.PRIMARY_INVERT,
             cornerRadius: 10,
-            overflow: "hidden"
-        }));
+            overflow: "hidden",
+            listening: true
+        })
 
-        group.add(titleView);
+        group.add(shape, titleView);
+
+        shape.on("dblclick", e => {
+            const origin = MidLayer.find("#"+group.id().substring("copy:".length))[0];
+            if (origin == null) {
+                throw new Error("not found origin: " + group.id());
+            }
+
+            const pos = group.absolutePosition();
+            origin.position({x: pos.x+10, y: pos.y+10});
+            origin.moveToTop()
+
+            group.field.resetInjectValue();
+            origin.show();
+        })
 
         return group;
     }
