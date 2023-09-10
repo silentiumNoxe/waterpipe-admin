@@ -109,8 +109,21 @@ window.addEventListener("DOMContentLoaded", () => {
 })
 
 window.addEventListener("konva/loaded", () => {
-    let node = new PipeNodeView({x: 100, y: 100, id: crypto.randomUUID(), fields: [{name: "test", type: "string"}]})
+    let node = new PipeNodeView({
+        x: 100,
+        y: 100,
+        id: crypto.randomUUID(),
+        fields: [{name: "string", type: "string"}, {name: "foo", type: "foo"}, {name: " bar", type: "bar"}]
+    })
     MidLayer.add(node);
+
+    MidLayer.add(new PipeNodeInjectView({
+        x: 500,
+        y: 100,
+        id: crypto.randomUUID(),
+        type: "string",
+        title: "one line string"
+    }));
 
     // const a = drawNode({x: 100, y: 100}, "testA")
     // drawNode({x: 100, y: 300}, "testB")
@@ -124,7 +137,7 @@ window.addEventListener("konva/loaded", () => {
 class PipeNodeView extends Konva.Group {
 
     static #width = 300;
-    static #height = 150;
+    static #height = 200;
 
     constructor({x, y, id, fields}) {
         super({x, y, id, name: "node", listening: true, draggable: true});
@@ -146,7 +159,8 @@ class PipeNodeView extends Konva.Group {
 
         for (const i in fields) {
             const f = fields[i];
-            const field = new FieldView(i, {name: f.name, type: f.type});
+
+            const field = new FieldView(i, {x: 0, y: i * 40, name: f.name, type: f.type});
             fieldsContainer.add(field);
         }
     }
@@ -154,8 +168,8 @@ class PipeNodeView extends Konva.Group {
 
 class FieldView extends Konva.Group {
 
-    constructor(index, {name, type}) {
-        super({name: `field field-${index} field-type-${type}`});
+    constructor(index, {x, y, name, type}) {
+        super({x, y, name: `field field-${index} field-type-${type}`});
 
         const label = new Konva.Text({
             name: "field-label",
@@ -168,30 +182,40 @@ class FieldView extends Konva.Group {
         this.add(label);
 
         const placeholder = new FieldPlaceholderView(type);
-        placeholder.x(label.width()+10);
-        placeholder.y(label.height()/2 * -1)
+        placeholder.x(label.width() + 10);
+        placeholder.y(label.height() / 2 * -1)
 
         this.add(placeholder);
+    }
+
+    equals(x) {
+        if (!(x instanceof FieldView)) {
+            return false;
+        }
+
+        return this.id() === x.id() && this.name() === x.name();
     }
 }
 
 class FieldPlaceholderView extends Konva.Group {
 
     constructor(typeName) {
-        super();
+        super({name: "placeholder"});
 
-        const title = new Konva.Text({
+        this.type = typeName;
+
+        const title = this.title = new Konva.Text({
             x: 10,
             y: 8,
             name: "placeholder-label",
-            fill: Konva.Color.PRIMARY_LIGHT_3,
+            fill: Konva.Color.PRIMARY_INVERT_2,
             fontSize: 14,
             text: typeName,
             fontStyle: "bold",
             fontFamily: Konva.DEFAULT_FONT
         });
 
-        const shape = new Konva.Rect({
+        const shape = this.shape = new Konva.Rect({
             width: title.width() + title.x() * 2,
             height: title.height() + title.y() * 2,
             name: "placeholder-shape",
@@ -203,6 +227,122 @@ class FieldPlaceholderView extends Konva.Group {
 
         this.width(shape.width());
         this.height(shape.height());
+    }
+
+    resetInteraction() {
+        this.shape.fill(Konva.Color.PRIMARY_LIGHT_1);
+        this.title.fill(Konva.Color.PRIMARY_INVERT_2);
+    }
+
+    /**
+     * @param x {PipeNodeInjectView}
+     * @return boolean - successful interaction
+     * */
+    interact(x) {
+        if (this.type === x.injectType) {
+            this.shape.fill(Konva.Color.SUCCESS);
+            this.title.fill(Konva.Color.PRIMARY);
+            return true;
+        }
+
+        this.shape.fill(Konva.Color.ERROR);
+        this.title.fill(Konva.Color.PRIMARY);
+        return false;
+    }
+}
+
+class PipeNodeInjectView extends Konva.Group {
+
+    injectType;
+
+    constructor({x, y, id, type, title}) {
+        super({x, y, id, name: `inject-node inject-type-${type}`, listening: true, draggable: true});
+        this.injectType = type;
+
+        const titleView = new Konva.Text({
+            x: 10,
+            y: 8,
+            name: "inject-title",
+            fill: Konva.Color.PRIMARY,
+            fontSize: 14,
+            text: title,
+            fontStyle: "bold",
+            fontFamily: Konva.DEFAULT_FONT
+        });
+
+        this.add(new Konva.Rect({
+            width: titleView.width() + titleView.x() * 2,
+            height: titleView.height() + titleView.y() * 2,
+            name: "inject-shape",
+            fill: Konva.Color.PRIMARY_INVERT,
+            cornerRadius: 10,
+            overflow: "hidden"
+        }));
+
+        this.add(titleView);
+
+        this.on("dragstart", e => changeLayer(TopLayer, e.target));
+        this.on("dragstart", e => e.target.listTarget = MidLayer.find(".field"))
+
+        this.on("dragend", e => changeLayer(MidLayer, e.target));
+        this.on("dragend", e => e.target.listTarget = null);
+
+        this.on("dragmove", e => {
+            const target = e.target;
+            if (target.listTarget == null || target.listTarget.length === 0) {
+                debug("warning", "no list of targets");
+                return;
+            }
+
+            const rect = target.getClientRect();
+            for (const x of target.listTarget) {
+                if (this.#haveIntersection(x.getClientRect(), rect)) {
+                    this.#interactWith(x);
+                    return;
+                }
+            }
+
+            this.#interactWith(null);
+        })
+    }
+
+    #haveIntersection(a, b) {
+        return !(
+            b.x > a.x + a.width ||
+            b.x + b.width < a.x ||
+            b.y > a.y + a.height ||
+            b.y + b.height < a.y
+        );
+    }
+
+    #interactWith(target) {
+        if (this.interacted != null && !this.interacted.equals(target)) {
+            setTimeout(((x, node) => {
+                return () => {
+                    if (node.interacted != null && node.interacted.equals(x)) {
+                        return;
+                    }
+
+                    const p = x.find(".placeholder")[0];
+                    if (p == null) {
+                        console.warn("no placeholder", node.id);
+                        return;
+                    }
+
+                    p.resetInteraction();
+                }
+            })(this.interacted, this), 0);
+        }
+
+        this.interacted = target;
+
+        if (target == null) {
+            return;
+        }
+
+        const placeholder = target.find(".placeholder").at(0);
+
+        const success = placeholder.interact(this);
     }
 }
 
