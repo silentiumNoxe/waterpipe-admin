@@ -171,7 +171,7 @@ class FieldView extends Konva.Group {
     constructor(index, {x, y, name, type}) {
         super({x, y, name: `field field-${index} field-type-${type}`});
 
-        const label = new Konva.Text({
+        const label = this.label = new Konva.Text({
             name: "field-label",
             fill: Konva.Color.PRIMARY_INVERT,
             fontSize: 16,
@@ -181,11 +181,24 @@ class FieldView extends Konva.Group {
 
         this.add(label);
 
-        const placeholder = new FieldPlaceholderView(type);
+        const placeholder = this.placeholder = new FieldPlaceholderView(type);
         placeholder.x(label.width() + 10);
         placeholder.y(label.height() / 2 * -1)
 
         this.add(placeholder);
+    }
+
+    injectValue(node) {
+        this.placeholder.hide();
+        const copy = node.getInjectValueView();
+        copy.addName("injected")
+        copy.addName("ref-"+node.id())
+
+        copy.x(this.label.width() + 10);
+        copy.y(this.label.height() / 2 * -1)
+
+        this.add(copy);
+        node.hide();
     }
 
     equals(x) {
@@ -258,6 +271,7 @@ class PipeNodeInjectView extends Konva.Group {
     constructor({x, y, id, type, title}) {
         super({x, y, id, name: `inject-node inject-type-${type}`, listening: true, draggable: true});
         this.injectType = type;
+        this.title = title;
 
         const titleView = new Konva.Text({
             x: 10,
@@ -286,6 +300,14 @@ class PipeNodeInjectView extends Konva.Group {
 
         this.on("dragend", e => changeLayer(MidLayer, e.target));
         this.on("dragend", e => e.target.listTarget = null);
+        this.on("dragend", e => {
+            const interacted = e.target.interacted;
+            if (interacted == null || !e.target.interactionSuccess) {
+                return;
+            }
+
+            e.target.fire("injected", {field: interacted});
+        })
 
         this.on("dragmove", e => {
             const target = e.target;
@@ -304,6 +326,43 @@ class PipeNodeInjectView extends Konva.Group {
 
             this.#interactWith(null);
         })
+
+        this.on("injected", e => {
+            if (e.field == null) {
+                return;
+            }
+
+            e.field.injectValue(e.target);
+        })
+    }
+
+    /** @return Konva.Group */
+    getInjectValueView() {
+        const group = new Konva.Group({id: this.id(), name: this.name(), listening: true, draggable: false});
+
+        const titleView = new Konva.Text({
+            x: 10,
+            y: 8,
+            name: "inject-title",
+            fill: Konva.Color.PRIMARY,
+            fontSize: 14,
+            text: this.title,
+            fontStyle: "bold",
+            fontFamily: Konva.DEFAULT_FONT
+        });
+
+        group.add(new Konva.Rect({
+            width: titleView.width() + titleView.x() * 2,
+            height: titleView.height() + titleView.y() * 2,
+            name: "inject-shape",
+            fill: Konva.Color.PRIMARY_INVERT,
+            cornerRadius: 10,
+            overflow: "hidden"
+        }));
+
+        group.add(titleView);
+
+        return group;
     }
 
     #haveIntersection(a, b) {
@@ -341,8 +400,7 @@ class PipeNodeInjectView extends Konva.Group {
         }
 
         const placeholder = target.find(".placeholder").at(0);
-
-        const success = placeholder.interact(this);
+        this.interactionSuccess = placeholder.interact(this);
     }
 }
 
