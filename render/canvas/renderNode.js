@@ -3,6 +3,7 @@ import Render from "../render.js";
 import {nodeMenuRender} from "../node_menu.js";
 import {getDefinition} from "../../client/node.js";
 import PipeNodeView from "../view/PipeNodeView.js";
+import PipeNodeInjectView from "../view/PipeNodeInjectView.js";
 
 const stepSize = 50;
 
@@ -158,116 +159,118 @@ async function renderNode(def, node) {
  * @return Konva.Group
  * */
 async function renderInjectable(def, node) {
-    const renderOps = def.render;
+    return new PipeNodeInjectView(def, node);
 
-    const group = new Konva.Group({listening: true, draggable: true});
-    group.position(node.position);
-    group.on("dragstart", e => {
-        e.target.moveTo(window.TopLayer);
-        window.TopLayer.draw();
-    })
-    group.on("dragend", e => {
-        e.target.moveTo(window.MidLayer);
-        window.MidLayer.draw();
-
-        if (e.target.targetField == null) {
-            return;
-        }
-
-        console.log(e.target);
-        const placeholder = e.target.targetField.parent();
-        const parent = placeholder.parent();
-        placeholder.hide();
-
-        parent.add(e.target);
-
-        console.debug("Selected field", e.target.targetField);
-    })
-    group.on("dragmove", e => {
-        const position = mousePosition();
-        const shape = MidLayer.getIntersection(position);
-
-        e.target.targetField = null;
-
-        if (e.target.lastIntersection) {
-            e.target.lastIntersection.fill(Konva.Color.PRIMARY_LIGHT_1);
-        }
-
-        if (shape == null || shape.parent == null) {
-            return;
-        }
-
-        const p = shape.parent;
-        if (!p.id().startsWith("arg")) {
-            return;
-        }
-
-        const x = e.target.lastIntersection = p.find(".shape_placeholder")[0];
-        if (x == null) {
-            return;
-        }
-
-        const expectedType = p.id().split("_")[1]
-        if (def.providedType.toLowerCase() !== expectedType.toLowerCase()) {
-            x.fill(Konva.Color.ERROR);
-            return;
-        }
-
-        e.target.targetField = x;
-        x.fill(Konva.Color.BLUE);
-    })
-
-    const shape = new Konva.Rect({
-        fill: Konva.Color.PRIMARY_INVERT,
-        cornerRadius: 10,
-        overflow: "hidden"
-    });
-
-    async function buildTitle() {
-        const group = new Konva.Group();
-
-        const titleText = new Konva.Text({
-            fontFamily: Konva.DEFAULT_FONT,
-            fontSize: 15,
-            fontStyle: "bold",
-            text: def.providedType,
-            align: "left",
-            wrap: "none",
-            fill: Konva.Color.PRIMARY,
-        })
-
-        group.add(titleText);
-
-        group.width(titleText.width());
-        group.height(titleText.height());
-
-        return group;
-    }
-
-    const title = await buildTitle();
-    title.x(shape.x()+15);
-    title.y(shape.y()+10);
-
-    const contentWidth = title.width()+30;
-    const contentHeight = title.height()+20;
-
-    group.width(contentWidth);
-    group.height(contentHeight);
-
-    shape.width(group.width());
-    shape.height(group.height());
-
-    group.add(shape, title);
-
-    if (def.important) {
-        console.debug("render important icon");
-        const important = await loadImage("/assets/icon/warning_circle.svg");
-        important.scale({x: 0.5, y: 0.5});
-        important.position({x: 0, y: -10});
-        group.add(important);
-    }
-
-    return group;
+    // const renderOps = def.render;
+    //
+    // const group = new Konva.Group({listening: true, draggable: true});
+    // group.position(node.position);
+    // group.on("dragstart", e => {
+    //     e.target.moveTo(window.TopLayer);
+    //     window.TopLayer.draw();
+    // })
+    // group.on("dragend", e => {
+    //     e.target.moveTo(window.MidLayer);
+    //     window.MidLayer.draw();
+    //
+    //     if (e.target.targetField == null) {
+    //         return;
+    //     }
+    //
+    //     console.log(e.target);
+    //     const placeholder = e.target.targetField.parent();
+    //     const parent = placeholder.parent();
+    //     placeholder.hide();
+    //
+    //     parent.add(e.target);
+    //
+    //     console.debug("Selected field", e.target.targetField);
+    // })
+    // group.on("dragmove", e => {
+    //     const position = mousePosition();
+    //     const shape = MidLayer.getIntersection(position);
+    //
+    //     e.target.targetField = null;
+    //
+    //     if (e.target.lastIntersection) {
+    //         e.target.lastIntersection.fill(Konva.Color.PRIMARY_LIGHT_1);
+    //     }
+    //
+    //     if (shape == null || shape.parent == null) {
+    //         return;
+    //     }
+    //
+    //     const p = shape.parent;
+    //     if (!p.id().startsWith("arg")) {
+    //         return;
+    //     }
+    //
+    //     const x = e.target.lastIntersection = p.find(".shape_placeholder")[0];
+    //     if (x == null) {
+    //         return;
+    //     }
+    //
+    //     const expectedType = p.id().split("_")[1]
+    //     if (def.providedType.toLowerCase() !== expectedType.toLowerCase()) {
+    //         x.fill(Konva.Color.ERROR);
+    //         return;
+    //     }
+    //
+    //     e.target.targetField = x;
+    //     x.fill(Konva.Color.BLUE);
+    // })
+    //
+    // const shape = new Konva.Rect({
+    //     fill: Konva.Color.PRIMARY_INVERT,
+    //     cornerRadius: 10,
+    //     overflow: "hidden"
+    // });
+    //
+    // async function buildTitle() {
+    //     const group = new Konva.Group();
+    //
+    //     const titleText = new Konva.Text({
+    //         fontFamily: Konva.DEFAULT_FONT,
+    //         fontSize: 15,
+    //         fontStyle: "bold",
+    //         text: def.providedType,
+    //         align: "left",
+    //         wrap: "none",
+    //         fill: Konva.Color.PRIMARY,
+    //     })
+    //
+    //     group.add(titleText);
+    //
+    //     group.width(titleText.width());
+    //     group.height(titleText.height());
+    //
+    //     return group;
+    // }
+    //
+    // const title = await buildTitle();
+    // title.x(shape.x()+15);
+    // title.y(shape.y()+10);
+    //
+    // const contentWidth = title.width()+30;
+    // const contentHeight = title.height()+20;
+    //
+    // group.width(contentWidth);
+    // group.height(contentHeight);
+    //
+    // shape.width(group.width());
+    // shape.height(group.height());
+    //
+    // group.add(shape, title);
+    //
+    // if (def.important) {
+    //     console.debug("render important icon");
+    //     const important = await loadImage("/assets/icon/warning_circle.svg");
+    //     important.scale({x: 0.5, y: 0.5});
+    //     important.position({x: 0, y: -10});
+    //     group.add(important);
+    // }
+    //
+    // return group;
 }
 
 /** @return Promise<Konva.Image>*/

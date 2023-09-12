@@ -1,11 +1,28 @@
 export default class PipeNodeInjectView extends Konva.Group {
 
     injectType;
+    #definition;
+    #data;
 
-    constructor({x, y, id, type, title}) {
-        super({x, y, id, name: `inject-node inject-type-${type}`, listening: true, draggable: true});
-        this.injectType = type;
-        this.title = title;
+    /**
+     * @param definition {NodeDefinition}
+     * @param data {ProcessNode}
+     * */
+    constructor(definition, data) {
+        super({
+            x: data.position.x,
+            y: data.position.y,
+            id: data.id,
+            name: `inject-node inject-type-${definition.providedType}`,
+            listening: true,
+            draggable: true
+        });
+
+        this.#definition = definition;
+        this.#data = data;
+
+        this.injectType = definition.providedType;
+        this.title = data.title || this.injectType;
 
         const titleView = new Konva.Text({
             x: 10,
@@ -13,7 +30,7 @@ export default class PipeNodeInjectView extends Konva.Group {
             name: "inject-title",
             fill: Konva.Color.PRIMARY,
             fontSize: 14,
-            text: title,
+            text: this.title,
             fontStyle: "bold",
             fontFamily: Konva.DEFAULT_FONT
         });
@@ -46,7 +63,6 @@ export default class PipeNodeInjectView extends Konva.Group {
         this.on("dragmove", e => {
             const target = e.target;
             if (target.listTarget == null || target.listTarget.length === 0) {
-                debug("warning", "no list of targets");
                 return;
             }
 
@@ -75,7 +91,7 @@ export default class PipeNodeInjectView extends Konva.Group {
         if (field == null) {
             throw new Error("required non null value - field is null");
         }
-        const group = new Konva.Group({id: "copy:"+this.id(), name: this.name(), listening: true, draggable: false});
+        const group = new Konva.Group({id: "copy:" + this.id(), name: this.name(), listening: true, draggable: false});
         group.field = field;
 
         const titleView = new Konva.Text({
@@ -103,13 +119,13 @@ export default class PipeNodeInjectView extends Konva.Group {
         group.add(shape, titleView);
 
         shape.on("dblclick", e => {
-            const origin = MidLayer.find("#"+group.id().substring("copy:".length))[0];
+            const origin = MidLayer.find("#" + group.id().substring("copy:".length))[0];
             if (origin == null) {
                 throw new Error("not found origin: " + group.id());
             }
 
             const pos = group.absolutePosition();
-            origin.position({x: pos.x+10, y: pos.y+10});
+            origin.position({x: pos.x + 10, y: pos.y + 10});
             origin.moveToTop()
 
             group.field.resetInjectValue();
@@ -128,6 +144,7 @@ export default class PipeNodeInjectView extends Konva.Group {
         );
     }
 
+    /** @param target {FieldView} */
     #interactWith(target) {
         if (this.interacted != null && !this.interacted.equals(target)) {
             setTimeout(((x, node) => {
