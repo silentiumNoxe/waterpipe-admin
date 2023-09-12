@@ -12,7 +12,6 @@ export default class ProcessNode {
     title;
     type;
 
-    /** @type Map<string,any>*/
     args = new Map();
 
     next;

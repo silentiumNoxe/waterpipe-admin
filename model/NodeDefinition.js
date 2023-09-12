@@ -6,7 +6,7 @@ export default class NodeDefinition {
     package;
     author;
 
-    /** @type Map<string,NodeDefinitionArgument>*/
+    /** @type Map<string, NodeDefinitionArgument>*/
     args = new Map();
 
     render;
