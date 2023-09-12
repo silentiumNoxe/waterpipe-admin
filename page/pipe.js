@@ -119,6 +119,14 @@ window.addEventListener("DOMContentLoaded", () => {
     const midLayer = window.MidLayer = new Konva.Layer({name: "Middle"});
     const bottomLayer = window.BottomLayer = new Konva.Layer({name: "Bottom"});
 
+    /**
+     * @param layer {Konva.Layer}
+     * @param x {Konva.Node}
+     * */
+    window.changeLayer = function (layer, x) {
+        x.moveTo(layer);
+    }
+
     window.addNode = node => {
         midLayer.add(node);
     };

@@ -1,3 +1,5 @@
+import FieldPlaceholderView from "./FieldPlaceholderView.js";
+
 export default class FieldView extends Konva.Group {
 
     constructor(index, {x, y, name, type}) {

@@ -1,6 +1,6 @@
 import FieldView from "./FieldView.js";
 
-const stepSize = 50;
+const stepSize = 25;
 
 export default class PipeNodeView extends Konva.Group {
 
@@ -46,7 +46,7 @@ export default class PipeNodeView extends Konva.Group {
             const shape = new Konva.Rect({
                 name: "node-shape",
                 fill: Konva.Color.PRIMARY_LIGHT_2,
-                cornerRadius: 10,
+                cornerRadius: 25,
                 overflow: "hidden"
             });
 
@@ -55,9 +55,9 @@ export default class PipeNodeView extends Konva.Group {
             const title = await node.#buildTitle(data.title, data.type, node.#definition.render);
 
             node.add(title);
+            node.height(title.height()+title.y()+15);
 
             const fieldsContainer = new Konva.Group({x: 20, y: title.height()+title.y()+20, name: "fields-container"});
-            node.add(fieldsContainer);
 
             const keys = node.#definition.args.keys();
             let i = 0;
@@ -75,6 +75,11 @@ export default class PipeNodeView extends Konva.Group {
                 i++;
             }
 
+            if (fieldsContainer.hasChildren()) {
+                node.add(fieldsContainer);
+                node.height(fieldsContainer.height()+fieldsContainer.y()+40);
+            }
+
             if (node.#definition.important) {
                 console.debug("render important icon");
                 const important = await loadImage("/assets/icon/warning_circle.svg");
@@ -84,7 +89,6 @@ export default class PipeNodeView extends Konva.Group {
             }
 
             node.width(title.width()+title.x());
-            node.height(fieldsContainer.height()+fieldsContainer.y()+40);
 
             shape.width(node.width()+30);
             shape.height(node.height());

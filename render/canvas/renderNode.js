@@ -2,6 +2,7 @@ import NodeView from "../../canvas-view/node.js";
 import Render from "../render.js";
 import {nodeMenuRender} from "../node_menu.js";
 import {getDefinition} from "../../client/node.js";
+import PipeNodeView from "../view/PipeNodeView.js";
 
 const stepSize = 50;
 
@@ -26,127 +27,129 @@ export default async function (def, node) {
  * @return Konva.Group
  * */
 async function renderNode(def, node) {
-    const renderOps = def.render;
+    return new PipeNodeView(def, node);
 
-    const group = new Konva.Group({id: `node_${node.id}`, listening: true, draggable: true});
-    group.offset({x: 0.5, y: 0.5})
-    group.position(node.position);
-    group.on("mouseover", () => document.body.style.cursor = "grab");
-    group.on("mouseout", () => document.body.style.cursor = "default");
-    group.on("dragstart", e => {
-        e.target.moveTo(window.TopLayer);
-        window.TopLayer.draw();
-    })
-    group.on("dragend", e => {
-        e.target.moveTo(window.MidLayer);
-        window.MidLayer.draw();
-    })
-    group.on("dragmove", e => {
-        const target = e.target;
-        if (target.x() % stepSize !== 0) {
-            target.x(target.x() - target.x() % stepSize)
-        }
-        if (target.y() % stepSize !== 0) {
-            target.y(target.y() - target.y() % stepSize)
-        }
-    })
+    // const renderOps = def.render;
+    //
+    // const group = new Konva.Group({id: `node_${node.id}`, listening: true, draggable: true});
+    // group.offset({x: 0.5, y: 0.5})
+    // group.position(node.position);
+    // group.on("mouseover", () => document.body.style.cursor = "grab");
+    // group.on("mouseout", () => document.body.style.cursor = "default");
+    // group.on("dragstart", e => {
+    //     e.target.moveTo(window.TopLayer);
+    //     window.TopLayer.draw();
+    // })
+    // group.on("dragend", e => {
+    //     e.target.moveTo(window.MidLayer);
+    //     window.MidLayer.draw();
+    // })
+    // group.on("dragmove", e => {
+    //     const target = e.target;
+    //     if (target.x() % stepSize !== 0) {
+    //         target.x(target.x() - target.x() % stepSize)
+    //     }
+    //     if (target.y() % stepSize !== 0) {
+    //         target.y(target.y() - target.y() % stepSize)
+    //     }
+    // })
+    //
+    // const shape = new Konva.Rect({
+    //     name: "shape",
+    //     fill: Konva.Color.PRIMARY_LIGHT_2,
+    //     cornerRadius: 25,
+    //     overflow: "hidden"
+    // });
+    //
+    // async function buildTitle() {
+    //     const group = new Konva.Group();
+    //
+    //     let image;
+    //     if (renderOps.icon) {
+    //         image = await loadImage("/assets/icon/"+renderOps.icon+".svg");
+    //         image.position({x: 0, y: -6})
+    //         group.add(image);
+    //     }
+    //
+    //     const titleText = new Konva.Text({
+    //         fontFamily: Konva.DEFAULT_FONT,
+    //         fontSize: 25,
+    //         fontStyle: "bold",
+    //         text: node.title,
+    //         align: "left",
+    //         wrap: "none",
+    //         fill: Konva.Color.PRIMARY_INVERT,
+    //     })
+    //
+    //     if (image) {
+    //         titleText.x(image.width() + 8);
+    //     }
+    //
+    //     const typeText = new Konva.Text({
+    //         x: titleText.x(),
+    //         y: titleText.y()+titleText.height(),
+    //         fontFamily: Konva.DEFAULT_FONT,
+    //         fontSize: 10,
+    //         text: node.type,
+    //         align: "left",
+    //         wrap: "none",
+    //         fill: Konva.Color.PRIMARY_INVERT
+    //     })
+    //
+    //     let width = titleText.width() > typeText.width() ? titleText.width() : typeText.width();
+    //     if (image) {
+    //         width += image.width()
+    //     }
+    //
+    //     group.add(titleText, typeText);
+    //     group.width(width);
+    //     group.height(titleText.height()+typeText.height());
+    //
+    //     return group;
+    // }
 
-    const shape = new Konva.Rect({
-        name: "shape",
-        fill: Konva.Color.PRIMARY_LIGHT_2,
-        cornerRadius: 25,
-        overflow: "hidden"
-    });
-
-    async function buildTitle() {
-        const group = new Konva.Group();
-
-        let image;
-        if (renderOps.icon) {
-            image = await loadImage("/assets/icon/"+renderOps.icon+".svg");
-            image.position({x: 0, y: -6})
-            group.add(image);
-        }
-
-        const titleText = new Konva.Text({
-            fontFamily: Konva.DEFAULT_FONT,
-            fontSize: 25,
-            fontStyle: "bold",
-            text: node.title,
-            align: "left",
-            wrap: "none",
-            fill: Konva.Color.PRIMARY_INVERT,
-        })
-
-        if (image) {
-            titleText.x(image.width() + 8);
-        }
-
-        const typeText = new Konva.Text({
-            x: titleText.x(),
-            y: titleText.y()+titleText.height(),
-            fontFamily: Konva.DEFAULT_FONT,
-            fontSize: 10,
-            text: node.type,
-            align: "left",
-            wrap: "none",
-            fill: Konva.Color.PRIMARY_INVERT
-        })
-
-        let width = titleText.width() > typeText.width() ? titleText.width() : typeText.width();
-        if (image) {
-            width += image.width()
-        }
-
-        group.add(titleText, typeText);
-        group.width(width);
-        group.height(titleText.height()+typeText.height());
-
-        return group;
-    }
-
-    const title = await buildTitle();
-    title.x(shape.x()+6);
-    title.y(shape.y()+10);
-
-    group.add(shape, title);
-
-    if (def.important) {
-        console.debug("render important icon");
-        const important = await loadImage("/assets/icon/warning_circle.svg");
-        important.scale({x: 0.5, y: 0.5});
-        important.position({x: 0, y: -10});
-        group.add(important);
-    }
-
-    const argsContainer = new Konva.Group();
-    let last = null;
-    for (const x of def.args.entries()) {
-        console.debug("arg", x);
-        const args = await renderArg(x.at(0), x.at(1).type);
-        if (last) {
-            args.y(last.height()+10)
-        }
-        argsContainer.height(argsContainer.height()+args.height()+10)
-        argsContainer.add(args);
-        last = args;
-    }
-
-    argsContainer.x(15);
-    argsContainer.y(title.height()+20);
-
-    group.add(argsContainer);
-
-    const contentWidth = title.width()+30;
-    const contentHeight = title.height()+argsContainer.height()+20;
-
-    group.width(contentWidth);
-    group.height(contentHeight);
-
-    shape.width(group.width());
-    shape.height(group.height());
-
-    return group;
+    // const title = await buildTitle();
+    // title.x(shape.x()+6);
+    // title.y(shape.y()+10);
+    //
+    // group.add(shape, title);
+    //
+    // if (def.important) {
+    //     console.debug("render important icon");
+    //     const important = await loadImage("/assets/icon/warning_circle.svg");
+    //     important.scale({x: 0.5, y: 0.5});
+    //     important.position({x: 0, y: -10});
+    //     group.add(important);
+    // }
+    //
+    // const argsContainer = new Konva.Group();
+    // let last = null;
+    // for (const x of def.args.entries()) {
+    //     console.debug("arg", x);
+    //     const args = await renderArg(x.at(0), x.at(1).type);
+    //     if (last) {
+    //         args.y(last.height()+10)
+    //     }
+    //     argsContainer.height(argsContainer.height()+args.height()+10)
+    //     argsContainer.add(args);
+    //     last = args;
+    // }
+    //
+    // argsContainer.x(15);
+    // argsContainer.y(title.height()+20);
+    //
+    // group.add(argsContainer);
+    //
+    // const contentWidth = title.width()+30;
+    // const contentHeight = title.height()+argsContainer.height()+20;
+    //
+    // group.width(contentWidth);
+    // group.height(contentHeight);
+    //
+    // shape.width(group.width());
+    // shape.height(group.height());
+    //
+    // return group;
 }
 
 /**
