@@ -4,6 +4,11 @@
     import("/component/dialog/CreateFile.js").catch(console.error);
 })();
 
+window.stageOffset = {x: 0, y: 0};
+window.normalizeOffset = function ({x, y}) {
+    return {x: x-stageOffset.x, y: y-stageOffset.y};
+}
+
 window.addEventListener("pipeloaded", () => {
     document.querySelector("[data-type='process-name']").textContent = CurrentProcess.name
     document.querySelector("#header button[data-type='process-version']").textContent = "Version: "+CurrentProcess.version
@@ -96,24 +101,18 @@ window.addEventListener("DOMContentLoaded", () => {
         document.body.style.cursor = "auto";
     })
 
+    stage.on("dragend", e => {
+        if (!(e.target instanceof Konva.Stage)) {
+            return;
+        }
+
+        console.debug(e.target);
+        window.stageOffset = e.target.position();
+        console.log(e.target.position());
+    })
+
     stage.on("click", hideNodeMenu);
     stage.on("click", unselectNode)
-
-    stage.on("dblclick", () => {
-        const mouse = mousePosition();
-        startDialog("create-node", `[data-type="node-type"]`)
-            .then(response => {
-                if (response.type == null) {
-                    throw "Type not specified";
-                }
-                createNode(response.type, mouse);
-            })
-            .catch(e => {
-                if (e !== "canceled") {
-                    console.error(e);
-                }
-            })
-    })
 
     const topLayer = window.TopLayer = new Konva.Layer({name: "Top"})
     const midLayer = window.MidLayer = new Konva.Layer({name: "Middle"});

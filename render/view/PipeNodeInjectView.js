@@ -124,7 +124,7 @@ export default class PipeNodeInjectView extends Konva.Group {
                 throw new Error("not found origin: " + group.id());
             }
 
-            const pos = group.absolutePosition();
+            const pos = normalizeOffset(group.absolutePosition());
             origin.position({x: pos.x + 10, y: pos.y + 10});
             origin.moveToTop()
 
