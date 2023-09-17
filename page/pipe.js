@@ -106,9 +106,7 @@ window.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        console.debug(e.target);
         window.stageOffset = e.target.position();
-        console.log(e.target.position());
     })
 
     stage.on("click", hideNodeMenu);
@@ -129,6 +127,11 @@ window.addEventListener("DOMContentLoaded", () => {
     window.addNode = node => {
         midLayer.add(node);
     };
+
+    window.moveCamera = ({x, y}) => {
+        stage.position({x, y});
+        window.stageOffset = stage.position();
+    }
 
     bottomLayer.listening(false);
 
@@ -207,17 +210,11 @@ async function showNodeMenu(view, node, def) {
 }
 
 function unselectNode() {
-    if (window.selectedNodeId == null || window.selectedNodeId === "") {
+    if (window.focusedNode == null) {
         return;
     }
 
-    const node = window.MidLayer.findOne("#" + window.selectedNodeId);
-    if (node == null) {
-        console.warn(`node ${window.selectedNodeId} not found`);
-        return;
-    }
-
-    node.selected = false;
+    window.focusedNode.stopFocus();
 }
 
 function hideNodeMenu() {
