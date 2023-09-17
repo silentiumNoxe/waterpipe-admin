@@ -1,7 +1,6 @@
 import FieldView from "./FieldView.js";
-import {start} from "../../worker/server_health/starter.js";
 
-const stepSize = 0.1;
+const stepSize = 25;
 
 export default class PipeNodeView extends Konva.Group {
 
