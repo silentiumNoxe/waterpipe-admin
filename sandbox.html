@@ -10,7 +10,34 @@
   <link rel="stylesheet" href="style/page/sandbox.css">
 </head>
 <body>
-<div id="debug"></div>
+<div id="debug">
+  <label>
+    Width
+    <input id="d-width" type="number">
+  </label>
+  <label>
+    Height
+    <input id="d-height" type="number">
+  </label>
+  <label>
+    Title
+    <input id="d-title" type="text">
+  </label>
+  <label>
+    Icon
+    <input id="d-icon" type="text" list="icons">
+  </label>
+  <label>
+    Important
+    <input id="d-important" type="checkbox">
+  </label>
+  <datalist id="icons" hidden="hidden">
+    <option value="code"></option>
+    <option value="check_circle"></option>
+    <option value="play"></option>
+    <option value="warning_circle"></option>
+  </datalist>
+</div>
 <div id="editor"></div>
 </body>
 </html>

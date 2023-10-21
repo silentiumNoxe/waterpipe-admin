@@ -17,6 +17,37 @@ Konva.Color = {
     BLUE2: "#7290bb"
 }
 
+const debugData = {
+    width: 400,
+    height: 100,
+    title: "Test node",
+    icon: "code",
+    important: true
+};
+
+window.addEventListener("DOMContentLoaded", () => {
+    const container = document.getElementById("debug");
+    let x = container.querySelector("input#d-width");
+    x.value = debugData.width;
+    x.addEventListener("change", e => debugData.width = parseInt(e.target.value, 10));
+
+    x = container.querySelector("input#d-height");
+    x.value = debugData.height;
+    x.addEventListener("change", e => debugData.height = parseInt(e.target.value, 10));
+
+    x = container.querySelector("input#d-title");
+    x.value = debugData.title;
+    x.addEventListener("change", e => debugData.title = e.target.value);
+
+    x = container.querySelector("input#d-icon");
+    x.value = debugData.icon;
+    x.addEventListener("change", e => debugData.icon = e.target.value);
+
+    x = container.querySelector("input#d-important");
+    x.checked = debugData.important;
+    x.addEventListener("change", e => debugData.important = e.target.checked);
+})
+
 window.addEventListener("DOMContentLoaded", () => {
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -95,79 +126,102 @@ window.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("konva/loaded", async () => {
     const NodeDefinition = (await import("../model/NodeDefinition.js")).default;
     const ProcessNode = (await import("../model/ProcessNode.js")).default;
-    const PipeNodeView = (await import("../render/view/PipeNodeView.js")).default;
+    const renderShape = (await import("../render/nodeRenderShape.js")).default;
+    const renderTitle = (await import("../render/nodeRenderTitle.js")).default;
+    const renderImportant = (await import("../render/nodeRenderImportant.js")).default;
+    const renderError = (await import("../render/nodeRenderError.js")).default;
 
-    const nodeDef = new NodeDefinition({
-        name: "test",
-        package: "",
-        author: "",
-        important: true,
-        injectable: false,
-        inject_type: "",
-        script: "",
-        args: {
-            "string": {type: "string", required: true},
-            "foo": {type: "foo"},
-            "bar": {type: "bar"},
-            "number": {type: "number"}
-        },
-        render: {
-            "icon": "code"
-        }
-    });
+    const node = new Konva.Group();
+    const shape = new Konva.Rect();
+    const title = new Konva.Group();
 
-    let node = new PipeNodeView(
-        nodeDef,
-        new ProcessNode({
-            id: crypto.randomUUID(),
-            title: "Test node",
-            type: "test_node",
-            next: null,
-            position: {x: 100, y: 100},
-            args: {}
-        }));
+    node.add(shape, title);
 
     MidLayer.add(node);
 
-    MidLayer.add(new PipeNodeInjectView({
-        x: 500,
-        y: 100,
-        id: crypto.randomUUID(),
-        type: "string",
-        title: "one line string"
-    }));
+    function frame() {
+        const nodeDef = new NodeDefinition({
+            name: "test",
+            package: "test.test.test",
+            author: "",
+            important: debugData.important,
+            injectable: false,
+            inject_type: "",
+            script: "",
+            args: {
+                "string": {type: "string", required: true},
+                "foo": {type: "foo"},
+                "bar": {type: "bar"},
+                "number": {type: "number"}
+            },
+            render: {
+                "icon": debugData.icon
+            }
+        });
 
-    MidLayer.add(new PipeNodeInjectView({
-        x: 600,
-        y: 200,
-        id: crypto.randomUUID(),
-        type: "string",
-        title: "another one line string"
-    }));
+        const nodeData = new ProcessNode({
+            id: crypto.randomUUID(),
+            title: debugData.title,
+            type: "test_node",
+            next: null,
+            position: {x: 800, y: 100},
+            args: {}
+        });
 
-    MidLayer.add(new PipeNodeInjectView({
-        x: 500,
-        y: 150,
-        id: crypto.randomUUID(),
-        type: "bar",
-        title: "bar value"
-    }));
+        node.x(nodeData.position.x);
+        node.y(nodeData.position.y);
 
-    MidLayer.add(new PipeNodeInjectView({
-        x: 500,
-        y: 200,
-        id: crypto.randomUUID(),
-        type: "foo",
-        title: "foo value"
-    }));
+        renderShape(shape, {width: debugData.width, height: debugData.height});
+        renderTitle(title, {text: debugData.title, icon: nodeDef.render.icon, pkg: nodeDef.package});
+        if (nodeDef.important) {
+            renderImportant(title, {value: nodeDef.important});
+        }
+        renderError(title, {value: true, reason: "test error reason"});
 
-    MidLayer.add(new PipeNodeInjectView({
-        x: 500,
-        y: 250,
-        id: crypto.randomUUID(),
-        type: "code",
-        title: "JS code"
-    }));
+        requestAnimationFrame(frame);
+    }
+
+    frame();
+
+    // MidLayer.add(new PipeNodeInjectView({
+    //     x: 500,
+    //     y: 100,
+    //     id: crypto.randomUUID(),
+    //     type: "string",
+    //     title: "one line string"
+    // }));
+    //
+    // MidLayer.add(new PipeNodeInjectView({
+    //     x: 600,
+    //     y: 200,
+    //     id: crypto.randomUUID(),
+    //     type: "string",
+    //     title: "another one line string"
+    // }));
+    //
+    // MidLayer.add(new PipeNodeInjectView({
+    //     x: 500,
+    //     y: 150,
+    //     id: crypto.randomUUID(),
+    //     type: "bar",
+    //     title: "bar value"
+    // }));
+    //
+    // MidLayer.add(new PipeNodeInjectView({
+    //     x: 500,
+    //     y: 200,
+    //     id: crypto.randomUUID(),
+    //     type: "foo",
+    //     title: "foo value"
+    // }));
+    //
+    // MidLayer.add(new PipeNodeInjectView({
+    //     x: 500,
+    //     y: 250,
+    //     id: crypto.randomUUID(),
+    //     type: "code",
+    //     title: "JS code"
+    // }));
 })
 
 class PipeNodeView extends Konva.Group {
