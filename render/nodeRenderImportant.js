@@ -7,6 +7,7 @@ import loadImage from "./loadImage.js";
 export default async function (target, {value}) {
     let $important = target.findOne(".important")
     if ($important != null && !value) {
+        console.log("remove important");
         $important.remove();
         return;
     }

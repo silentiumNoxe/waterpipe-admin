@@ -22,7 +22,7 @@ const debugData = {
     height: 100,
     title: "Test node",
     icon: "code",
-    important: true
+    important: false
 };
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -51,7 +51,7 @@ window.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("DOMContentLoaded", () => {
     const width = window.innerWidth;
     const height = window.innerHeight;
-    const stage = new Konva.Stage({container: "editor", width, height, draggable: false});
+    const stage = window.stage = new Konva.Stage({container: "editor", width, height, draggable: false});
 
     window.mousePosition = function () {
         return stage.getPointerPosition();
@@ -130,10 +130,17 @@ window.addEventListener("konva/loaded", async () => {
     const renderTitle = (await import("../render/nodeRenderTitle.js")).default;
     const renderImportant = (await import("../render/nodeRenderImportant.js")).default;
     const renderError = (await import("../render/nodeRenderError.js")).default;
+    const renderFocus = (await import("../render/nodeRenderFocus.js")).default;
 
     const node = new Konva.Group();
     const shape = new Konva.Rect();
     const title = new Konva.Group();
+
+    shape.on("click", e => {
+        e.cancelBubble = true;
+        e.target.focused = true;
+    });
+    window.stage.on("click", () => shape.focused = false);
 
     node.add(shape, title);
 
@@ -176,7 +183,9 @@ window.addEventListener("konva/loaded", async () => {
         if (nodeDef.important) {
             renderImportant(title, {value: nodeDef.important});
         }
-        renderError(title, {value: true, reason: "test error reason"});
+        renderError(title, {value: false, reason: "test error reason"});
+
+        renderFocus(shape, {value: shape.focused});
 
         requestAnimationFrame(frame);
     }
